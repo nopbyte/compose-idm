@@ -1,0 +1,12 @@
+
+#Create service source code first 
+curl --digest -u "composecontroller:composecontrollerpassword"   -H "Content-Type: application/json;charset=UTF-8" -d '{"authorization": "'"Bearer $TOKEN"'","id":"test2","name":"firstapp2","version":"1.0"}' http://localhost:8080/idm/servicesourcecode/
+
+
+#Get data
+curl -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/servicesourcecode/test2
+
+
+#delete an service source
+curl  --digest -u "composecontroller:composecontrollerpassword" -H "If-Unmodified-Since: 1400857002000"  -H "Content-Type: application/json;charset=UTF-8"  -d  '{"authorization": "'"Bearer $TOKEN"'"}' -X DELETE http://localhost:8080/idm/servicesourcecode/test2
+

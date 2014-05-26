@@ -1,0 +1,33 @@
+#UserMembership: add
+curl   -H "Authorization: Bearer $TOKENEVIL"   -H "Content-Type: application/json;charset=UTF-8" -d '{"group_id":"ba5b1e7c-2fa4-47d4-9770-4110627a8bca","role":"ADMIN"}' -X POST http://localhost:8080/idm/memberships/user/189653b3-deec-4fd1-aed2-7e03454d12b0/
+
+#USerMebmership: list pending approvals
+curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/memberships/users/
+
+#UserMembership: Approve membership
+curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1399305217000" -X PUT http://localhost:8080/idm/memberships/approve/5ea30baf-4f49-403c-8874-6d2684bbfa30/
+
+#Group Memberships: get pending approvals
+curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/group_memberships/
+
+#Group Memberships: approve
+curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1399305205000" -X PUT http://localhost:8080/idm/memberships/approve/8edd9f9c-1bb3-46ff-952c-1847ad4c255e
+
+#Group Memberships: add a new membership
+curl   -H "Authorization: Bearer $TOKENOWNER"  -H "Content-Type: application/json;charset=UTF-8" -d '{"group_id":"6a9edbbe-a8c2-4c1a-970e-48fb3787a1a2"}' -X POST http://localhost:8080/idm/group_memberships/serviceobject/dummysoid/
+
+#User: Get data for a user
+curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/user/189653b3-deec-4fd1-aed2-7e03454d12b0
+
+#User: Delete user
+curl -H "Authorization: Bearer $TOKEN"  -H "If-Unmodified-Since: 1399286161000" -H "Content-Type: application/json;charset=UTF-8" -X DELETE http://localhost:8082/idm/user/b6fd9900-bbac-4d21-9a9f-bf156883ac39
+
+#Service Object registry: Create Service Object
+curl --include --header "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzYWM5NTAzMi1kOWRhLTQxOTktYTBjOS0yNmU5M2I1OTNmMGYiLCJzdWIiOiJkMDI1NWVjYi0zMjE1LTRhMWQtYjc2OS02YjcwZGE5OGVmNTYiLCJzY29wZSI6WyJzY2ltLnVzZXJpZHMiLCJwYXNzd29yZC53cml0ZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiXSwiY2xpZW50X2lkIjoidm1jIiwiY2lkIjoidm1jIiwidXNlcl9pZCI6ImQwMjU1ZWNiLTMyMTUtNGExZC1iNzY5LTZiNzBkYTk4ZWY1NiIsInVzZXJfbmFtZSI6InRlc3QyIiwiZW1haWwiOiJ0ZXN0MkBjb21wb3NlLmNvbSIsImlhdCI6MTM5OTQ1MDk4NywiZXhwIjoxMzk5NDk0MTg3LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvdWFhL29hdXRoL3Rva2VuIiwiYXVkIjpbInNjaW0iLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyIiwicGFzc3dvcmQiXX0.A792WXOVArPkM0xHZGUKORD1B26uRI4KBFX9Eo-YgGc" --header "Content-Type: application/json" \
+     --request POST \
+     --data-binary "service object rescprition" \
+  "http://192.168.56.101:8080/"
+
+
+
+

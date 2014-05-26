@@ -1,0 +1,21 @@
+
+#Create service source code first 
+curl --digest -u "composecontroller:composecontrollerpassword"   -H "Content-Type: application/json;charset=UTF-8" -d '{"authorization": "'"Bearer $TOKEN"'","id":"test2","name":"firstapp2","version":"1.0"}' http://localhost:8080/idm/servicesourcecode/
+
+#received LastModified: 1400857002000
+
+#Create service instance
+curl --digest -u "composecontroller:composecontrollerpassword"    -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'","id":"si1"'',"source_code_id":"test2", "data_provenance_collection":false,"uri": "https://google.com"}' http://localhost:8080/idm/serviceinstance/
+
+#received LastModified: :1400857085000,
+
+
+#Get data from the service instance
+curl -H "Authorization: Bearer $TOKEN"   -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceinstance/si1
+
+#delete 
+curl -H "If-Unmodified-Since: 1400861573000" --digest -u "composecontroller:composecontrollerpassword"   -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'"}' -X DELETE http://localhost:8080/idm/serviceinstance/si1
+ 
+
+
+

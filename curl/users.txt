@@ -1,0 +1,21 @@
+#create a user
+curl -u "composecontroller:composecontrollerpassword" -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"test2","password":"pass"}' http://localhost:8082/idm/user/
+
+userid=a42ec61f-34a1-4984-8d67-2d6ca074793d
+a42ec61f-34a1-4984-8d67-2d6ca074793d
+#authenticate
+curl   -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"test2","password":"pass"}' -X POST http://localhost:8082/auth/user/
+
+TOKEN=eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJjN2ZiYjg2Yi04MWIzLTRkMTgtYTljYS04OWViYmIwYWExZjUiLCJzdWIiOiI1ZmI2OGUxZi1jMmM2LTQ0OTUtODlkZi1kZDA2N2YzMzUyMzMiLCJzY29wZSI6WyJzY2ltLnVzZXJpZHMiLCJwYXNzd29yZC53cml0ZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiXSwiY2xpZW50X2lkIjoidm1jIiwiY2lkIjoidm1jIiwidXNlcl9pZCI6IjVmYjY4ZTFmLWMyYzYtNDQ5NS04OWRmLWRkMDY3ZjMzNTIzMyIsInVzZXJfbmFtZSI6InRlc3QyIiwiZW1haWwiOiJ0ZXN0MkBjb21wb3NlLmNvbSIsImlhdCI6MTM5OTQ3NDQ4OCwiZXhwIjoxMzk5NTE3Njg4LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvdWFhL29hdXRoL3Rva2VuIiwiYXVkIjpbInNjaW0iLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyIiwicGFzc3dvcmQiXX0.jaEq2L-UrhuTMONF08f1_ul0aKBC-9TqS3pu_nePP3MkBnhmG1yYzRjHYlS8CdPpj2y2aKUL8KJMN_p_rAuvoxD70HVcmHAXUSi8FP8qHXs-tmoFDxvnd0wt-OGiuJ2csIaz_xL0EIR_L9x1Iw9H5Nn2fy-ZLAzgDmRHLC_WVBsk66CusKSPy1ATyCd8W44s7DyYzH6UQispqufRrSmXEwps9315TzDNYY3Dk1BfLXzExd4vcqubS_95QW66sOASW0boq1R_BxyDteD1ZRLjMHNrGlJyVXRqTazqxWFxLXuSZnTWKG3hOuLVs-bjnsTzEcZozkr7uO7n8_4RYiaQDw
+
+
+#get data for a user
+curl -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8082/idm/user/b6fd9900-bbac-4d21-9a9f-bf156883ac39
+
+#delete user (BY COMPONENT)
+curl -u "composecontroller:composecontrollerpassword"   -H "If-Unmodified-Since: 1399286161000" -H "Content-Type: application/json;charset=UTF-8" -X DELETE http://localhost:8082/idm/user/b6fd9900-bbac-4d21-9a9f-bf156883ac39
+
+#delete user (By himself)
+curl -H "Authorization: Bearer $TOKEN"  -H "If-Unmodified-Since: 1399286161000" -H "Content-Type: application/json;charset=UTF-8" -X DELETE http://localhost:8082/idm/user/b6fd9900-bbac-4d21-9a9f-bf156883ac39
+
+

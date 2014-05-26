@@ -1,0 +1,16 @@
+
+#Create a sc
+
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'","id":"sc"}' http://localhost:8080/idm/servicecomposition/
+
+
+#Get data from the sc
+curl -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/servicecomposition/sc
+
+
+#delete a sc
+curl  --digest -u "composecontroller:composecontrollerpassword" -H "If-Unmodified-Since: 1400858400000"  -H "Content-Type: application/json;charset=UTF-8"  -d  '{"authorization": "'"Bearer $TOKEN"'"}' -X DELETE http://localhost:8080/idm/servicecomposition/sc
+
+
+
+

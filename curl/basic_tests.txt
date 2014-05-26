@@ -1,0 +1,46 @@
+curl  -H "Accept: application/json" -X GET  http://localhost:8080/User/uid
+
+
+#Create user test
+curl -u "composecontroller:composecontrollerpassword"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"test","password":"pass"}' http://localhost:8080/idm/user/
+
+#Authenticate
+
+curl   -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"test","password":"pass"}' -X POST http://localhost:8080/auth/user/
+
+curl   -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"juan","password":"pass"}' -X POST http://localhost:8080/auth/user/
+
+#Create group
+TOKEN=eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJhMDIxZDZmZS03Zjk5LTQ1NzAtOWEwYS1mMGUyMDNlMjllZWUiLCJzdWIiOiIwMGQ0NjFiYi04NWJiLTRiMTMtODJiNy0xMGRiNjE1MTg3ZGYiLCJzY29wZSI6WyJzY2ltLnVzZXJpZHMiLCJwYXNzd29yZC53cml0ZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiXSwiY2xpZW50X2lkIjoidm1jIiwiY2lkIjoidm1jIiwidXNlcl9pZCI6IjAwZDQ2MWJiLTg1YmItNGIxMy04MmI3LTEwZGI2MTUxODdkZiIsInVzZXJfbmFtZSI6InRlc3QiLCJlbWFpbCI6InRlc3RAY29tcG9zZS5jb20iLCJpYXQiOjEzOTc5MDU4MjgsImV4cCI6MTM5Nzk0OTAyOCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3VhYS9vYXV0aC90b2tlbiIsImF1ZCI6WyJzY2ltIiwib3BlbmlkIiwiY2xvdWRfY29udHJvbGxlciIsInBhc3N3b3JkIl19.A9bWqahxmus8So34w-fblKToskO6cX-VosbD6KBp5FSf0xWAXYVa4JLb0Dv1EPZ2Xl8ZtMHhvcmdL4pUQbPq6H2QAOkV0pOXs_8Y8JDIZrjSOQGZd_TqTKI_2TgzcI28ARWQ4QnxiiTzjbgyUWlfHBEpdkal2YNGuSLmbZ3mse0K3Lxk1UO3qCQrEYO6fW0jXY96WNsy9nY7XnDbP6C0mNpFPQrKBXM8FtShepVaxWK6ZzNGKikkFEBohHH6vYKiIMCXLm9mOr5ncRB9xGoLZE8zqIuD0SFN9svqIzjfNpu6jcu90BAbSqfc-yB-7DDhsFYupcQRIfT7HaG1gBL3kg
+curl -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8" -d '{"name":"grouptest"}' http://localhost:8080/idm/group/
+
+
+#Get a group
+curl -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/group/60a4e0ad-de60-4a50-8a7b-9d62a1ddfd65
+
+#Attempt to add a user to a group as admin
+
+curl   -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d '{"group_id":"f02cedd7-7d15-4963-8413-80f5b4552813","role":"ADMIN"}' -X POST http://localhost:8080/idm/memberships/user/00d461bb-85bb-4b13-82b7-10db615187df/
+
+#get data for a user
+curl -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/user/00d461bb-85bb-4b13-82b7-10db615187df
+	
+	
+#create a service object
+
+#curl -u "composecontroller:composecontrollerpassword"   -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKENSERVICEOBJECT"'","id":"second_id+notoken"'',"requires_token":false, "data_provenance_collection":false,"payment": true}' http://localhost:8080/idm/serviceobject/
+curl -u "composecontroller:composecontrollerpassword"   -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'","id":"someid"'',"requires_token":true, ,"payment": true}' http://localhost:8080/idm/serviceobject/
+
+
+#get a service object as a user
+curl -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceobject/so1meid
+
+#get a service object as a component
+curl -u "composecontroller:composecontrollerpassword"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceobject/so1meid
+
+#ok
+
+curl -u "composecontroller:composecontrollerpassword"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"test2","password":"pass"}' http://localhost:8080/idm/user/
+
+curl -u "composecontroller:composecontrollerpassword"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/user/df345dcd-6de3-4f60-b9de-1a4c23aa82f7
+

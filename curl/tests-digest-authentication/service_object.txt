@@ -1,0 +1,13 @@
+	
+#create a service object
+
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'","id":"so1meid"'',"requires_token":true, "data_provenance_collection":false,"payment": true}' http://localhost:8080/idm/serviceobject/
+
+#get a service object as a user
+curl -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceobject/so1meid
+
+#get a service object as a component
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceobject/api_token_data/so1meid
+
+#delete the service object
+curl --digest -u "composecontroller:composecontrollerpassword" -H "If-Unmodified-Since: 1400862183000"   -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'"}' -X DELETE http://localhost:8080/idm/serviceobject/so1meid

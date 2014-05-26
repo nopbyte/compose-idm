@@ -1,0 +1,19 @@
+
+#Create service source code first 
+curl -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d '{"id":"test2","name":"firstapp2","version":"1.0"}' http://localhost:8080/idm/servicesourcecode/
+
+#Create service instance
+TOKEN=eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIyNzM2MDI0Zi1jYTA0LTQ2MDktODU5My1jYzBhMjBlMWQ1MTUiLCJzdWIiOiIwZGJmMDZmZC02YTc2LTRmOTUtODVmYy1iMTI5NTJhNjlmM2YiLCJzY29wZSI6WyJzY2ltLnVzZXJpZHMiLCJwYXNzd29yZC53cml0ZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiXSwiY2xpZW50X2lkIjoidm1jIiwiY2lkIjoidm1jIiwidXNlcl9pZCI6IjBkYmYwNmZkLTZhNzYtNGY5NS04NWZjLWIxMjk1MmE2OWYzZiIsInVzZXJfbmFtZSI6InRlc3QiLCJlbWFpbCI6InRlc3RAY29tcG9zZS5jb20iLCJpYXQiOjEzOTkyODQwNTEsImV4cCI6MTM5OTMyNzI1MSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3VhYS9vYXV0aC90b2tlbiIsImF1ZCI6WyJzY2ltIiwib3BlbmlkIiwiY2xvdWRfY29udHJvbGxlciIsInBhc3N3b3JkIl19.lGwhB9Z23RzS8ebhphJr8f4CI2GiucHpeIJQQEq2hudJmb_qxgZfEfSVCx_12u7z1dEIJNaeexg3rOyUlDFCjVINoIYLfmoCDvB7a_D2EPg_qAr0Ik6is4ex0n67Dm6VREJ7r2_1XzYb522E5Ai4LZ6kixbaUGKrf4vD0DS5EZv3lJ2eO-wi8stNdmucbKR5Iji5xpmKzisvYs61ZSm8Rypnj-0ostDe-Mjyb8Yq9k8lajgq6O65ttTLa40O51hM2j6DUHq7x7gu9T5YeCZzWHMBjg200B2ujSTYQFyylD42CoQwVWy3WNYGzGN669zfkPLFXuU2odStU6Y7_c-C8g
+curl -u "composecontroller:composecontrollerpassword"   -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'","id":"si1"'',"source_code_id":"test2", "data_provenance_collection":false,"uri": "https://google.com"}' http://localhost:8080/idm/serviceinstance/
+
+
+
+#Get data from the service instance
+curl -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceinstance/si1
+
+#delete 
+curl -H "If-Unmodified-Since: 1399295061000" -u "composecontroller:composecontrollerpassword"   -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'"}' -X DELETE http://localhost:8080/idm/serviceinstance/si1
+ 
+
+
+
