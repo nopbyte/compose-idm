@@ -1,8 +1,5 @@
 package de.passau.uni.sec.compose.id.rest.controller.authentication;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -14,23 +11,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
-import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
-import de.passau.uni.sec.compose.id.core.event.CreateUserEvent;
-import de.passau.uni.sec.compose.id.core.service.EntityService;
 import de.passau.uni.sec.compose.id.core.service.UserAuthenticate;
-import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
 import de.passau.uni.sec.compose.id.rest.controller.UserCommandsController;
 import de.passau.uni.sec.compose.id.rest.messages.UserAuthenticatedMessage;
-import de.passau.uni.sec.compose.id.rest.messages.UserCreateMessage;
 import de.passau.uni.sec.compose.id.rest.messages.UserCredentials;
-import de.passau.uni.sec.compose.id.rest.messages.UserResponseMessage;
 
 @Controller
 @RequestMapping("/auth/user")

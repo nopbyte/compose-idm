@@ -1,9 +1,7 @@
 package de.passau.uni.sec.compose.id.rest.controller;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -25,23 +23,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
-import de.passau.uni.sec.compose.id.core.domain.Entity.entityType;
 import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
 import de.passau.uni.sec.compose.id.core.event.ApproveEntityGroupMembershipEvent;
-import de.passau.uni.sec.compose.id.core.event.ApproveMembershipEvent;
 import de.passau.uni.sec.compose.id.core.event.CreateEntityGroupMembershipEvent;
-import de.passau.uni.sec.compose.id.core.event.CreateMembershipEvent;
-import de.passau.uni.sec.compose.id.core.event.DeleteApplicationEvent;
 import de.passau.uni.sec.compose.id.core.event.DeleteEntityGroupMembershipEvent;
-import de.passau.uni.sec.compose.id.core.event.DeleteUserMembershipEvent;
 import de.passau.uni.sec.compose.id.core.service.EntityGroupMembershipService;
-import de.passau.uni.sec.compose.id.core.service.UserMembershipService;
 import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
 import de.passau.uni.sec.compose.id.rest.messages.EntityGroupMembershipCreateMessage;
 import de.passau.uni.sec.compose.id.rest.messages.EntityGroupMembershipResponseMessage;
 import de.passau.uni.sec.compose.id.rest.messages.EntityResponseMessage;
-import de.passau.uni.sec.compose.id.rest.messages.MembershipResponseMessage;
-import de.passau.uni.sec.compose.id.rest.messages.MembershipCreateMessage;
 
 
 

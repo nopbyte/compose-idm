@@ -3,7 +3,6 @@ package de.passau.uni.sec.compose.id.rest.messages;
 import java.util.Date;
 import java.util.List;
 
-import de.passau.uni.sec.compose.id.core.persistence.entities.Membership;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
 
 public class UserResponseMessage implements EntityResponseMessage

@@ -1,7 +1,5 @@
 package de.passau.uni.sec.compose.id.rest.messages;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.passau.uni.sec.compose.id.core.persistence.entities.Application;
