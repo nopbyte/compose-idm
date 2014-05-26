@@ -20,9 +20,7 @@ public class CoreDomainIntegrationTest {
 	GroupService service;
     
 
-    //@Autowired
-    //IGlobalConfig conf;
-
+    
   //This is to check that the wiring in Configurations work.
   @Test
   public void testUAAConfiguration() {

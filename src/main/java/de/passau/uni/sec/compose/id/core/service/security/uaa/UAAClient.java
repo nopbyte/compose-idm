@@ -2,19 +2,17 @@ package de.passau.uni.sec.compose.id.core.service.security.uaa;
 
 
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.io.StringWriter;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -26,19 +24,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import javax.annotation.Resource;
-
-
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.sun.org.apache.xerces.internal.util.URI;
 import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
-
-
 
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException.Level;
@@ -55,10 +49,9 @@ public class UAAClient implements UsersAuthzAndAuthClient
 {
 	private static Logger LOG = LoggerFactory.getLogger(UAAClient.class);	
 	
-	/*
-	@Resource
-	private Environment env;
-	*/
+	@Autowired
+    private Environment env;
+	
 	private static String oauthAdminToken = null;
 	
 	private  String UAAUrl;
@@ -88,24 +81,18 @@ public class UAAClient implements UsersAuthzAndAuthClient
 	public UAAClient()
 	{
 		
+		
 		//TODO extract this in a properties file properly! - also take into account test.
 		/*this.UAAUrl = env.getProperty("uaa.url");//"http://localhost:8081/uaa";
 		this.username = env.getProperty("client.credentials.admin.username");//"admin";
 		this.password = env.getProperty("client.credentials.admin.pass");//"adminsecret";
 		this.clientId= env.getProperty("compose.client.id");
-		//this.clientId="idm";
-		//this.scope = "read write";
-		this.redirectUriBase = env.getProperty("compose.client.redirect");//"https://uaa.cloudfoundry.com/redirect/";
-		*/
-		//this.UAAUrl = "http://localhost:8080/uaa";
+		this.redirectUriBase = env.getProperty("compose.client.redirect");//"https://uaa.cloudfoundry.com/redirect/";*/
+		
 		this.UAAUrl = "http://localhost:8081/uaa";
-		//this.UAAUrl = "http://192.168.56.101:8081/uaa";
 		this.username = "admin";
 		this.password = "adminsecret";
 		this.clientId= "vmc";
-		//this.clientId="idm";
-		//this.scope = "read write";
-		//this.redirectUriBase = env.getProperty("compose.client.redirect");//"https://uaa.cloudfoundry.com/redirect/";
 		
 		
 	}

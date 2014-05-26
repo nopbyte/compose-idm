@@ -16,10 +16,10 @@ public class CoreConfiguration
 {
 	
 	//@Bean
-	public UsersAuthzAndAuthClient getUAA()
+	/*public UsersAuthzAndAuthClient getUAA()
 	{
 		return new UAAClient();
-	}
+	}*/
 
 
 }
