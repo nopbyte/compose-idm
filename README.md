@@ -58,3 +58,14 @@ The database tables will be created afterwards during the building process (grad
 
 To test this component there is a set of curl command lines available in the curl/tests-digest-authentication folder.
 
+## Importing the project as an eclipse java project
+
+To import the project execute the following commands from a shell:
+
+	$ git clone https://github.com/nopobyte/compose-idm
+	$ cd compose-idm
+	$ gradle eclipse
+
+This will generate the proper eclipse files. Afterwards, just execute the 'import existing project into workspace' feature from eclipse.
+
+
