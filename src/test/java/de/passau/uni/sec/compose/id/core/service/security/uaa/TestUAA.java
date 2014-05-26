@@ -5,15 +5,10 @@ package de.passau.uni.sec.compose.id.core.service.security.uaa;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-
-
-
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,18 +17,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
-import de.passau.uni.sec.compose.id.configuration.CoreConfiguration;
 import de.passau.uni.sec.compose.id.configuration.UAAConfiguration;
 import de.passau.uni.sec.compose.id.core.service.security.TokenResponse;
 import de.passau.uni.sec.compose.id.core.service.security.UsersAuthzAndAuthClient;
-import de.passau.uni.sec.compose.id.core.service.security.uaa.OpenIdUserData;
-import de.passau.uni.sec.compose.id.core.service.security.uaa.UAAClient;
-import de.passau.uni.sec.compose.id.core.service.security.uaa.UAAUserRequest;
-import de.passau.uni.sec.compose.id.core.service.security.uaa.UAAUserRequestName;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {UAAConfiguration.class})
@@ -53,8 +41,6 @@ public class TestUAA
 	  @Before
 	  public void setupUnitUnderTest() 
 	  {
-		  //TODO extract this in a config file properly! 
-		  client = new UAAClient();
 		  adminUsername = "admin";
 		  adminPassword = "adminsecret";
 		  usersCreated_toDelete = new LinkedList<>();
