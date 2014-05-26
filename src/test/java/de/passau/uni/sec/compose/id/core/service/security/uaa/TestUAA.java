@@ -1,4 +1,4 @@
-package de.passau.uni.sec.compose.id.core.service.security;
+package de.passau.uni.sec.compose.id.core.service.security.uaa;
 
 
 
@@ -14,6 +14,7 @@ import java.util.UUID;
 
 
 
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,10 +25,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.configuration.CoreConfiguration;
 import de.passau.uni.sec.compose.id.configuration.UAAConfiguration;
+import de.passau.uni.sec.compose.id.core.service.security.TokenResponse;
 import de.passau.uni.sec.compose.id.core.service.security.UsersAuthzAndAuthClient;
 import de.passau.uni.sec.compose.id.core.service.security.uaa.OpenIdUserData;
 import de.passau.uni.sec.compose.id.core.service.security.uaa.UAAClient;
