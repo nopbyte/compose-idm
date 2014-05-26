@@ -26,6 +26,8 @@ Once you have installed the requirements listed above. 	You can start by Install
     $ git clone git://github.com/cloudfoundry/uaa.git
     $ cd uaa
     $ mvn install
+    $ mvn tomcat7:run -Dmaven.tomcat.port=8081
+    
     
 For additional info, see https://github.com/cloudfoundry/uaa/.
 
