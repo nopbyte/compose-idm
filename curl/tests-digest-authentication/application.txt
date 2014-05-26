@@ -1,7 +1,7 @@
 
 #Create an app
 TOKEN= put token for a user here
-curl --digest -u "composecontroller:composecontrollerpassword" -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'","id":"app_id"'',"name":"application1"}' http://localhost:8080/idm/application/
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'","id":"app_id"'',"name":"application1"}' http://localhost:8080/idm/application/
 
 #Get data from the app
 curl -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/application/app_id

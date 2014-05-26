@@ -1,7 +1,7 @@
 
 #Create a sc
 
-curl --digest -u "composecontroller:composecontrollerpassword"  -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'","id":"sc"}' http://localhost:8080/idm/servicecomposition/
+curl --digest -u "composecontroller:composecontrollerpassword"   -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'","id":"sc"}' http://localhost:8080/idm/servicecomposition/
 
 
 #Get data from the sc

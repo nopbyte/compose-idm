@@ -1,7 +1,7 @@
 
 #Create a group
 
-curl -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d '{"name":"grouptest"}' http://localhost:8080/idm/group/
+curl -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8" -d '{"name":"grouptest"}' http://localhost:8080/idm/group/
 
 #idReceived: 895ff5a3-f7d2-4bea-ba84-b796015fa3f1
 #received lastModified:1400858056000
