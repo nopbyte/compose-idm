@@ -20,7 +20,7 @@ This component is a Spring Java project. It requires the CloudFoundry User Accou
 
 ### Installing the UAA
 
-Once you have installed the requirements listed above. 	You can start by Installing the UAA in the following way:
+Once you have installed the requirements listed above. 	You can start by Installing Cloud Foundry's UAA in the following way:
 
 
     $ git clone git://github.com/cloudfoundry/uaa.git
@@ -28,7 +28,10 @@ Once you have installed the requirements listed above. 	You can start by Install
     $ mvn install
     $ mvn tomcat7:run -Dmaven.tomcat.port=8081
     
-    
+However, please note that this method can be used only to run the UAA with an in-memory database. In case that you want to install it with another database (such as MySQL, PostgreSQL, etc) you would need to refer to the sysadmin guide locaed here:
+
+https://github.com/cloudfoundry/uaa/blob/master/docs/Sysadmin-Guide.rst
+
 For additional info, see https://github.com/cloudfoundry/uaa/.
 
 ### Installing COMPOSE Identity Management
