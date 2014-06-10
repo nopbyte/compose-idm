@@ -67,6 +67,8 @@ test {
   // explicitly include or exclude tests
   exclude 'de/passau/uni/sec/compose/id/core/service/security/uaa**'
   
+  exclude 'de/passau/uni/sec/compose/id/rest/functional/**'
+  
   // show standard out and standard error of the test JVM(s) on the console
   testLogging.showStandardStreams = true
 

@@ -18,8 +18,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc;
 import org.slf4j.Logger;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
 import de.passau.uni.sec.compose.id.core.event.CreateUserEvent;
 import de.passau.uni.sec.compose.id.core.service.UserService;
@@ -46,6 +44,7 @@ public class UserCommandsControllerIntegrationTest {
     @Spy
     private UserService userService = new UserService();
 
+    @SuppressWarnings("unchecked")
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -66,7 +65,7 @@ public class UserCommandsControllerIntegrationTest {
     public void createUserHttpCreatedTest() throws Exception {
 
         this.mockMvc.perform(
-                post("/idm/user/").headers(AuthorizationHttpHeader())
+                post("/idm/user/").headers(authorizationHttpHeader())
                         .content(createUserDataJSON())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)).andExpect(
@@ -76,7 +75,7 @@ public class UserCommandsControllerIntegrationTest {
     @Test
     public void createUserRendersAsJson() throws Exception {
         this.mockMvc.perform(
-                post("/idm/user/").headers(AuthorizationHttpHeader())
+                post("/idm/user/").headers(authorizationHttpHeader())
                         .content(createUserDataJSON())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)).andExpect(
@@ -87,7 +86,7 @@ public class UserCommandsControllerIntegrationTest {
     public void createUserLocationHeaderTest() throws Exception {
 
         this.mockMvc.perform(
-                post("/idm/user/").headers(AuthorizationHttpHeader())
+                post("/idm/user/").headers(authorizationHttpHeader())
                         .content(createUserDataJSON())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)).andExpect(
