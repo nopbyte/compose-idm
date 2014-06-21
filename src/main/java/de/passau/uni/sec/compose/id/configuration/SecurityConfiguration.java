@@ -27,6 +27,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	private static Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
 	
+	private static String REALMNAME = "COMPOSE Digest Idm Realm name";
+	
     @Autowired
     private Environment env;
     
@@ -104,8 +106,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	  public DigestAuthenticationEntryPoint digestEntryPoint ()
 	  {
 	    DigestAuthenticationEntryPoint digestAuthenticationEntryPoint = new DigestAuthenticationEntryPoint();
-	    digestAuthenticationEntryPoint.setKey("mykey");
-	    digestAuthenticationEntryPoint.setRealmName("Digest WF Realm");
+	    digestAuthenticationEntryPoint.setKey(env.getProperty("digest.key"));
+	    digestAuthenticationEntryPoint.setRealmName(env.getProperty("digest.realm"));
 	    digestAuthenticationEntryPoint.setNonceValiditySeconds(3);
 	    return digestAuthenticationEntryPoint;
 	  }
