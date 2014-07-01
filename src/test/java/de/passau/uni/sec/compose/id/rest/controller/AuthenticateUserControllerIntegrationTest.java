@@ -78,7 +78,7 @@ public class AuthenticateUserControllerIntegrationTest {
     public void authenticateUserRendersAsJsonTest() throws Exception {
 
         when(userAuthenticate.authenticateUser(any(UserCredentials.class)))
-                .thenReturn(authenticateUserMessage("testToken","testType"));
+                .thenReturn(authenticateUserMessage("testToken", "testType"));
 
         this.mockMvc
                 .perform(

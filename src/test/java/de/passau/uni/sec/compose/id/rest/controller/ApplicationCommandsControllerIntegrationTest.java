@@ -2,6 +2,7 @@ package de.passau.uni.sec.compose.id.rest.controller;
 
 import java.util.Collection;
 import java.util.LinkedList;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
@@ -30,7 +32,7 @@ import static de.passau.uni.sec.compose.id.rest.controller.fixture.RestDataFixtu
 import static de.passau.uni.sec.compose.id.rest.controller.fixture.RestDataFixture.tokenUnmodifiedHttpHeader;
 import static de.passau.uni.sec.compose.id.rest.controller.fixture.RestDataFixture.createUserDataJSON;
 import static de.passau.uni.sec.compose.id.rest.controller.fixture.RestDataFixture.ifUnmodifiedHttpHeader;
-import static de.passau.uni.sec.compose.id.rest.controller.fixture.RestDataFixture.tokenAuthenticationDataJSON;
+import static de.passau.uni.sec.compose.id.rest.controller.fixture.RestDataFixture.authenticatedEmptyMessageJSON;
 import static de.passau.uni.sec.compose.id.rest.controller.fixture.RestDataFixture.createApplicationDataJSON;
 import static de.passau.uni.sec.compose.id.rest.controller.fixture.RestEventFixtures.applicationResponseMessage;
 import static de.passau.uni.sec.compose.id.rest.controller.fixture.RestEventFixtures.user;
@@ -46,6 +48,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ApplicationService.class)
+@PowerMockIgnore(value = {"org.apache.log4j.*"})
 public class ApplicationCommandsControllerIntegrationTest {
 
     MockMvc mockMvc;
@@ -173,7 +176,7 @@ public class ApplicationCommandsControllerIntegrationTest {
         this.mockMvc.perform(
                 delete("/idm/application/test")
                         .headers(ifUnmodifiedHttpHeader())
-                        .content(tokenAuthenticationDataJSON())
+                        .content(authenticatedEmptyMessageJSON())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)).andExpect(
                 status().isOk());
@@ -192,7 +195,7 @@ public class ApplicationCommandsControllerIntegrationTest {
         this.mockMvc.perform(
                 delete("/idm/application/test")
                         .headers(ifUnmodifiedHttpHeader())
-                        .content(tokenAuthenticationDataJSON())
+                        .content(authenticatedEmptyMessageJSON())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)).andExpect(
                 status().is5xxServerError());

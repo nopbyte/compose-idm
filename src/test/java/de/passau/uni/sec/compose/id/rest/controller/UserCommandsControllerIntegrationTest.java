@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.http.MediaType;
@@ -31,6 +32,7 @@ import static de.passau.uni.sec.compose.id.rest.controller.fixture.RestDataFixtu
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(UserService.class)
+@PowerMockIgnore(value = {"org.apache.log4j.*"})
 public class UserCommandsControllerIntegrationTest {
 
     MockMvc mockMvc;
