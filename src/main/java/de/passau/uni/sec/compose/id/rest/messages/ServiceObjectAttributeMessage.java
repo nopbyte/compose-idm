@@ -2,6 +2,7 @@ package de.passau.uni.sec.compose.id.rest.messages;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceObject;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceObjectAttributes;
@@ -20,6 +21,8 @@ public class ServiceObjectAttributeMessage{
     private String apiToken;
     
     private String owner_id;
+    
+    private Map<String, Object> policy;
 
 	public ServiceObjectAttributeMessage(ServiceObject so)
 	{

@@ -5,9 +5,17 @@ public class ExtraAttributeMessage
 	private String name;
 	private String type;
 	private String value;
+	private boolean approved;
+	//TODO define how the mapping to a group needs to be done 
 	
 	public String getName() {
 		return name;
+	}
+	public boolean isApproved() {
+		return approved;
+	}
+	public void setApproved(boolean approved) {
+		this.approved = approved;
 	}
 	public void setName(String name) {
 		this.name = name;

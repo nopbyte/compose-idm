@@ -69,11 +69,12 @@ public class UAAClient implements UsersAuthzAndAuthClient
 	private String getOauthAdminAuthToken() throws IdManagementException
 	{
 		//TODO manage expired admin token!!
-		if(this.oauthAdminToken==null)
-		{
+		// check expiration date of token (Oauth2 library? JWT?)
+		/*if(this.oauthAdminToken==null)
+		{*/
 			TokenResponse res = getClientCredentialsToken(username,password);	
 			this.oauthAdminToken =  res.getAccessToken();
-		}
+		/*}*/
 		return oauthAdminToken;
 	}
 	

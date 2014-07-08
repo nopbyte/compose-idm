@@ -13,6 +13,7 @@ import javax.persistence.TemporalType;
 
 import de.passau.uni.sec.compose.id.rest.messages.EntityGroupMembershipResponseMessage;
 import de.passau.uni.sec.compose.id.rest.messages.EntityResponseMessage;
+import de.passau.uni.sec.compose.id.rest.messages.ExtraAttributeMessage;
 
 @MappedSuperclass
 public abstract class AbstractEntity implements IEntity {
@@ -48,7 +49,11 @@ public abstract class AbstractEntity implements IEntity {
     public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
     }
-
+    /**
+     * List all the memeberships as messages
+     * @param memberships all the memberships that need to be converted
+     * @return List of EntityGroupMembershipMessage corresponding to the parameter memberships.
+     */
     public List<EntityGroupMembershipResponseMessage> getApprovedGroups(Collection<EntityGroupMembership> memberships)
     {
     	List<EntityGroupMembershipResponseMessage> ret = new LinkedList<>();
@@ -59,5 +64,11 @@ public abstract class AbstractEntity implements IEntity {
     	}
     	return ret;
     }
-    
+
+    public Collection<ExtraAttributeMessage> getAttributes(Collection<?> attributes)
+    {
+    	Collection<ExtraAttributeMessage> ret = new LinkedList<ExtraAttributeMessage>();
+    	//TODO complete
+    	return ret;
+    }
 }

@@ -1,6 +1,8 @@
 package de.passau.uni.sec.compose.id.rest.messages;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 public class AbstractMainEnityResponse {
@@ -10,8 +12,23 @@ public class AbstractMainEnityResponse {
 	protected Date lastModified;
 	
 	protected String owner_id;
-	
+	/**
+	 * groups that the entity belongs to
+	 */
 	protected List<EntityGroupMembershipResponseMessage> groups;
+	/**
+	 * Additoinal attributes for the entity
+	 */
+	protected Collection<ExtraAttributeMessage> attributes = new LinkedList<ExtraAttributeMessage>();
+	
+	
+	public Collection<ExtraAttributeMessage> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(Collection<ExtraAttributeMessage> attributes) {
+		this.attributes = attributes;
+	}
 
 	public String getId() {
 		return id;
