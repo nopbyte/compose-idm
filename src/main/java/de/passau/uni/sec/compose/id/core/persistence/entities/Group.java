@@ -9,7 +9,7 @@ import java.util.LinkedList;
 @Table(name = "\"Group\"")
 public class Group extends AbstractEntity implements CoreEntity{
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "owner_fk")
     private User owner;
 
