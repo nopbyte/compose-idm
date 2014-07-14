@@ -14,10 +14,21 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
-jar {
+
+// jar changes...
+//jar {
+//    baseName = 'COMPOSEIdentityManagement'
+//    version =  '0.5.0'
+//}
+// end of jar changes...
+
+//these are the war changes
+apply plugin: 'war'
+war {
     baseName = 'COMPOSEIdentityManagement'
     version =  '0.5.0'
 }
+// end of war changes... 
 
 repositories {
     mavenCentral()
@@ -67,7 +78,7 @@ test {
   // explicitly include or exclude tests
   exclude 'de/passau/uni/sec/compose/id/core/service/security/uaa**'
   
-  exclude 'de/passau/uni/sec/compose/id/rest/functional/**'
+  exclude 'de/passau/uni/sec/compose/id/rest/**'
   
   // show standard out and standard error of the test JVM(s) on the console
   testLogging.showStandardStreams = true
