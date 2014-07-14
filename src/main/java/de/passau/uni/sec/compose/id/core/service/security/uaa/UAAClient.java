@@ -2,11 +2,13 @@ package de.passau.uni.sec.compose.id.core.service.security.uaa;
 
 
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.annotation.Resource;
 
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -44,13 +47,9 @@ import de.passau.uni.sec.compose.id.rest.client.HTTPClient;
  
 
 @Service
-@PropertySource("classpath:authentication.properties")
 public class UAAClient implements UsersAuthzAndAuthClient
 {
 	private static Logger LOG = LoggerFactory.getLogger(UAAClient.class);	
-	
-	@Autowired
-    private Environment env;
 	
 	private static String oauthAdminToken = null;
 	
@@ -79,24 +78,25 @@ public class UAAClient implements UsersAuthzAndAuthClient
 	}
 	
 	
-	public UAAClient()
-	{
-		
-		
-		//TODO extract this in a properties file properly! - also take into account test.
-		/*this.UAAUrl = env.getProperty("uaa.url");//"http://localhost:8081/uaa";
-		this.username = env.getProperty("client.credentials.admin.username");//"admin";
-		this.password = env.getProperty("client.credentials.admin.pass");//"adminsecret";
-		this.clientId= env.getProperty("compose.client.id");
-		this.redirectUriBase = env.getProperty("compose.client.redirect");//"https://uaa.cloudfoundry.com/redirect/";*/
-		
-		this.UAAUrl = "http://localhost:8081/uaa";
-		this.username = "admin";
-		this.password = "adminsecret";
-		this.clientId= "vmc";
-		
-		
-	}
+    public UAAClient() {
+
+        // load properties file from classpath
+        Properties properties = new Properties();
+        ClassPathResource resource = new ClassPathResource("uaa.properties");
+      
+        try {
+            properties.load(resource.getInputStream());
+        } catch (IOException e) {
+            LOG.error("Error while reading uaa properties file.");
+            e.printStackTrace();
+        }
+
+        this.UAAUrl = properties.getProperty("uaa.url");
+        this.username = properties.getProperty("client.credentials.admin.username");
+        this.password = properties.getProperty("client.credentials.admin.pass");
+        this.clientId = properties.getProperty("compose.client.id");
+        this.redirectUriBase = properties.getProperty("compose.client.redirect");
+    }
 
 	@Override
 	public String getUAAUrl() {
