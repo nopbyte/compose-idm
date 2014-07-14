@@ -72,6 +72,39 @@ public class UserMembershipService extends AbstractListEntityService implements 
 	
 	@Autowired
 	ReputationManager rep;
+
+	/**
+	 * Method that initializes roles when database is empty. This is done, so this application can be deployed without requiring creation of any additional entries in the database.
+	 */
+	private void initializeRoles() {
+		
+		Role role = null;
+		String value = null;
+		role = new Role();
+
+		
+		value = Role.ADMIN;
+		role.setId(value);
+		role.setName(value);
+		roleRepository.save(role);
+		
+		value = Role.DEVELOPER;
+		role.setId(value);
+		role.setName(value);
+		roleRepository.save(role);
+		
+		value = Role.OBJECT_PROVIDER;
+		role.setId(value);
+		role.setName(value);
+		roleRepository.save(role);
+		
+		value = Role.SERVICE_PROVIDER;
+		role.setId(value);
+		role.setName(value);
+		roleRepository.save(role);
+		
+	}
+
 	
 		@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
@@ -79,6 +112,9 @@ public class UserMembershipService extends AbstractListEntityService implements 
 		
 		CreateMembershipEvent membEvent = ((CreateMembershipEvent)event);
 		Membership m = new Membership();
+		List<Role> all = roleRepository.findAll();
+		if(all.isEmpty())
+			initializeRoles();
 		List<Role> roles = roleRepository.findByName(membEvent.getMessage().getRole());
 		if(roles.isEmpty())
 			throw new IdManagementException("Role unexistent: There is no such role \""+membEvent.getMessage().getRole()+"\"",null, LOG,"Role not found with id ==\""+membEvent.getMessage().getRole()+"\" either the request is wrong, or the table Role doesn't contain the right roles, Principals: "+RestAuthentication.getBasicInfoPrincipals(membEvent.getPrincipals()),Level.ERROR, 403);
@@ -108,6 +144,7 @@ public class UserMembershipService extends AbstractListEntityService implements 
 		
 		return new MembershipResponseMessage(m);
 	}
+
 
 	@Override
 	protected EntityResponseMessage postACGetEntity(Event event)
