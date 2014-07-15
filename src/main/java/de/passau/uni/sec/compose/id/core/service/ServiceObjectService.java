@@ -10,27 +10,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import sun.security.provider.SecureRandom;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException.Level;
 import de.passau.uni.sec.compose.id.core.domain.ComposeComponentPrincipal;
 import de.passau.uni.sec.compose.id.core.domain.ComposeUserPrincipal;
 import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
 import de.passau.uni.sec.compose.id.core.event.CreateServiceObjectEvent;
+import de.passau.uni.sec.compose.id.core.event.DetailsIdEvent;
 import de.passau.uni.sec.compose.id.core.event.Event;
 import de.passau.uni.sec.compose.id.core.event.GetServiceObjectEvent;
-import de.passau.uni.sec.compose.id.core.event.DetailsIdEvent;
 import de.passau.uni.sec.compose.id.core.persistence.entities.IEntity;
-import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceInstance;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceObject;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
 import de.passau.uni.sec.compose.id.core.persistence.repository.ServiceObjectRepository;
-import de.passau.uni.sec.compose.id.core.persistence.repository.UserRepository;
 import de.passau.uni.sec.compose.id.core.service.policy.PolicyManager;
 import de.passau.uni.sec.compose.id.core.service.reputation.ReputationManager;
 import de.passau.uni.sec.compose.id.core.service.security.Authorization;
 import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
-import de.passau.uni.sec.compose.id.core.service.security.UsersAuthzAndAuthClient;
 import de.passau.uni.sec.compose.id.rest.messages.EntityResponseMessage;
 import de.passau.uni.sec.compose.id.rest.messages.ServiceObjectCreateMessage;
 import de.passau.uni.sec.compose.id.rest.messages.ServiceObjectResponseMessage;
@@ -57,6 +56,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 	@Autowired
 	PolicyManager policyManager;
 	
+		
 	
 	@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
@@ -71,13 +71,8 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			User u = authentication.getUserFromEvent(event);
 			ServiceObject so = new ServiceObject();
 			if(message.isRequires_token())
-			{
-				SecureRandom r = new SecureRandom();
-				byte[] array = new byte[100];
-				r.engineNextBytes(array);
-				String token = DatatypeConverter.printBase64Binary(array);
-				so.setApiToken(token);
-			}
+				so.setApiToken(getRandomToken());
+			
 			so.setId(message.getId());
 			so.setCollectProvenance(message.isData_provenance_collection());
 			so.setPayment(message.isPayment());
@@ -88,6 +83,25 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			//in this case the policy needs to be included in the ServiceObject response in order for the Service Object registry to keep a copy of it.
 			ServiceObjectResponseMessage res = new ServiceObjectResponseMessage (so,policy);
 			return res;	
+	}
+
+	private String getRandomToken() 
+	{
+		byte[] array = new byte[33];
+		SecureRandom random;
+		try {
+			random = SecureRandom.getInstance("SHA1PRNG");
+			random.nextBytes(array);
+			
+		} catch (NoSuchAlgorithmException e) {
+
+			sun.security.provider.SecureRandom r = new sun.security.provider.SecureRandom();
+			r.engineNextBytes(array);
+			LOG.warn("Using a newly created SecureRandom object to generate tokens for SO: SHA1PRNG instance of SecureRandom was not found!");
+			
+		}
+		String token = DatatypeConverter.printBase64Binary(array);
+		return token;
 	}
 
 	@Override
