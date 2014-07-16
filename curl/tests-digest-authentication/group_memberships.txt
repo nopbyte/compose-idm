@@ -5,6 +5,8 @@ first create 3 users: owner, evil, and dummy, and replace all arround the text t
 When creating groups or entities apply the same procedure.
 Remember to update (ids, and lastModifications)
 
+To see more information about groups, and how to list users inside a group check group.txt
+
 #******************************* creation of users ***************************************
 
 owner:

@@ -14,6 +14,7 @@ curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json;charse
 curl -H "If-Unmodified-Since: 1400858056000" -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  -X DELETE http://localhost:8080/idm/group/895ff5a3-f7d2-4bea-ba84-b796015fa3f1
 
 
-
+#get all members of a group
+curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080//idm/group_users/71afc9ae-9c2b-4f2c-8657-5f8da6b1cffd/
 
 
