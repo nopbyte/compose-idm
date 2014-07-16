@@ -69,7 +69,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
               .antMatchers(HttpMethod.DELETE,"/idm/serviceobject/*").authenticated() //create service object
               .antMatchers(HttpMethod.DELETE,"/idm/servicesourcecode/*").authenticated() //create service source code
               .antMatchers(HttpMethod.GET,"/idm/serviceobject/api_token_data/*").authenticated() //getting api_token from SO as component
-              .antMatchers(HttpMethod.GET,"/idm/groupusers/*").authenticated() //getting list of users in a group as component
               
               .antMatchers("/**").permitAll()
           // the entry point on digest filter is used for failed authentication attempts
