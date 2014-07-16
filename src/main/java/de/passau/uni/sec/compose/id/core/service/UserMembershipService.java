@@ -50,7 +50,7 @@ import de.passau.uni.sec.compose.id.rest.messages.UserResponseMessage;
 
 
 @Service
-public class UserMembershipService extends AbstractListEntityService implements EntityService 
+public class UserMembershipService extends AbstractBasicListEntityService implements EntityService 
 {
 
 	private static Logger LOG = LoggerFactory.getLogger(UserMembershipService.class);

@@ -54,7 +54,7 @@ public class Authorization
 			if(!userThere || !composeComponentThere)
 				throw new IdManagementException("Not sufficient permissions for the action requred ",null, LOG,"The entities authenticated for the request do not have sufficient permissions to execute it, principals "+RestAuthentication.getBasicInfoPrincipals(principals),Level.ERROR, 403);
 			
-			LOG.debug("Authorization granted for creation of service object to principals: "+RestAuthentication.getBasicInfoPrincipals(principals));
+			LOG.debug("Authorization granted to principals: "+RestAuthentication.getBasicInfoPrincipals(principals));
 	 }
 	 
 	 public void authorizeIfOwner(Collection<IPrincipal> principals, CoreEntity entity) throws IdManagementException
