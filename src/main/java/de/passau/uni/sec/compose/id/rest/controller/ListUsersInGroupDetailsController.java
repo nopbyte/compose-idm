@@ -27,28 +27,31 @@ import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
 import de.passau.uni.sec.compose.id.rest.messages.GroupResponseMessage;
 
 @Controller
-@RequestMapping("/idm/group")
-public class GroupDetailsController {
-private static Logger LOG = LoggerFactory.getLogger(GroupDetailsController.class);
+@RequestMapping("/idm/group_users")
+public class ListUsersInGroupDetailsController {
+private static Logger LOG = LoggerFactory.getLogger(ListUsersInGroupDetailsController.class);
 	
-	@Autowired
-    private GroupService groupService;
 	
 	@Autowired
     private RestAuthentication authenticator;
-
+	
+	@Autowired
+	private ListUsersGroupService listUsersInGroupService;
     
-	@RequestMapping(value="/{groupId}", method=RequestMethod.GET)
-    public @ResponseBody ResponseEntity<Object> getUser( @RequestHeader("Authorization") String token,
-    		@PathVariable(value="groupId") String uid,UriComponentsBuilder builder){
+	
+	
+	@RequestMapping(value="/{groupId}/", method=RequestMethod.GET)
+    public @ResponseBody ResponseEntity<Object> getMembershipsUser(   @RequestHeader("Authorization") String token,
+    		@PathVariable(value="groupId") String uid, UriComponentsBuilder builder){
 				
-				Collection<String> cred = new LinkedList<String>();
-		    	cred.add(token);
-    			try{
+			Collection<String> cred = new LinkedList<String>();
+			cred.add(token);
+		    	try{
     				 //This method just authenticates... it doesn't do access control
     				 Collection<IPrincipal> principals = authenticator.authenticatePrincipals(LOG,cred);
-		    		 GroupResponseMessage res = (GroupResponseMessage) groupService.getEntity(new GetGroupEvent(uid,principals));
-		    		 return new ResponseEntity<Object>(res, HttpStatus.OK);
+    				 Object obj= listUsersInGroupService.listAllEntities(new ListUsersInGroupEvent(principals,uid));
+    				 return new ResponseEntity<Object>(obj, HttpStatus.OK);
+    				 
 		    	 }
 		    	 catch(IdManagementException idm){
 		    		 //since the creation of the exception generated the log entries for the stacktrace, we don't do it again here
@@ -62,6 +65,7 @@ private static Logger LOG = LoggerFactory.getLogger(GroupDetailsController.class
 		    	 }
     	 
     	 
-        }	
+        }
+	
     
 }
