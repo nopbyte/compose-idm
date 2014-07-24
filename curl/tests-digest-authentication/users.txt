@@ -1,16 +1,26 @@
 #create a user
 
-curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"test","password":"pass"}' http://localhost:8080/idm/user/
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"test2","password":"pass"}' http://localhost:8080/idm/user/
+#expected response:
+#{"id":"fc8698ab-634c-4c46-8546-928816b6fa5f","username":"test2","lastModified":1406201171000,"approvedMemberships":[]}
 
 #user id returned was: 19f712f8-3338-4670-9ac8-ae5392972250 . This is used from now on. Also last modified is: 1400853224000
 
 #authenticate
 curl   -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"test2","password":"pass"}' -X POST http://localhost:8080/auth/user/
+#expected response
+#{"accessToken":"eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI3MDYxNTc2Ni0zYjIxLTQzY2YtYjgxYy00MzdmY2RjNjZjYTMiLCJzdWIiOiJmYzg2OThhYi02MzRjLTRjNDYtODU0Ni05Mjg4MTZiNmZhNWYiLCJzY29wZSI6WyJzY2ltLnVzZXJpZHMiLCJwYXNzd29yZC53cml0ZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiXSwiY2xpZW50X2lkIjoidm1jIiwiY2lkIjoidm1jIiwidXNlcl9pZCI6ImZjODY5OGFiLTYzNGMtNGM0Ni04NTQ2LTkyODgxNmI2ZmE1ZiIsInVzZXJfbmFtZSI6InRlc3QyIiwiZW1haWwiOiJ0ZXN0MkBjb21wb3NlLmNvbSIsImlhdCI6MTQwNjIwMTIwNCwiZXhwIjoxNDA2MjQ0NDA0LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvdWFhL29hdXRoL3Rva2VuIiwiYXVkIjpbInNjaW0iLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyIiwicGFzc3dvcmQiXX0.puX8NKJhsdFE75ws-zpqah74ZJlD3I2Iy-V1pmnOzrY","token_type":"bearer"}
 
 TOKEN=... copy here what comes in the response as token
 
 #get data for a user
-curl -H "Authorization: Bearer $TOKEN"   -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/user/19f712f8-3338-4670-9ac8-ae5392972250
+curl -H "Authorization: Bearer $TOKEN"   -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/user/fc8698ab-634c-4c46-8546-928816b6fa5f
+#expected response
+#{"id":"fc8698ab-634c-4c46-8546-928816b6fa5f","username":"test2","lastModified":1406201171000,"approvedMemberships":[]}
+
+#user get data for himself
+curl -H "Authorization: Bearer $TOKEN"   -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/user/info/
+#expected response is equal to providing the ID, only in this case the data corresnponds to the user calling the API.
 
 #delete user (BY COMPONENT)
 curl --digest -u "composecontroller:composecontrollerpassword"   -H "If-Unmodified-Since: 1400853224000" -H "Content-Type: application/json;charset=UTF-8" -X DELETE http://localhost:8080/idm/user/19f712f8-3338-4670-9ac8-ae5392972250

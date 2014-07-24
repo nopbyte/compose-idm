@@ -123,6 +123,17 @@ public class RestAuthentication
 		return ret;
 	}
 	
+	public static ComposeUserPrincipal getComposeUser(Collection<IPrincipal> principals) throws IdManagementException
+	{
+		ComposeUserPrincipal user = null;
+		for(IPrincipal p: principals)
+			if(p instanceof ComposeUserPrincipal)
+				user = (ComposeUserPrincipal) p;
+		if(user != null)
+				return user;
+		throw new IdManagementException("Error in authentication of the user",null,LOG,"Null ComposeUser as ComposeIPrincipal",Level.ERROR,500);
+		
+	}
 	/**
 	 * This method is used to get the actual user from the database, which corresponds to the first user in the list of Principals for the event.
 	 * @param event

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException.Level;
 import de.passau.uni.sec.compose.id.core.domain.ComposeComponentPrincipal;
+import de.passau.uni.sec.compose.id.core.domain.ComposeUserPrincipal;
 import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
 import de.passau.uni.sec.compose.id.core.event.CreateUserEvent;
 import de.passau.uni.sec.compose.id.core.event.Event;
@@ -52,6 +53,9 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 	
 	@Autowired
 	ReputationManager rep;
+	
+	@Autowired
+	RestAuthentication auth;
 	
 	@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
@@ -94,9 +98,16 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 	@Override
 	protected EntityResponseMessage postACGetEntity(Event event)
 			throws IdManagementException {
-		
-		GetUserEvent get = ((GetUserEvent) event);
-		User u = userRepository.getOne(get.getId());
+		User u = null;
+		if(event instanceof GetUserEvent)
+		{
+		   GetUserEvent get = ((GetUserEvent) event);
+		   u = userRepository.getOne(get.getId());
+		}
+		else{
+			ComposeUserPrincipal comp = auth.getComposeUser(event.getPrincipals());
+			u = userRepository.getOne(comp.getOpenId().getUser_id());
+		}
 		UserResponseMessage res = new UserResponseMessage(u);
 		return res;
 		
