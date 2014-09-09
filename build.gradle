@@ -25,7 +25,7 @@ apply plugin: 'spring-boot'
 apply plugin: 'war'
 war {
     baseName = 'COMPOSEIdentityManagement'
-    version =  '0.5.0'
+    version =  '0.8.0'
 }
 // end of war changes... 
 
