@@ -5,7 +5,6 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.0.RC5")
-
     }
 }
 
@@ -36,27 +35,49 @@ repositories {
 	maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
 }
 
+//Required for war because of the dependencies already present in tomcat
+configurations {
+    providedRuntime
+}
+
 dependencies {
+  
+    //default boot and tomcat dependencies
+    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     compile("org.springframework.boot:spring-boot-starter-web")
-    compile("com.fasterxml.jackson.core:jackson-databind")
+
+    //mixed in test dependencies
+    //compile("com.fasterxml.jackson.core:jackson-databind")
     //validation for the rest messages
     compile("org.hibernate:hibernate-validator")
+    
     //Spring
     //runtime 'org.springframework:spring-web:4.0.1.RELEASE'
 	//runtime 'org.springframework:spring-webmvc:4.0.1.RELEASE'
 	//runtime 'org.springframework:spring-core:4.0.1.RELEASE'
+    
     //security part
-    compile 'org.springframework.security:spring-security-web:3.2.4.RELEASE'
-    compile 'org.springframework.security:spring-security-config:3.2.4.RELEASE'
+    //compile 'org.springframework.security:spring-security-web:3.2.4.RELEASE'
+    //compile 'org.springframework.security:spring-security-config:3.2.4.RELEASE'
+    
+    //modified security dependencies
+    compile("org.springframework.boot:spring-boot-starter-security")
 
     compile 'org.slf4j:slf4j-api:1.7.5'
     //runtime 'org.slf4j:slf4j-jdk14:1.7.5'
 
-    compile 'org.hibernate:hibernate-entitymanager:4.3.4.Final'
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    runtime 'mysql:mysql-connector-java:5.1.30'
+    //old database dependencies
+    //compile 'org.hibernate:hibernate-entitymanager:4.3.4.Final'
+    //compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    //runtime 'mysql:mysql-connector-java:5.1.30'
     //testRuntime 'com.h2database:h2'
+
+    //new database dependencies
+    //persistence dependencies removed explicit hibernate because it is already included
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtime 'mysql:mysql-connector-java:5.1.30'
 
     testCompile 'org.springframework:spring-test'
     testCompile 'com.jayway.jsonpath:json-path-assert:0.8.1'
@@ -65,12 +86,6 @@ dependencies {
     testCompile 'org.mockito:mockito-all:1.9.5'
     testCompile 'org.powermock:powermock-module-junit4:1.5.4'
     testCompile 'org.powermock:powermock-api-mockito:1.5.4'
-    
-
-    
-    
-
-
 }
 
 test {
@@ -82,10 +97,7 @@ test {
   
   // show standard out and standard error of the test JVM(s) on the console
   testLogging.showStandardStreams = true
-
-
 }
-
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
