@@ -17,7 +17,7 @@ apply plugin: 'spring-boot'
 // jar changes...
 //jar {
 //    baseName = 'COMPOSEIdentityManagement'
-//    version =  '0.5.0'
+//    version =  '0.8.0'
 //}
 // end of jar changes...
 
