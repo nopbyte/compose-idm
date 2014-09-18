@@ -21,4 +21,11 @@ public class PolicyManager
 		//TODO get policy for the service object here!
 		return policy;
 	}
+	
+	public Map<String,Object> getPolicyExistingServiceObject(ServiceObject serviceObject)
+	{
+		Map<String,Object> policy = new HashMap<String, Object>();
+		//TODO get policy for the service object here!
+		return policy;
+	}
 }

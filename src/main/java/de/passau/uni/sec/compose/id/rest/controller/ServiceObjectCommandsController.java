@@ -27,11 +27,14 @@ import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
 import de.passau.uni.sec.compose.id.core.event.CreateServiceObjectEvent;
 import de.passau.uni.sec.compose.id.core.event.DeleteServiceObjectEvent;
+import de.passau.uni.sec.compose.id.core.event.UpdateServiceObjectTokenEvent;
 import de.passau.uni.sec.compose.id.core.service.ServiceObjectService;
 import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
 import de.passau.uni.sec.compose.id.rest.messages.AuthenticatedEmptyMessage;
+import de.passau.uni.sec.compose.id.rest.messages.EntityResponseMessage;
 import de.passau.uni.sec.compose.id.rest.messages.ServiceObjectCreateMessage;
 import de.passau.uni.sec.compose.id.rest.messages.ServiceObjectResponseMessage;
+import de.passau.uni.sec.compose.id.rest.messages.ServiceObjectTokenUpdateMessage;
 
 
 
@@ -115,5 +118,34 @@ public class ServiceObjectCommandsController {
 	    		 return new ResponseEntity<Object>(null, headers, HttpStatus.INTERNAL_SERVER_ERROR);	 
 	    	 }
     	}
+    
+    @RequestMapping(value="/{Id}/api_token", method = RequestMethod.PUT)
+        @ResponseBody
+        public  ResponseEntity<Object> UpdateTokenEntity(
+        		@Valid @RequestBody ServiceObjectTokenUpdateMessage message,
+        		@RequestHeader("If-Unmodified-Since") long lastKnownUpdate,
+        		@PathVariable(value="Id") String uid) {
+    	
+	    	HttpHeaders headers = new HttpHeaders();
+	    	Collection<String> cred = new LinkedList<String>();
+	    	cred.add(message.getAuthorization());
+			try{
+				
+				 Collection<IPrincipal> principals = authenticator.authenticatePrincipals(LOG,cred);
+				 EntityResponseMessage res = soService.updateEntity(new UpdateServiceObjectTokenEvent(uid,message,principals,lastKnownUpdate));
+	    		 return new ResponseEntity<Object>(res, headers, HttpStatus.OK);
+	    		 
+	    	 }
+	    	 catch(IdManagementException idm){
+	    		 //since the creation of the exception generated the log entries for the stacktrace, we don't do it again here
+	    		 return new ResponseEntity<Object>(idm.getErrorAsMap(), headers, HttpStatus.valueOf(idm.getHTTPErrorCode()));
+	    	 }catch(Exception e)
+	    	 {
+	    		 String s = IdManagementException.getStackTrace(e);
+	    		 LOG.error(s);
+	    		 return new ResponseEntity<Object>(null, headers, HttpStatus.INTERNAL_SERVER_ERROR);	 
+	    	 }
+    	}
+
 
 }

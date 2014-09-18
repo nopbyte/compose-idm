@@ -22,6 +22,7 @@ import de.passau.uni.sec.compose.id.core.event.CreateServiceObjectEvent;
 import de.passau.uni.sec.compose.id.core.event.DetailsIdEvent;
 import de.passau.uni.sec.compose.id.core.event.Event;
 import de.passau.uni.sec.compose.id.core.event.GetServiceObjectEvent;
+import de.passau.uni.sec.compose.id.core.event.UpdateServiceObjectTokenEvent;
 import de.passau.uni.sec.compose.id.core.persistence.entities.IEntity;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceObject;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
@@ -33,6 +34,7 @@ import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
 import de.passau.uni.sec.compose.id.rest.messages.EntityResponseMessage;
 import de.passau.uni.sec.compose.id.rest.messages.ServiceObjectCreateMessage;
 import de.passau.uni.sec.compose.id.rest.messages.ServiceObjectResponseMessage;
+import de.passau.uni.sec.compose.id.rest.messages.ServiceObjectTokenResponseMessage;
 
 
 @Service
@@ -129,10 +131,43 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 		return res;
 	}
 
+	protected   void verifyAccessControlUpdateEntity(DetailsIdEvent event)
+			throws IdManagementException {
+		
+		ServiceObject so = serviceObjectRepository.findOne(event.getEntityId());
+		if(so !=null)
+			authz.authorizeIfOwner(event.getPrincipals(), so);
+		else
+			throw new IdManagementException("Service Object not found",null, LOG," Attempting to update a non-existent service object"+event.getEntityId(),Level.ERROR, 404);
+		
+	}
+	
 	@Override
 	protected EntityResponseMessage postACUpdateEntity(DetailsIdEvent event, IEntity previous)
 			throws IdManagementException {
 		
+		//AC is done in the locally defined method instead of the AbstractSecure class...
+		Collection<IPrincipal> principals = event.getPrincipals();
+		//trying to update a SO token
+		if(event instanceof UpdateServiceObjectTokenEvent)
+		{
+			UpdateServiceObjectTokenEvent tokenUpdate = (UpdateServiceObjectTokenEvent) event;
+			ServiceObject so = serviceObjectRepository.findOne(event.getEntityId());
+			if(so.getApiToken().equals(tokenUpdate.getMessage().getOld_api_token()))
+			{
+				String newToken = getRandomToken();
+				so.setApiToken(newToken);
+				so.UpdateLastModifiedToNow();
+				serviceObjectRepository.save(so);
+				Map<String,Object> policy = policyManager.getPolicyExistingServiceObject(so);
+				//keep the policy in the response since this call could be issued by Servioticy
+				return new ServiceObjectResponseMessage(so, policy);
+			}
+			else
+				//Although one should not leak which error happen. It is important to help developers to get what they are doing wrong in this case, since there are two authentication credentials at the same time (the API token, and the user token provided as authentication header)
+				throw new IdManagementException("Forbidden action. Wrong API TOKEN",null, LOG," Wrong API token for Service Object: "+tokenUpdate.getEntityId(),Level.ERROR, 401);
+				
+		}
 		// 403 Forbidden, 304 Not modified, or 409 not modified (conflict), 
 		//TODO verify ownership, or propper permissions
 		
@@ -148,7 +183,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 		this.authz.authorizeIfAnyComponentWithAnyUser(event.getPrincipals());
 		
 	}
-
+	
 	@Override
 	protected IEntity getEntityById(String entityId) {
 	

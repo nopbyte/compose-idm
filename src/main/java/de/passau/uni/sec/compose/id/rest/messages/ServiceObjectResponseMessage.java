@@ -1,15 +1,10 @@
 package de.passau.uni.sec.compose.id.rest.messages;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceObject;
-import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceObjectAttributes;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ServiceObjectResponseMessage extends AbstractMainEnityResponse implements EntityResponseMessage
