@@ -71,4 +71,9 @@ public abstract class AbstractEntity implements IEntity {
     	//TODO complete
     	return ret;
     }
+    
+    public void UpdateLastModifiedToNow()
+    {
+    	 this.lastModified = new Date( (new Date().getTime()/1000)*1000 );
+    }
 }
