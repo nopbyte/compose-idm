@@ -5,6 +5,7 @@ package de.passau.uni.sec.compose.id.core.service.security.uaa;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.http.impl.client.ContentEncodingHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -266,7 +268,8 @@ public class UAAClient implements UsersAuthzAndAuthClient
 		
 		 
 		HttpHeaders headers = http.createBasicAuthenticationHttpHeaders(username, password);
-		LOG.info("Setting token to:"+getOauthAdminAuthToken());
+		LOG.debug("Setting token to:"+getOauthAdminAuthToken());
+		LOG.info("Retrieving token from UAA successful");
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		
 		headers.set("Authorization", "Bearer " +getOauthAdminAuthToken());
@@ -340,6 +343,61 @@ public class UAAClient implements UsersAuthzAndAuthClient
 			
 		if(!responseEntity.getStatusCode().equals(HttpStatus.OK))
 			LOG.error("Error ocurred during deletion of  a UAA user, status code: "+responseEntity.getStatusCode().value());
+		
+	}
+
+
+	@Override
+	public void changePassword(String userToken, String id, String old_password,
+			String new_password) throws IdManagementException {
+		
+		UAAUserPasswordRequest pass = new UAAUserPasswordRequest();
+		
+		pass.setOldPassword(old_password);
+		pass.setPassword(new_password);
+		
+		HTTPClient<HashMap<String,Object>> http = new HTTPClient<>();
+		ResponseEntity<HashMap> responseEntity = null;
+		String url = this.UAAUrl+"/Users/"+id+"/password";
+		
+		 
+		HttpHeaders headers = http.createBasicAuthenticationHttpHeaders(username, password);
+		headers.setAccept(Collections.singletonList(new MediaType("application","json")));
+		headers.set("Authorization", "bearer " +userToken);
+		headers.add("Content-Type","application/json;charset=utf-8");
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		
+		
+		
+		RestTemplate restTemplate = new RestTemplate();
+		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
+        messageConverters.add(new MappingJackson2HttpMessageConverter());
+        restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
+        restTemplate.setMessageConverters(messageConverters);
+        try{
+        	HttpEntity request = new HttpEntity(pass, headers);
+            responseEntity= restTemplate.exchange(url, HttpMethod.PUT, request,
+			HashMap.class);
+        }
+        catch(HttpClientErrorException ce)
+        {
+        	if(ce.getStatusCode().equals(HttpStatus.CONFLICT))
+        		throw new IdManagementException("Conflict while changing password",null,LOG,"Conflict while attempting to change password for user "+url+ " response: "+ce.getResponseBodyAsString(),Level.ERROR,ce.getStatusCode().value());
+        	if(ce.getStatusCode().equals(HttpStatus.UNAUTHORIZED))
+        	{
+        		if(responseEntity!=null && responseEntity.getBody() !=null && responseEntity.getBody().containsKey("description"))
+        			throw new IdManagementException(responseEntity.getBody().get("description").toString(), ce, LOG, "Error while chaning password. Description from UAA"+responseEntity.getBody().get("description").toString(), Level.DEBUG , 401);
+        		throw new IdManagementException("Password change usuccessfull. Not authorized",ce,LOG," Unauthorized to change password for user with id "+id+". StatusCode:"+ce.getStatusCode()+ce.getStatusText()+" response Message"+ce.getResponseBodyAsString(),Level.ERROR,500);
+        	}throw new IdManagementException("An error ocurred during HTTP communication",ce,LOG,"HttClientError  while attempting to create a User. StatusCode:"+ce.getStatusCode()+ce.getStatusText()+" response Message"+ce.getResponseBodyAsString(),Level.ERROR,500);
+        }
+        catch(Exception e)
+        {
+        	throw new IdManagementException("An error ocurred during HTTP communication",e,LOG,"Unknown exception while trying to create a user: Exception"+e.getClass(),Level.ERROR,500);
+        }
+			
+		if(!responseEntity.getStatusCode().equals(HttpStatus.CREATED)&&!responseEntity.getStatusCode().equals(HttpStatus.OK))
+			LOG.error("Error ocurred during creation or a UAA user, status code: "+responseEntity.getStatusCode().value());
+		
 		
 	}
 	

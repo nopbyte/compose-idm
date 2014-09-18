@@ -52,6 +52,14 @@ public interface UsersAuthzAndAuthClient
 	 * @throws IdManagementException in case the deletion was not successfull
 	 */
 	public void deleteUser(String userId) throws IdManagementException;
-	
+	/**
+	 * 
+	 * @param token token to authenticate the user
+	 * @param id user id
+	 * @param old_password previous password
+	 * @param new_password new password
+	 */
+	public void changePassword(String token, String id,  String old_password,
+			String new_password) throws IdManagementException;	
 	
 }
