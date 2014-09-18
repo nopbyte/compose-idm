@@ -37,7 +37,7 @@ public class UpdateServiceObjectTokenEvent extends AbstractUpdateEvent implement
 	@Override
 	public String getLoggingDetails() 
 	{
-		return "Updating password for service object with id: "+entityId;
+		return "Revoking/updating api token for service object with id: "+entityId;
 	}
 
 	
