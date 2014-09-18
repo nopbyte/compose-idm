@@ -11,6 +11,11 @@ curl   -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"test2"
 #expected response
 #{"accessToken":"eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI3MDYxNTc2Ni0zYjIxLTQzY2YtYjgxYy00MzdmY2RjNjZjYTMiLCJzdWIiOiJmYzg2OThhYi02MzRjLTRjNDYtODU0Ni05Mjg4MTZiNmZhNWYiLCJzY29wZSI6WyJzY2ltLnVzZXJpZHMiLCJwYXNzd29yZC53cml0ZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiXSwiY2xpZW50X2lkIjoidm1jIiwiY2lkIjoidm1jIiwidXNlcl9pZCI6ImZjODY5OGFiLTYzNGMtNGM0Ni04NTQ2LTkyODgxNmI2ZmE1ZiIsInVzZXJfbmFtZSI6InRlc3QyIiwiZW1haWwiOiJ0ZXN0MkBjb21wb3NlLmNvbSIsImlhdCI6MTQwNjIwMTIwNCwiZXhwIjoxNDA2MjQ0NDA0LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvdWFhL29hdXRoL3Rva2VuIiwiYXVkIjpbInNjaW0iLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyIiwicGFzc3dvcmQiXX0.puX8NKJhsdFE75ws-zpqah74ZJlD3I2Iy-V1pmnOzrY","token_type":"bearer"}
 
+#change password
+## This method returns an empty response with 200 in case it was successful, otherwise it can return 403, 401 or 500
+curl -H "Authorization: Bearer $TOKEN"   -H "Content-Type: application/json;charset=UTF-8" -d '{"old_password":"pass","new_password":"test"}' -X PUT http://localhost:8080/idm/user/password/
+
+
 TOKEN=... copy here what comes in the response as token
 
 #get data for a user

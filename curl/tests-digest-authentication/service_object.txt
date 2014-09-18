@@ -11,3 +11,9 @@ curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type
 
 #delete the service object
 curl --digest -u "composecontroller:composecontrollerpassword" -H "If-Unmodified-Since: 1400862183000"   -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'"}' -X DELETE http://localhost:8080/idm/serviceobject/so1meid
+
+#Revoke and get a new API TOKEN
+## This method returns: 401 if the API_TOKEN provided is incorrect,403 if access was denied, 404 if the SO doesn't exists, or  200 OK
+curl -H "If-Unmodified-Since: 1411030355000"   -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'", "old_api_token":"adssadfasdfdaf"}' -X PUT http://localhost:8080/idm/serviceobject/so1meid/api_token
+
+## 
