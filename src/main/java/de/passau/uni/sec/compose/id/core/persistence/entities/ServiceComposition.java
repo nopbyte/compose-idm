@@ -24,23 +24,12 @@ public class ServiceComposition extends AbstractEntity implements CoreEntity{
     @OneToMany(mappedBy = "serviceComposition", cascade = CascadeType.ALL)
     Collection<EntityGroupMembership> groups = new LinkedList<>();
 
-    @OneToMany(mappedBy = "serviceComposition")
-    private Collection<ServiceCompositionAttributes> serviceCompositionAttributes = new LinkedList<>();
-
     public User getOwner() {
         return owner;
     }
 
     public void setOwner(User owner) {
         this.owner = owner;
-    }
-
-    public Collection<ServiceCompositionAttributes> getServiceCompositionAttributes() {
-        return serviceCompositionAttributes;
-    }
-
-    public void setServiceCompositionAttributes(Collection<ServiceCompositionAttributes> serviceCompositionAttributes) {
-        this.serviceCompositionAttributes = serviceCompositionAttributes;
     }
 
 	public Collection<EntityGroupMembership> getGroups() {
