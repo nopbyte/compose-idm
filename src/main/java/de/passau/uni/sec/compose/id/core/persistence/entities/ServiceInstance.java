@@ -21,9 +21,6 @@ public class ServiceInstance extends AbstractEntity implements CoreEntity{
     @OneToOne
     private ServiceSourceCode serviceSourceCode;
 
-    @OneToMany(mappedBy = "serviceInstance")
-    private Collection<ServiceInstanceAttributes> serviceInstanceAttributes = new LinkedList<>();
-
     @Column
     private int reputation;
 
@@ -64,14 +61,6 @@ public class ServiceInstance extends AbstractEntity implements CoreEntity{
 	public void setGroups(Collection<EntityGroupMembership> groups) {
 		this.groups = groups;
 	}
-
-	public Collection<ServiceInstanceAttributes> getServiceInstanceAttributes() {
-        return serviceInstanceAttributes;
-    }
-
-    public void setServiceInstanceAttributes(Collection<ServiceInstanceAttributes> serviceInstanceAttributes) {
-        this.serviceInstanceAttributes = serviceInstanceAttributes;
-    }
 
     public int getReputation() {
         return reputation;
