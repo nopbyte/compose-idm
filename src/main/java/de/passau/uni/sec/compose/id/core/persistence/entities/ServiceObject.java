@@ -23,9 +23,6 @@ public class ServiceObject extends AbstractEntity implements CoreEntity{
     Collection<EntityGroupMembership> groups = new LinkedList<>();
     
 
-    @OneToMany(mappedBy = "serviceObject")
-    private Collection<ServiceObjectAttributes> serviceObjectAttributes = new LinkedList<>();
-
     @Column
     private int reputation;
 
@@ -46,15 +43,7 @@ public class ServiceObject extends AbstractEntity implements CoreEntity{
         this.owner = owner;
     }
 
-    public Collection<ServiceObjectAttributes> getServiceObjectAttributes() {
-        return serviceObjectAttributes;
-    }
-
-    public void setServiceObjectAttributes(Collection<ServiceObjectAttributes> serviceObjectAttributes) {
-        this.serviceObjectAttributes = serviceObjectAttributes;
-    }
-
-    public int getReputation() {
+   public int getReputation() {
         return reputation;
     }
 

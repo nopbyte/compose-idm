@@ -36,7 +36,6 @@ public class ServiceObjectResponseMessage extends AbstractMainEnityResponse impl
 		this.reputation = so.getReputation();
 		this.data_provenance_collection = so.isCollectProvenance();
 		this.payment = so.isPayment();
-		this.attributes = so.getAttributes(so.getServiceObjectAttributes());
 		
 	}
 

@@ -65,13 +65,6 @@ public abstract class AbstractEntity implements IEntity {
     	return ret;
     }
 
-    public Collection<ExtraAttributeMessage> getAttributes(Collection<?> attributes)
-    {
-    	Collection<ExtraAttributeMessage> ret = new LinkedList<ExtraAttributeMessage>();
-    	//TODO complete
-    	return ret;
-    }
-    
     public void UpdateLastModifiedToNow()
     {
     	 this.lastModified = new Date( (new Date().getTime()/1000)*1000 );

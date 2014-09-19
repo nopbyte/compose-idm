@@ -16,20 +16,8 @@ public class AbstractMainEnityResponse {
 	 * groups that the entity belongs to
 	 */
 	protected List<EntityGroupMembershipResponseMessage> groups;
-	/**
-	 * Additoinal attributes for the entity
-	 */
-	protected Collection<ExtraAttributeMessage> attributes = new LinkedList<ExtraAttributeMessage>();
 	
 	
-	public Collection<ExtraAttributeMessage> getAttributes() {
-		return attributes;
-	}
-
-	public void setAttributes(Collection<ExtraAttributeMessage> attributes) {
-		this.attributes = attributes;
-	}
-
 	public String getId() {
 		return id;
 	}
