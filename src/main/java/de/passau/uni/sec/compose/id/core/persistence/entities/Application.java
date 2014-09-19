@@ -20,9 +20,7 @@ public class Application extends AbstractEntity implements CoreEntity{
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
     Collection<EntityGroupMembership> groups = new LinkedList<>();
 
-    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
-    private Collection<ApplicationAttributes> applicationAttributes = new LinkedList<>();
-
+    
     @Column
     private String name;
     
@@ -35,14 +33,6 @@ public class Application extends AbstractEntity implements CoreEntity{
 
     public void setOwner(User owner) {
         this.owner = owner;
-    }
-
-        public Collection<ApplicationAttributes> getApplicationAttributes() {
-        return applicationAttributes;
-    }
-
-    public void setApplicationAttributes(Collection<ApplicationAttributes> applicationAttributes) {
-        this.applicationAttributes = applicationAttributes;
     }
 
     public String getName() {
