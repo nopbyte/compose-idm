@@ -20,9 +20,7 @@ public class User extends AbstractEntity implements CoreEntity{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<Membership> memberships = new LinkedList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<UserAttributes> userAttributes = new LinkedList<>();
-
+    
     @Column(nullable = false)
     private int reputation = 0;
 
@@ -45,13 +43,6 @@ public class User extends AbstractEntity implements CoreEntity{
         this.memberships = memberships;
     }
 
-    public Collection<UserAttributes> getUserAttributes() {
-        return userAttributes;
-    }
-
-    public void setUserAttributes(Collection<UserAttributes> userAttributes) {
-        this.userAttributes = userAttributes;
-    }
 
     public int getReputation() {
         return reputation;
