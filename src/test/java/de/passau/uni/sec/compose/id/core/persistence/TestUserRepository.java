@@ -118,26 +118,11 @@ public class TestUserRepository extends IntegrationTestBase {
         User res = userRepository.getOne(u.getId());
         assertEquals(res, u);
 
-        UserAttributes att = new UserAttributes();
-        att.setUser(u);
-        att.setAuthority("something");
-        att.setId(UUID.randomUUID().toString());
-        att.setName("some attribute name");
-        att.setType("type1");
-        att.setValue("some string value");
-        att.setVerified(false);
-        att.setLastModified(new Date(System.currentTimeMillis()));
-
-        Collection<UserAttributes> list = new LinkedList<>();
-        list.add(att);
-        u.setUserAttributes(list);
         userRepository.save(u);
 
         User u2 = userRepository.getOne(u.getId());
         //only one time in the loop...
-        for (UserAttributes at : u2.getUserAttributes()) {
-            assertEquals(at.getId(), att.getId());
-        }
+        
     }
 
     @Test

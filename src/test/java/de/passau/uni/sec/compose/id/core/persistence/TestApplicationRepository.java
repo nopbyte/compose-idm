@@ -2,7 +2,6 @@ package de.passau.uni.sec.compose.id.core.persistence;
 
 
 import de.passau.uni.sec.compose.id.core.persistence.entities.Application;
-import de.passau.uni.sec.compose.id.core.persistence.entities.ApplicationAttributes;
 import de.passau.uni.sec.compose.id.core.persistence.entities.Group;
 import de.passau.uni.sec.compose.id.core.persistence.entities.EntityGroupMembership;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
@@ -236,27 +235,10 @@ public class TestApplicationRepository extends IntegrationTestBase {
         applicationRepository.save(app);
         assertEquals(app, applicationRepository.getOne(app.getId()));
 
-        ApplicationAttributes att = new ApplicationAttributes();
-        att.setApplication(app);
-        att.setAuthority("something");
-        att.setId(UUID.randomUUID().toString());
-        att.setName("some attribute nane");
-        att.setType("type1");
-        att.setValue("some string value");
-        att.setVerified(false);
-        att.setLastModified(new Date(System.currentTimeMillis()));
-
-
-        Collection<ApplicationAttributes> list = new LinkedList<ApplicationAttributes>();
-        list.add(att);
-        app.setApplicationAttributes(list);
         applicationRepository.save(app);
 
         Application app2 = applicationRepository.getOne(app.getId());
-        //only one time in the loop...
-        for (ApplicationAttributes at : app2.getApplicationAttributes()) {
-            assertEquals(at.getId(), att.getId());
-        }
+        
     }
 
     @Test

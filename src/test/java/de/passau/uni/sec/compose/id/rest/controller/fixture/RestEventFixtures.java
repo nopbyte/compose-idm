@@ -10,13 +10,9 @@ import de.passau.uni.sec.compose.id.core.persistence.entities.Group;
 import de.passau.uni.sec.compose.id.core.persistence.entities.Membership;
 import de.passau.uni.sec.compose.id.core.persistence.entities.Role;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceComposition;
-import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceCompositionAttributes;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceInstance;
-import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceInstanceAttributes;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceObject;
-import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceObjectAttributes;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceSourceCode;
-import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceSourceCodeAttributes;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
 import de.passau.uni.sec.compose.id.rest.messages.ApplicationResponseMessage;
 import de.passau.uni.sec.compose.id.rest.messages.EntityGroupMembershipResponseMessage;
@@ -163,8 +159,7 @@ public class RestEventFixtures {
         ServiceComposition serviceComposition = new ServiceComposition();
         serviceComposition.setGroups(new LinkedList<EntityGroupMembership>());
         serviceComposition.setOwner(new User());
-        serviceComposition
-                .setServiceCompositionAttributes(new LinkedList<ServiceCompositionAttributes>());
+        
 
         return new ServiceCompositionResponseMessage(serviceComposition);
     }
@@ -173,8 +168,6 @@ public class RestEventFixtures {
         ServiceInstance serviceInstance = new ServiceInstance();
         serviceInstance.setGroups(new LinkedList<EntityGroupMembership>());
         serviceInstance.setOwner(new User());
-        serviceInstance
-                .setServiceInstanceAttributes(new LinkedList<ServiceInstanceAttributes>());
         serviceInstance.setServiceSourceCode(new ServiceSourceCode());
 
         return new ServiceInstanceResponseMessage(serviceInstance);
@@ -183,8 +176,6 @@ public class RestEventFixtures {
     public static ServiceObjectResponseMessage serviceObjectResponseMessage() {
         ServiceObject serviceObject = new ServiceObject();
         serviceObject.setGroups(new LinkedList<EntityGroupMembership>());
-        serviceObject
-                .setServiceObjectAttributes(new LinkedList<ServiceObjectAttributes>());
         serviceObject.setOwner(new User());
 
         return new ServiceObjectResponseMessage(serviceObject, null);
@@ -194,9 +185,7 @@ public class RestEventFixtures {
         ServiceSourceCode serviceSourceCode = new ServiceSourceCode();
         serviceSourceCode.setDeveloper(new User());
         serviceSourceCode.setGroups(new LinkedList<EntityGroupMembership>());
-        serviceSourceCode
-                .setServiceSourceCodeAttributes(new LinkedList<ServiceSourceCodeAttributes>());
-
+        
         return new ServiceSourceCodeResponseMessage(serviceSourceCode);
     }
 }
