@@ -21,9 +21,7 @@ public class ServiceSourceCode extends AbstractEntity implements CoreEntity{
     @OneToMany(mappedBy = "serviceSourceCode", cascade = CascadeType.ALL)
     Collection<EntityGroupMembership> groups = new LinkedList<>();
 
-    @OneToMany(mappedBy = "serviceSourceCode")
-    private Collection<ServiceSourceCodeAttributes> serviceSourceCodeAttributes = new LinkedList<>();
-
+    
     @Column
     private int reputation;
 
@@ -66,15 +64,7 @@ public class ServiceSourceCode extends AbstractEntity implements CoreEntity{
 		this.groups = groups;
 	}
 
-	public Collection<ServiceSourceCodeAttributes> getServiceSourceCodeAttributes() {
-        return serviceSourceCodeAttributes;
-    }
-
-    public void setServiceSourceCodeAttributes(Collection<ServiceSourceCodeAttributes> serviceSourceCodeAttributes) {
-        this.serviceSourceCodeAttributes = serviceSourceCodeAttributes;
-    }
-
-    public int getReputation() {
+	public int getReputation() {
         return reputation;
     }
 
