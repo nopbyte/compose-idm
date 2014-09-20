@@ -35,7 +35,7 @@ public class DeleteMembershipEvent extends AbstractUpdateEvent implements Event
 	@Override
 	public String getLoggingDetails() {
 	
-			return "Deleting Membership with id "+entityId;
+			return "Deleting Membership with id "+entityId+" principals: "+RestAuthentication.getBasicInfoPrincipals(principals);
 
 	}
 }

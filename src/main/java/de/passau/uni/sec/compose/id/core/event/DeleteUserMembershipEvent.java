@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
+import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
 
 public class DeleteUserMembershipEvent extends AbstractUpdateEvent implements Event
 {
@@ -23,7 +24,7 @@ public class DeleteUserMembershipEvent extends AbstractUpdateEvent implements Ev
 	@Override
 	public String getLoggingDetails() {
 	
-			return "Deleting UserMembersehip with id "+entityId;
+			return "Deleting UserMembersehip with id "+entityId+" principals: "+RestAuthentication.getBasicInfoPrincipals(principals);
 
 	}
 }

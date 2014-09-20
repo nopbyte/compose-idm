@@ -35,7 +35,7 @@ public class DeleteServiceObjectEvent extends AbstractUpdateEvent implements Eve
 	@Override
 	public String getLoggingDetails() {
 	
-			return "Deleting Source Object with id "+entityId;
+			return "Deleting Source Object with id "+entityId+" principals: "+RestAuthentication.getBasicInfoPrincipals(principals);
 
 	}
 }

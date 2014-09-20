@@ -35,7 +35,7 @@ public class DeleteApplicationEvent extends AbstractUpdateEvent implements Event
 	@Override
 	public String getLoggingDetails() {
 	
-			return "Deleting application with id "+entityId;
+			return "Deleting application with id "+entityId+" principals: "+RestAuthentication.getBasicInfoPrincipals(principals);
 
 	}
 }

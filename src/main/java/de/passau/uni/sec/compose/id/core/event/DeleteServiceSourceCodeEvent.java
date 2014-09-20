@@ -35,7 +35,7 @@ public class DeleteServiceSourceCodeEvent extends AbstractUpdateEvent implements
 	@Override
 	public String getLoggingDetails() {
 	
-			return "Deleting Source Code with id "+entityId;
+			return "Deleting Source Code with id "+entityId+" principals: "+RestAuthentication.getBasicInfoPrincipals(principals);
 
 	}
 }

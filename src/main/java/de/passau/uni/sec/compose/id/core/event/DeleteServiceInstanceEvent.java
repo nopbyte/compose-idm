@@ -35,7 +35,7 @@ public class DeleteServiceInstanceEvent extends AbstractUpdateEvent implements E
 	@Override
 	public String getLoggingDetails() {
 	
-			return "Deleting Source Instance with id "+entityId;
+			return "Deleting Source Instance with id "+entityId+" principals: "+RestAuthentication.getBasicInfoPrincipals(principals);
 
 	}
 }

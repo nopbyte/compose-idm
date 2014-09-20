@@ -35,7 +35,7 @@ public class DeleteServiceCompositionEvent extends AbstractUpdateEvent implement
 	@Override
 	public String getLoggingDetails() {
 	
-			return "Deleting Service composition with id "+entityId;
+			return "Deleting Service composition with id "+entityId+" principals: "+RestAuthentication.getBasicInfoPrincipals(principals);
 
 	}
 }

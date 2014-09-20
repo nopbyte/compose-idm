@@ -35,7 +35,7 @@ public class DeleteUserEvent extends AbstractUpdateEvent implements Event
 	@Override
 	public String getLoggingDetails() {
 	
-			return "Deleting User with id "+entityId;
+			return "Deleting User with id "+entityId+" principals: "+RestAuthentication.getBasicInfoPrincipals(principals);
 
 	}
 }

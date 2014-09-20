@@ -35,7 +35,7 @@ public class DeleteEntityGroupMembershipEvent extends AbstractUpdateEvent implem
 	@Override
 	public String getLoggingDetails() {
 	
-			return "Deleting Entity Group Membership with id "+entityId;
+			return "Deleting Entity Group Membership with id "+entityId+" principals: "+RestAuthentication.getBasicInfoPrincipals(principals);
 
 	}
 }
