@@ -142,7 +142,7 @@ public abstract class AbstractBasicEntityService
 	
 	protected void verifyUpdateTimestamps(DetailsIdEvent event, IEntity entity) throws IdManagementException{
 		if(!event.getLastModifiedKnown().equals(entity.getLastModified()))
-			throw new IdManagementException("Conclicting update: Entity has been updated between read and write requests, try again including the current value for LastModified from the entity",
+			throw new IdManagementException("Conflicting update: Entity has been updated between read and write requests, try again including the current value for LastModified from the entity",
 					null, LOG," Attempt to Update entity: "+event.getLoggingDetails()+" without providing the propper timestamp(conflicting change)",Level.DEBUG, 412);
 	}
 	protected abstract EntityResponseMessage postACCreateEntity(Event event) throws IdManagementException;
