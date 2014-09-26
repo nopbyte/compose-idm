@@ -1,6 +1,7 @@
 package de.passau.uni.sec.compose.id.core.service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
@@ -81,7 +83,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			so.setOwner(u);
 			so.setReputation(rep.getReputationValueForNewServiceObject(u.getId()));
 			so = serviceObjectRepository.save(so);
-			Map<String,Object> policy = policyManager.getPolicyForNewServiceObject(u.getId(), so);
+			List<Map<String, Object>> policy = policyManager.getPolicyForNewServiceObject(u.getId(), so);
 			//in this case the policy needs to be included in the ServiceObject response in order for the Service Object registry to keep a copy of it.
 			ServiceObjectResponseMessage res = new ServiceObjectResponseMessage (so,policy);
 			return res;	
@@ -159,7 +161,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 				so.setApiToken(newToken);
 				so.UpdateLastModifiedToNow();
 				serviceObjectRepository.save(so);
-				Map<String,Object> policy = policyManager.getPolicyExistingServiceObject(so);
+				List<Map<String, Object>> policy = policyManager.getPolicyExistingServiceObject(so);
 				//keep the policy in the response since this call could be issued by Servioticy
 				return new ServiceObjectResponseMessage(so, policy);
 			}

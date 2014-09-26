@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.passau.uni.sec.compose.id.core.persistence.entities.Group;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class GroupResponseMessage extends AbstractMainEnityResponse implements EntityResponseMessage
+public class GroupResponseMessage extends AbstractEnityResponse implements EntityResponseMessage
 {
 
 	private String name;

@@ -20,6 +20,10 @@ public class Application extends AbstractEntity implements CoreEntity{
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
     Collection<EntityGroupMembership> groups = new LinkedList<>();
 
+
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
+    Collection<AttributeValue> attributes= new LinkedList<>();
+
     
     @Column
     private String name;
@@ -57,6 +61,14 @@ public class Application extends AbstractEntity implements CoreEntity{
 
 	public void setReputation(int reputation) {
 		this.reputation = reputation;
+	}
+
+	public Collection<AttributeValue> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(Collection<AttributeValue> attributes) {
+		this.attributes = attributes;
 	}
     
 	

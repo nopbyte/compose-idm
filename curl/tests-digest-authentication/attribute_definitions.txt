@@ -1,0 +1,20 @@
+
+#Create an attribute definition
+## The parameter after the /group/ part in the URL is the id of the group where the attribute is going to be registered
+
+curl   -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8" -d '{"name":"made in","type":"string"}' -X POST http://localhost:8080/idm/group/01160edc-d6ae-44f0-9912-8cfea72af7a4/attribute_definition/
+
+## Expected response
+## {"id":"a49e8387-4481-410e-9536-d053eb98df4c","lastModified":1411748870000,"owner_id":"14911794-29eb-4677-9c47-ca81d4ff7693","group_id":"01160edc-d6ae-44f0-9912-8cfea72af7a4","name":"made in","type":"string"}
+
+#Delete an attribute definition
+
+curl -H "If-Unmodified-Since: 1411748282000" -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  -X DELETE http://localhost:8080/idm/group/attribute_definition/d9109526-192e-435a-946a-9709bbc9b2c3/
+## Expected response: empty body, error codes 404, 403, 401, 409, 500
+
+
+#List all attributes in a group
+curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/group_attributes/01160edc-d6ae-44f0-9912-8cfea72af7a4/
+
+
+

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.passau.uni.sec.compose.id.core.persistence.entities.Application;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ApplicationResponseMessage extends AbstractMainEnityResponse implements EntityResponseMessage
+public class ApplicationResponseMessage extends AbstractCoreEnityResponse implements EntityResponseMessage
 {
 
 	private String name;
@@ -17,7 +17,8 @@ public class ApplicationResponseMessage extends AbstractMainEnityResponse implem
 		 owner_id = app.getOwner().getId();
 		 groups = app.getApprovedGroups(app.getGroups());
 		 lastModified = app.getLastModified();
-		 
+		 //Do this for every entity. And test!
+		 attributeValues = app.getApprovedAttributeValues(app.getAttributes());
 	}
 	public String getName() {
 		return name;
@@ -37,7 +38,7 @@ public class ApplicationResponseMessage extends AbstractMainEnityResponse implem
 	public void setOwner_id(String owner_id) {
 		this.owner_id = owner_id;
 	}
-
+	
 	
 	
 }

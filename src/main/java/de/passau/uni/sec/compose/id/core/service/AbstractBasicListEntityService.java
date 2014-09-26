@@ -1,7 +1,5 @@
 package de.passau.uni.sec.compose.id.core.service;
 
-import java.util.List;
-
 import javax.persistence.PersistenceException;
 
 import org.slf4j.Logger;
@@ -10,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException.Level;
 import de.passau.uni.sec.compose.id.core.event.Event;
-import de.passau.uni.sec.compose.id.rest.messages.EntityResponseMessage;
 
 public abstract class AbstractBasicListEntityService extends AbstractBasicEntityService
 {

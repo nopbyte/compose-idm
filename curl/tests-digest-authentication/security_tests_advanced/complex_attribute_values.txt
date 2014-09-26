@@ -1,0 +1,137 @@
+[
+{"id":"1ba55759-e90d-408c-b56b-48e333a3bd13","lastModified":1411752702000,"owner_id":"456a01e4-f5c7-460b-9f22-743397aa7e30","group_id":"3f0fdf68-f5c6-4e59-84b2-47e64810acca","name":"new attribute def","type":"string"},
+{"id":"bece68d8-5829-4945-acca-35b8a654820a","lastModified":1411752327000,"owner_id":"456a01e4-f5c7-460b-9f22-743397aa7e30","group_id":"3f0fdf68-f5c6-4e59-84b2-47e64810acca","name":"made in","type":"string"}]
+
+## This file shows how to use the API, assuming that the commands from complex_attribute_definitions.txt have been executed.
+
+##Now dummy creates a service object.
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKENDUMMY"'","id":"so_dummy"'',"requires_token":true, "data_provenance_collection":false,"payment": true}' http://localhost:8080/idm/serviceobject/
+{"id":"so_dummy","lastModified":1411753385000,"owner_id":"456a01e4-f5c7-460b-9f22-743397aa7e30","api_token":"y9c7ZKOL3tV3QD3Y2rdxntEr1919fJV5VC/MwvA9Owia","policy":[{"flow":{"target":"userid/456a01e4-f5c7-460b-9f22-743397aa7e30"}},{"flow":{"source":"userid/456a01e4-f5c7-460b-9f22-743397aa7e30"}}],"reputation":2,"data_provenance_collection":false,"payment":true}
+
+#EVIL creates his service object
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKENEVIL"'","id":"so_evil"'',"requires_token":true, "data_provenance_collection":false,"payment": true}' http://localhost:8080/idm/serviceobject/
+{"id":"so_evil","lastModified":1411753455000,"owner_id":"b724beaf-c77e-4ba9-a38d-f89b8ee52252","api_token":"jbMHwmtcnD3vX3Hadof33FuTYLKJ6d6AGCg4moOS/RlG","policy":[{"flow":{"target":"userid/b724beaf-c77e-4ba9-a38d-f89b8ee52252"}},{"flow":{"source":"userid/b724beaf-c77e-4ba9-a38d-f89b8ee52252"}}],"reputation":2,"data_provenance_collection":false,"payment":true}
+
+#External creates a SO
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKENEXTERNAL"'","id":"so_external"'',"requires_token":true, "data_provenance_collection":false,"payment": true}' http://localhost:8080/idm/serviceobject/
+nt": true}' http://localhost:8080/idm/serviceobject/
+{"id":"so_external","lastModified":1411753494000,"owner_id":"8e8a52ad-462e-49bd-b538-7f7fc3b82539","api_token":"vBqUDTKRjyDlPdXdmbxNsc2b7nSwOHkDFCIC6jBdOGQy","policy":[{"flow":{"target":"userid/8e8a52ad-462e-49bd-b538-7f7fc3b82539"}},{"flow":{"source":"userid/8e8a52ad-462e-49bd-b538-7f7fc3b82539"}}],"reputation":2,"data_provenance_collection":false,"payment":true}
+
+#EVIL TRIES to set a value for Dummy's SO
+curl   -H "Authorization: Bearer $TOKENEVIL"  -H "Content-Type: application/json;charset=UTF-8" -d '{"attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Germany"}' -X POST http://localhost:8080/idm/attribute_values/serviceobject/so_dummy/
+{"error":"Not sufficient permissions for the action requred : Attempt to create in a group for an entity for which the user is no the owner"}
+
+#External tries to set attributes for Dummy's SO
+curl   -H "Authorization: Bearer $TOKENEXTERNAL"  -H "Content-Type: application/json;charset=UTF-8" -d '{"attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Germany"}' -X POST http://localhost:8080/idm/attribute_values/serviceobject/so_dummy/
+{"error":"Not sufficient permissions for the action requred : Attempt to create in a group for an entity for which the user is no the owner"}
+
+#### ===========================================  DUMMY SETS AN ATTRIBUTE FOR HIS SO.  =================================================
+
+#Dummy does it
+curl   -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8" -d '{"attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Germany"}' -X POST http://localhost:8080/idm/attribute_values/serviceobject/so_dummy/
+{"id":"24ca011a-b5f1-4038-b31c-5d6d116939b7","lastModified":1411754043000,"entity_id":"so_dummy","entity_type":"serviceobject","value":"Germany","approved":true}
+
+#### ===========================================  GET DATA FOR THE SO.  =================================================
+
+# Get the data for a Dummy;s So. It inclused the attribute value because dummy owns the group.
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceobject/api_token_data/so_dummy
+{"id":"so_dummy","lastModified":1411753385000,"attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","owner_id":"456a01e4-f5c7-460b-9f22-743397aa7e30","attributeValues":[{"id":"24ca011a-b5f1-4038-b31c-5d6d116939b7","lastModified":1411754043000,"entity_id":"so_dummy","entity_type":"serviceobject","value":"Germany","approved":true}],"api_token":"y9c7ZKOL3tV3QD3Y2rdxntEr1919fJV5VC/MwvA9Owia","reputation":2,"data_provenance_collection":false,"payment":true}
+
+#### ==========================================  EVIL's SO ATTRIBUTES ==============================================================
+
+# Evil attempts sets an attribute value for his SO
+curl   -H "Authorization: Bearer $TOKENEVIL"  -H "Content-Type: application/json;charset=UTF-8" -d '{"attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Germany"}' -X POST http://localhost:8080/idm/attribute_values/serviceobject/so_evil/
+{"id":"c9ced685-e883-4a9c-8e95-c4eff985fdc0","lastModified":1411754196000,"entity_id":"so_evil","entity_type":"serviceobject","value":"Germany","approved":false}
+
+#Get data for the SO
+## Attribute doesn't show up here because it has not been approved
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceobject/api_token_data/so_evil
+{"id":"so_evil","lastModified":1411753455000,"owner_id":"b724beaf-c77e-4ba9-a38d-f89b8ee52252","api_token":"jbMHwmtcnD3vX3Hadof33FuTYLKJ6d6AGCg4moOS/RlG","reputation":2,"data_provenance_collection":false,"payment":true}
+ 
+ ## Now evil attempts to approve the attribute
+ curl -H "Authorization: Bearer $TOKENEVIL"  -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411754196000" -X PUT http://localhost:8080/idm/attribute_values/approve/c9ced685-e883-4a9c-8e95-c4eff985fdc0/
+{"error":"The principal calling the API does not have enough permissions to approve the attribute"}
+
+## Get approvals for External
+curl -H "Authorization: Bearer $TOKENEXTERNAL"  -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/attribute_values/approve/
+[{"id":"c9ced685-e883-4a9c-8e95-c4eff985fdc0","lastModified":1411754196000,"entity_id":"so_evil","entity_type":"serviceobject","value":"Germany","approved":false}]
+
+## External  approves the attribute value
+curl -H "Authorization: Bearer $TOKENEXTERNAL"  -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411754196000" -X PUT http://localhost:8080/idm/attribute_values/approve/c9ced685-e883-4a9c-8e95-c4eff985fdc0/
+{"id":"c9ced685-e883-4a9c-8e95-c4eff985fdc0","lastModified":1411754632000,"entity_id":"so_evil","attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","entity_type":"serviceobject","value":"Germany","approved":true}
+
+## Get approvals for External
+curl -H "Authorization: Bearer $TOKENEXTERNAL"  -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/attribute_values/approve/
+[]
+
+## Now Dummy gets data for Evil's SO!
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceobject/api_token_data/so_evil
+{"id":"so_evil","lastModified":1411753455000,"owner_id":"b724beaf-c77e-4ba9-a38d-f89b8ee52252","attributeValues":[{"id":"c9ced685-e883-4a9c-8e95-c4eff985fdc0","lastModified":1411754632000,"entity_id":"so_evil","entity_type":"serviceobject","value":"Germany","approved":true}],"api_token":"jbMHwmtcnD3vX3Hadof33FuTYLKJ6d6AGCg4moOS/RlG","reputation":2,"data_provenance_collection":false,"payment":true}
+
+## Dummy deletes the attributeValue
+curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411754632000" -X DELETE http://localhost:8080/idm/attribute_values/c9ced685-e883-4a9c-8e95-c4eff985fdc0/
+
+#The attribute is not there anymore
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceobject/api_token_data/so_evil
+{"id":"so_evil","lastModified":1411753455000,"owner_id":"b724beaf-c77e-4ba9-a38d-f89b8ee52252","api_token":"jbMHwmtcnD3vX3Hadof33FuTYLKJ6d6AGCg4moOS/RlG","reputation":2,"data_provenance_collection":false,"payment":true}
+
+#### ============================================ EVIL TRIES AGAIN! ==============================================
+
+# Evil attempts sets an attribute value for his SO
+curl   -H "Authorization: Bearer $TOKENEVIL"  -H "Content-Type: application/json;charset=UTF-8" -d '{"attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Germany"}' -X POST http://localhost:8080/idm/attribute_values/serviceobject/so_evil/
+{"id":"fc74e488-c48c-4e80-9a1e-8aded2eb53e9","lastModified":1411754889000,"entity_id":"so_evil","entity_type":"serviceobject","value":"Germany","approved":false}
+
+# Evil tries to sabotage Dummy by attempting to update his attribute
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceobject/api_token_data/so_dummy
+{"id":"so_dummy","lastModified":1411753385000,"owner_id":"456a01e4-f5c7-460b-9f22-743397aa7e30","attributeValues":[{"id":"24ca011a-b5f1-4038-b31c-5d6d116939b7","lastModified":1411754043000,"entity_id":"so_dummy","entity_type":"serviceobject","attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Germany","approved":true}],"api_token":"y9c7ZKOL3tV3QD3Y2rdxntEr1919fJV5VC/MwvA9Owia","reputation":2,"data_provenance_collection":false,"payment":true}
+
+curl   -H "Authorization: Bearer $TOKENEVIL"  -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411754043000" -d '{"value":"Am i evil?"}' -X PUT http://localhost:8080/idm/attribute_values/24ca011a-b5f1-4038-b31c-5d6d116939b7/
+{"error":"The principal calling the API does not have enough permissions to update the attribute with id: 24ca011a-b5f1-4038-b31c-5d6d116939b7"}
+
+#NOw Dummy updates the attribute value.
+## This makes the approval false always! for security reasons.
+curl   -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411754043000" -d '{"value":"Colombia"}' -X PUT http://localhost:8080/idm/attribute_values/24ca011a-b5f1-4038-b31c-5d6d116939b7/
+{"id":"24ca011a-b5f1-4038-b31c-5d6d116939b7","lastModified":1411755216000,"entity_id":"so_dummy","entity_type":"serviceobject","value":"Colombia","approved":false}
+
+#Now external approves the new attribute value
+curl -H "Authorization: Bearer $TOKENEXTERNAL"  -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411755216000" -X PUT http://localhost:8080/idm/attribute_values/approve/24ca011a-b5f1-4038-b31c-5d6d116939b7/
+{"id":"24ca011a-b5f1-4038-b31c-5d6d116939b7","lastModified":1411755353000,"entity_id":"so_dummy","entity_type":"serviceobject","value":"Colombia","approved":true}
+
+### ======================================= FORGETFUL DUMMY ===========================================================
+
+#Now dummy forgets about setting the attribute definition for made in, and tries to set another value
+curl   -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8" -d '{"attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Germany"}' -X POST http://localhost:8080/idm/attribute_values/serviceobject/so_dummy/
+{"id":"24ca011a-b5f1-4038-b31c-5d6d116939b7","lastModified":1411754043000,"entity_id":"so_dummy","entity_type":"serviceobject","attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Germany","approved":true}
+
+curl   -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8" -d '{"attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Uganda"}' -X POST http://localhost:8080/idm/attribute_values/serviceobject/so_dummy/
+{"error":"Entity with id:so_dummy with type:serviceobject has already an attribute value for the same attribute value definition"}
+
+##################################################################################################################################
+### ========================================= ATTRIBUTES FOR USERS ==============================================================
+
+## EVIL attempts to add an attribute to Dummy
+curl   -H "Authorization: Bearer $TOKENEVIL"  -H "Content-Type: application/json;charset=UTF-8" -d '{"attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Uganda"}' -X POST http://localhost:8080/idm/attribute_values/user/456a01e4-f5c7-460b-9f22-743397aa7e30/
+{"error":"Not sufficient permissions for the action requred : Attempt to create in a group for an entity for which the user is no the owner"}
+
+##Evil sets an attribute for himself 
+curl   -H "Authorization: Bearer $TOKENEVIL"  -H "Content-Type: application/json;charset=UTF-8" -d '{"attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Uganda"}' -X POST http://localhost:8080/idm/attribute_values/user/b724beaf-c77e-4ba9-a38d-f89b8ee52252/
+{"id":"c7b92626-f0d1-4bca-a036-e2b1e5870123","lastModified":1411756710000,"entity_id":"b724beaf-c77e-4ba9-a38d-f89b8ee52252","entity_type":"user","attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Uganda","approved":false}
+
+## Evil gets data for himself to test for the attribute value
+curl -H "Authorization: Bearer $TOKENEVIL"   -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/user/info/
+{"id":"b724beaf-c77e-4ba9-a38d-f89b8ee52252","username":"evil","lastModified":1411749999000,"approvedAttributes":[],"approvedMemberships":[]}
+
+##Dummy adds an attribute for himself
+curl   -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8" -d '{"attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Uganda"}' -X POST http://localhost:8080/idm/attribute_values/user/456a01e4-f5c7-460b-9f22-743397aa7e30/
+
+#Dummy checks the approvals pending 
+curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/attribute_values/approve/
+[{"id":"fc74e488-c48c-4e80-9a1e-8aded2eb53e9","lastModified":1411754889000,"entity_id":"so_evil","entity_type":"serviceobject","attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Germany","approved":false},{"id":"c7b92626-f0d1-4bca-a036-e2b1e5870123","lastModified":1411756710000,"entity_id":"b724beaf-c77e-4ba9-a38d-f89b8ee52252","entity_type":"user","attribute_definition_id":"1ba55759-e90d-408c-b56b-48e333a3bd13","value":"Uganda","approved":false}]
+
+##Evil deletes the attributes for himself that have not been approved
+curl -H "Authorization: Bearer $TOKENEVIL"  -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411756710000" -X DELETE http://localhost:8080/idm/attribute_values/c7b92626-f0d1-4bca-a036-e2b1e5870123/
+curl -H "Authorization: Bearer $TOKENEVIL"  -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411754889000" -X DELETE http://localhost:8080/idm/attribute_values/fc74e488-c48c-4e80-9a1e-8aded2eb53e9/
+
+#Once more Dummy checks approvals for attributes
+curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/attribute_values/approve/
+[]

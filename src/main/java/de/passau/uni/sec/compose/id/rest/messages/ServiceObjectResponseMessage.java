@@ -1,5 +1,7 @@
 package de.passau.uni.sec.compose.id.rest.messages;
 
+import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -7,12 +9,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceObject;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ServiceObjectResponseMessage extends AbstractMainEnityResponse implements EntityResponseMessage
+public class ServiceObjectResponseMessage extends AbstractCoreEnityResponse implements EntityResponseMessage
 {
 	private String api_token;
 	
 	//New stuff
-	private Map<String, Object> policy;
+	private List<Map<String, Object>> policy;
 	 
 	private int reputation;
 	   
@@ -23,16 +25,17 @@ public class ServiceObjectResponseMessage extends AbstractMainEnityResponse impl
 	    
 	 
 	//end new stuff
-	public ServiceObjectResponseMessage(ServiceObject so, Map<String,Object> policy)
+	public ServiceObjectResponseMessage(ServiceObject so, List<Map<String, Object>> policy2)
 	{
 		this.id = so.getId();
 		this.api_token = so.getApiToken();
 		this.owner_id = so.getOwner().getId();
 		this.lastModified = so.getLastModified();
 		this.groups = (so.getApprovedGroups(so.getGroups()));
+		this.attributeValues = so.getApprovedAttributeValues(so.getAttributes());
 		
 		//new stuff
-		this.policy = policy;
+		this.policy = policy2;
 		this.reputation = so.getReputation();
 		this.data_provenance_collection = so.isCollectProvenance();
 		this.payment = so.isPayment();
@@ -52,11 +55,11 @@ public class ServiceObjectResponseMessage extends AbstractMainEnityResponse impl
 		this.api_token = api_token;
 	}
 
-	public Map<String, Object> getPolicy() {
+	public List<Map<String, Object>> getPolicy() {
 		return policy;
 	}
 
-	public void setPolicy(Map<String, Object> policy) {
+	public void setPolicy(List<Map<String, Object>> policy) {
 		this.policy = policy;
 	}
 

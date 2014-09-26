@@ -2,6 +2,7 @@ package de.passau.uni.sec.compose.id.core.persistence.entities;
 
 import javax.persistence.*;
 
+import de.passau.uni.sec.compose.id.rest.messages.AttributeValueResponseMessage;
 import de.passau.uni.sec.compose.id.rest.messages.MembershipResponseMessage;
 
 import java.util.Collection;
@@ -20,6 +21,8 @@ public class User extends AbstractEntity implements CoreEntity{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<Membership> memberships = new LinkedList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<AttributeValue> attributeValues = new LinkedList<>();
     
     @Column(nullable = false)
     private int reputation = 0;
@@ -60,8 +63,16 @@ public class User extends AbstractEntity implements CoreEntity{
         this.username = username;
     }
 
+    
+    public Collection<AttributeValue> getAttributeValues() {
+		return attributeValues;
+	}
 
-    public List<MembershipResponseMessage> getApprovedMemberships()
+	public void setAttributeValues(Collection<AttributeValue> attributeValues) {
+		this.attributeValues = attributeValues;
+	}
+
+	public List<MembershipResponseMessage> getApprovedMemberships()
     {
     	List <MembershipResponseMessage> ret = new LinkedList<>();
     	for(Membership memb: memberships)
@@ -94,6 +105,17 @@ public class User extends AbstractEntity implements CoreEntity{
 			 }
 		}
 		return false;		
+	}
+
+	public List<AttributeValueResponseMessage> getApprovedAttributeValues() {
+		
+		List<AttributeValueResponseMessage> ret = new LinkedList<>();
+		for(AttributeValue v: attributeValues)
+		{
+			if(v.isApproved())
+				ret.add(new AttributeValueResponseMessage(v));
+		}
+		return ret;
 	}
 	
     

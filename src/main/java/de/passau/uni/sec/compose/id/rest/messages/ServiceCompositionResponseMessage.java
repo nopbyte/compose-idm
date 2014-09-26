@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceComposition;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ServiceCompositionResponseMessage extends AbstractMainEnityResponse implements EntityResponseMessage
+public class ServiceCompositionResponseMessage extends AbstractCoreEnityResponse implements EntityResponseMessage
 {
 	
 	
@@ -16,6 +16,7 @@ public class ServiceCompositionResponseMessage extends AbstractMainEnityResponse
 		this.owner_id = si.getOwner().getId();
 		this.lastModified = si.getLastModified();
 		this.groups = si.getApprovedGroups(si.getGroups());
+		attributeValues = si.getApprovedAttributeValues(si.getAttributes());
 		
 	}
 

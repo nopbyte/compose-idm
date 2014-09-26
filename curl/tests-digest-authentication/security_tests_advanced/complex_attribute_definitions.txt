@@ -1,0 +1,96 @@
+
+### =======================================   CREATE USERS AND AUTHENTICATE THEM ====================================
+#Create evil user
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"evil","password":"pass"}' http://localhost:8080/idm/user/
+{"id":"b724beaf-c77e-4ba9-a38d-f89b8ee52252","username":"evil","lastModified":1411749999000,"approvedAttributes":[],"approvedMemberships":[]}
+
+#Create dummy
+curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"dummy","password":"pass"}' http://localhost:8080/idm/user/
+{"id":"456a01e4-f5c7-460b-9f22-743397aa7e30","username":"dummy","lastModified":1411750237000,"approvedAttributes":[],"approvedMemberships":[]}
+
+#authenticate with evil
+curl   -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"evil","password":"pass"}' -X POST http://localhost:8080/auth/user/
+{"accessToken":"eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIyNzhjZWMzZC02YzYzLTQ1ZTAtOWIwMy03MWRmZmYxYWNjYjciLCJzdWIiOiJiNzI0YmVhZi1jNzdlLTRiYTktYTM4ZC1mODliOGVlNTIyNTIiLCJzY29wZSI6WyJzY2ltLnVzZXJpZHMiLCJwYXNzd29yZC53cml0ZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiXSwiY2xpZW50X2lkIjoidm1jIiwiY2lkIjoidm1jIiwidXNlcl9pZCI6ImI3MjRiZWFmLWM3N2UtNGJhOS1hMzhkLWY4OWI4ZWU1MjI1MiIsInVzZXJfbmFtZSI6ImV2aWwiLCJlbWFpbCI6ImV2aWxAY29tcG9zZS5jb20iLCJpYXQiOjE0MTE3NTAxMTcsImV4cCI6MTQxMTc5MzMxNywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3VhYS9vYXV0aC90b2tlbiIsImF1ZCI6WyJzY2ltIiwib3BlbmlkIiwiY2xvdWRfY29udHJvbGxlciIsInBhc3N3b3JkIl19.NvZy_dUVYgN0AAL2xlWJESOVt08ITLGFlv-kvVnOEs3Dqay1W7CGK5eZTFBd673Xajzb_w6VEL9Bzq4aVLYcBjlwCCcf7HodpF8L10CR44bDDSCmVTjMcDh_7JFjoCP2yKP_50JxqvtNvIlQsbVvdSEVo9dzUQADGQwDfLeluyiQf0sPfvv3ztawHAasYUaY17CnKhAugWmEhqhrwIQ-PH3dI3oC-A8qJkPqgv7OqR4qs3FJq-tdjxKh3v3W0hdWB0VPRQFT-74DDWtZYtKnm2plfeG9yEQXGWgIZ62cIaiJHnuPDsaMuZsyRhzpleqEjG6VN3hWcWzqDHEvlY_4cg","token_type":"bearer"}
+
+#set token
+TOKENEVIL=eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIyNzhjZWMzZC02YzYzLTQ1ZTAtOWIwMy03MWRmZmYxYWNjYjciLCJzdWIiOiJiNzI0YmVhZi1jNzdlLTRiYTktYTM4ZC1mODliOGVlNTIyNTIiLCJzY29wZSI6WyJzY2ltLnVzZXJpZHMiLCJwYXNzd29yZC53cml0ZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiXSwiY2xpZW50X2lkIjoidm1jIiwiY2lkIjoidm1jIiwidXNlcl9pZCI6ImI3MjRiZWFmLWM3N2UtNGJhOS1hMzhkLWY4OWI4ZWU1MjI1MiIsInVzZXJfbmFtZSI6ImV2aWwiLCJlbWFpbCI6ImV2aWxAY29tcG9zZS5jb20iLCJpYXQiOjE0MTE3NTAxMTcsImV4cCI6MTQxMTc5MzMxNywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3VhYS9vYXV0aC90b2tlbiIsImF1ZCI6WyJzY2ltIiwib3BlbmlkIiwiY2xvdWRfY29udHJvbGxlciIsInBhc3N3b3JkIl19.NvZy_dUVYgN0AAL2xlWJESOVt08ITLGFlv-kvVnOEs3Dqay1W7CGK5eZTFBd673Xajzb_w6VEL9Bzq4aVLYcBjlwCCcf7HodpF8L10CR44bDDSCmVTjMcDh_7JFjoCP2yKP_50JxqvtNvIlQsbVvdSEVo9dzUQADGQwDfLeluyiQf0sPfvv3ztawHAasYUaY17CnKhAugWmEhqhrwIQ-PH3dI3oC-A8qJkPqgv7OqR4qs3FJq-tdjxKh3v3W0hdWB0VPRQFT-74DDWtZYtKnm2plfeG9yEQXGWgIZ62cIaiJHnuPDsaMuZsyRhzpleqEjG6VN3hWcWzqDHEvlY_4cg
+
+#authenticate with dummy
+curl   -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"dummy","password":"pass"}' -X POST http://localhost:8080/auth/user/
+{"accessToken":"eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiI5ODdiM2NlYy02NGJiLTQ3NjMtYjI5ZS0yMGE4YmM1MTFiMmYiLCJzdWIiOiI0NTZhMDFlNC1mNWM3LTQ2MGItOWYyMi03NDMzOTdhYTdlMzAiLCJzY29wZSI6WyJzY2ltLnVzZXJpZHMiLCJwYXNzd29yZC53cml0ZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiXSwiY2xpZW50X2lkIjoidm1jIiwiY2lkIjoidm1jIiwidXNlcl9pZCI6IjQ1NmEwMWU0LWY1YzctNDYwYi05ZjIyLTc0MzM5N2FhN2UzMCIsInVzZXJfbmFtZSI6ImR1bW15IiwiZW1haWwiOiJkdW1teUBjb21wb3NlLmNvbSIsImlhdCI6MTQxMTc1MDI4MywiZXhwIjoxNDExNzkzNDgzLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvdWFhL29hdXRoL3Rva2VuIiwiYXVkIjpbInNjaW0iLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyIiwicGFzc3dvcmQiXX0.EEqxjuHB8c7hbd4rvkZsdNrfj_cdu-GrheVRnANAfAUcgwqz_UKC2pvAwMiqgz47c_gIy78ug0-iMK3qv8ILanun92Pn01QVNpGk_VNonvJxSoOzZ5ZpWVjkxZXOhFf6E_XMOYrIFaycIi-D3v8dGEBnxDpL69KAFrlzQ1QwfgA5S_qQJASD4CVELgcnrOM-oG_MXfodR-u8sT5iUpexfMlRKX0pYVaJqef3mrmZAdO7enLKtDF4GmXlm6ol3f3WBRTYZVlb3TkT5RmPv5N5_WRbEi12EELGs5fsfnPWWPgYKUjoyEJia7ld5TRqz89Bd-seyX6SKrsNtxdUcn2zAQ","token_type":"bearer"}
+#set token
+TOKENDUMMY=eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiI5ODdiM2NlYy02NGJiLTQ3NjMtYjI5ZS0yMGE4YmM1MTFiMmYiLCJzdWIiOiI0NTZhMDFlNC1mNWM3LTQ2MGItOWYyMi03NDMzOTdhYTdlMzAiLCJzY29wZSI6WyJzY2ltLnVzZXJpZHMiLCJwYXNzd29yZC53cml0ZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiXSwiY2xpZW50X2lkIjoidm1jIiwiY2lkIjoidm1jIiwidXNlcl9pZCI6IjQ1NmEwMWU0LWY1YzctNDYwYi05ZjIyLTc0MzM5N2FhN2UzMCIsInVzZXJfbmFtZSI6ImR1bW15IiwiZW1haWwiOiJkdW1teUBjb21wb3NlLmNvbSIsImlhdCI6MTQxMTc1MDI4MywiZXhwIjoxNDExNzkzNDgzLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvdWFhL29hdXRoL3Rva2VuIiwiYXVkIjpbInNjaW0iLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyIiwicGFzc3dvcmQiXX0.EEqxjuHB8c7hbd4rvkZsdNrfj_cdu-GrheVRnANAfAUcgwqz_UKC2pvAwMiqgz47c_gIy78ug0-iMK3qv8ILanun92Pn01QVNpGk_VNonvJxSoOzZ5ZpWVjkxZXOhFf6E_XMOYrIFaycIi-D3v8dGEBnxDpL69KAFrlzQ1QwfgA5S_qQJASD4CVELgcnrOM-oG_MXfodR-u8sT5iUpexfMlRKX0pYVaJqef3mrmZAdO7enLKtDF4GmXlm6ol3f3WBRTYZVlb3TkT5RmPv5N5_WRbEi12EELGs5fsfnPWWPgYKUjoyEJia7ld5TRqz89Bd-seyX6SKrsNtxdUcn2zAQ
+
+#Create external user
+curl   -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"external","password":"pass"}' -X POST http://localhost:8080/auth/user/
+{"id":"8e8a52ad-462e-49bd-b538-7f7fc3b82539","username":"external","lastModified":1411750902000,"approvedAttributes":[],"approvedMemberships":[]}
+
+#authenticate external
+curl   -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"external","password":"pass"}' -X POST http://localhost:8080/auth/user/
+{"accessToken":"eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJkOWI3NWRhNC0xOGYyLTRhNWUtYjViYy1iNjExZmY4MDMzNGMiLCJzdWIiOiI4ZThhNTJhZC00NjJlLTQ5YmQtYjUzOC03ZjdmYzNiODI1MzkiLCJzY29wZSI6WyJzY2ltLnVzZXJpZHMiLCJwYXNzd29yZC53cml0ZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiXSwiY2xpZW50X2lkIjoidm1jIiwiY2lkIjoidm1jIiwidXNlcl9pZCI6IjhlOGE1MmFkLTQ2MmUtNDliZC1iNTM4LTdmN2ZjM2I4MjUzOSIsInVzZXJfbmFtZSI6ImV4dGVybmFsIiwiZW1haWwiOiJleHRlcm5hbEBjb21wb3NlLmNvbSIsImlhdCI6MTQxMTc1MDk3MSwiZXhwIjoxNDExNzk0MTcxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvdWFhL29hdXRoL3Rva2VuIiwiYXVkIjpbInNjaW0iLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyIiwicGFzc3dvcmQiXX0.elDTcaT6UGWpUArwYJddFMmbfs2cHiuMaEPTbWWETV_Bv__GB8lWZ5IzuzLh7HQEZrMxvA2WC9nTfzyNbAvAN2Q4aQSLa5E8urf2e_Z9XGUC6afrp5WzE5hAHNgtOfxt934KD0JJ1lEi23SEXfyLTEmRX3ejjMmYpy-9-1wUmdnLj3IIxNUPFPf4x1PC5qoJFRSZlD-blZSKVAI2fYKceB_ypBK-K4lxkMjE0NSTroLuC9WF8A2pa78YKT1p4qPDVPCZQ2qN8mJ05o9JLuDPjR3mD6zpDBx63aC_kX3rCR6jeP1kil1Hh5y5SOqIzGZih6JkPh4Xy3J-y-6rlyxE1Q","token_type":"bearer"}
+TOKENEXTERNAL=eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJkOWI3NWRhNC0xOGYyLTRhNWUtYjViYy1iNjExZmY4MDMzNGMiLCJzdWIiOiI4ZThhNTJhZC00NjJlLTQ5YmQtYjUzOC03ZjdmYzNiODI1MzkiLCJzY29wZSI6WyJzY2ltLnVzZXJpZHMiLCJwYXNzd29yZC53cml0ZSIsImNsb3VkX2NvbnRyb2xsZXIud3JpdGUiLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyLnJlYWQiXSwiY2xpZW50X2lkIjoidm1jIiwiY2lkIjoidm1jIiwidXNlcl9pZCI6IjhlOGE1MmFkLTQ2MmUtNDliZC1iNTM4LTdmN2ZjM2I4MjUzOSIsInVzZXJfbmFtZSI6ImV4dGVybmFsIiwiZW1haWwiOiJleHRlcm5hbEBjb21wb3NlLmNvbSIsImlhdCI6MTQxMTc1MDk3MSwiZXhwIjoxNDExNzk0MTcxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvdWFhL29hdXRoL3Rva2VuIiwiYXVkIjpbInNjaW0iLCJvcGVuaWQiLCJjbG91ZF9jb250cm9sbGVyIiwicGFzc3dvcmQiXX0.elDTcaT6UGWpUArwYJddFMmbfs2cHiuMaEPTbWWETV_Bv__GB8lWZ5IzuzLh7HQEZrMxvA2WC9nTfzyNbAvAN2Q4aQSLa5E8urf2e_Z9XGUC6afrp5WzE5hAHNgtOfxt934KD0JJ1lEi23SEXfyLTEmRX3ejjMmYpy-9-1wUmdnLj3IIxNUPFPf4x1PC5qoJFRSZlD-blZSKVAI2fYKceB_ypBK-K4lxkMjE0NSTroLuC9WF8A2pa78YKT1p4qPDVPCZQ2qN8mJ05o9JLuDPjR3mD6zpDBx63aC_kX3rCR6jeP1kil1Hh5y5SOqIzGZih6JkPh4Xy3J-y-6rlyxE1Q
+#### ==========================================   CREATE GROUP ========================================
+
+#DUMMY creates a group
+
+curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8" -d '{"name":"dummy group"}' http://localhost:8080/idm/group/
+{"id":"3f0fdf68-f5c6-4e59-84b2-47e64810acca","lastModified":1411750398000,"owner_id":"456a01e4-f5c7-460b-9f22-743397aa7e30","name":"dummy group"}
+
+
+### ======================================   EVIL ATTEMPTS ============================================== 
+
+#Evil tries to create an attribute definition inside the group of dummy
+
+curl   -H "Authorization: Bearer $TOKENEVIL"  -H "Content-Type: application/json;charset=UTF-8" -d '{"name":"made in","type":"string"}' -X POST http://localhost:8080/idm/group/3f0fdf68-f5c6-4e59-84b2-47e64810acca/attribute_definition/
+{"error":"Not sufficient permissions for the action requred : Attempt to create attribute defintition in a group for which the user is no the owner nor the admin"}
+
+curl   -H "Authorization: Bearer $TOKENDUMMY"  -H "Content-Type: application/json;charset=UTF-8" -d '{"name":"made in","type":"string"}' -X POST http://localhost:8080/idm/group/3f0fdf68-f5c6-4e59-84b2-47e64810acca/attribute_definition/
+{"id":"bece68d8-5829-4945-acca-35b8a654820a","lastModified":1411752327000,"owner_id":"456a01e4-f5c7-460b-9f22-743397aa7e30","group_id":"3f0fdf68-f5c6-4e59-84b2-47e64810acca","name":"made in","type":"string"}
+## ======================================  SMALL GROUP MEMBERSHIP TEST ========================
+
+#EVIL attempts to add external to the group owned by dymmy
+curl   -H "Authorization: Bearer $TOKENEVIL"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d '{"group_id":"3f0fdf68-f5c6-4e59-84b2-47e64810acca","role":"ADMIN"}' -X POST http://localhost:8080/idm/memberships/user/8e8a52ad-462e-49bd-b538-7f7fc3b82539/
+{"error":"Not sufficient permissions for the action requred : Attempt to add another user in a group where you are not admin nor the owner"}
+
+#DUMMY does it
+curl   -H "Authorization: Bearer $TOKENDUMMY"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -d '{"group_id":"3f0fdf68-f5c6-4e59-84b2-47e64810acca","role":"ADMIN"}' -X POST http://localhost:8080/idm/memberships/user/8e8a52ad-462e-49bd-b538-7f7fc3b82539/
+{"id":"545bf17e-343a-40d9-8ae9-7dd85d383e06","user_id":"8e8a52ad-462e-49bd-b538-7f7fc3b82539","role":"ADMIN","group_id":"3f0fdf68-f5c6-4e59-84b2-47e64810acca","lastModified":1411751655000}
+
+# ==== EVIL =====
+#Now Dummy attempts to approve  the membership
+curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411751655000" -X PUT http://localhost:8080/idm/memberships/approve/545bf17e-343a-40d9-8ae9-7dd85d383e06
+{"error":"There was no pending approval from the principal calling the API"}d
+
+##Now external does it 
+curl -H "Authorization: Bearer $TOKENEXTERNAL"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411751655000" -X PUT http://localhost:8080/idm/memberships/approve/545bf17e-343a-40d9-8ae9-7dd85d383e06
+{"id":"545bf17e-343a-40d9-8ae9-7dd85d383e06","user_id":"8e8a52ad-462e-49bd-b538-7f7fc3b82539","role":"ADMIN","group_id":"3f0fdf68-f5c6-4e59-84b2-47e64810acca","lastModified":1411751822000}
+
+### ===================================================EXTERNAL AS ADMIN CREATES AN ATTRIBUTE DEFINITION ======================================================
+
+## With repeated name!
+curl   -H "Authorization: Bearer $TOKENEXTERNAL"  -H "Content-Type: application/json;charset=UTF-8" -d '{"name":"made in","type":"string"}' -X POST http://localhost:8080/idm/group/3f0fdf68-f5c6-4e59-84b2-47e64810acca/attribute_definition/
+{"error":"Attribute definition already extists"}
+
+#With a new name
+curl   -H "Authorization: Bearer $TOKENEXTERNAL"  -H "Content-Type: application/json;charset=UTF-8" -d '{"name":"location","type":"string"}' -X POST http://localhost:8080/idm/group/3f0fdf68-f5c6-4e59-84b2-47e64810acca/attribute_definition/
+{"id":"6cf434d3-b725-43bb-938e-3426ea403914","lastModified":1411752475000,"owner_id":"456a01e4-f5c7-460b-9f22-743397aa7e30","group_id":"3f0fdf68-f5c6-4e59-84b2-47e64810acca","name":"location","type":"string"}
+
+#And another one
+curl   -H "Authorization: Bearer $TOKENEXTERNAL"  -H "Content-Type: application/json;charset=UTF-8" -d '{"name":"new attribute def","type":"string"}' -X POST http://localhost:8080/idm/group/3f0fdf68-f5c6-4e59-84b2-47e64810acca/attribute_definition/
+{"id":"1ba55759-e90d-408c-b56b-48e333a3bd13","lastModified":1411752702000,"owner_id":"456a01e4-f5c7-460b-9f22-743397aa7e30","group_id":"3f0fdf68-f5c6-4e59-84b2-47e64810acca","name":"new attribute def","type":"string"}
+## ======================================================EVIL ATTEMPTS TO DELETE=====================================================
+
+
+# EVIL tries to delete an attribute definition
+
+curl -H "If-Unmodified-Since: 1411752475000" -H "Authorization: Bearer $TOKENEVIL"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  -X DELETE http://localhost:8080/idm/group/attribute_definition/6cf434d3-b725-43bb-938e-3426ea403914/
+{"error":"Not sufficient permissions for the action requred : Attempt to delete attribute defintition for a group for which the user is no the owner nor the admin"}
+
+# Dummy deletes the attribute definition created by external
+curl -H "If-Unmodified-Since: 1411752475000" -H "Authorization: Bearer $TOKENDUMMY"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  -X DELETE http://localhost:8080/idm/group/attribute_definition/6cf434d3-b725-43bb-938e-3426ea403914/
+
+#List all attributes in a the group owned by dummy 
+curl -H "Authorization: Bearer $TOKENDUMMY" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/group_attributes/3f0fdf68-f5c6-4e59-84b2-47e64810acca/
+[{"id":"1ba55759-e90d-408c-b56b-48e333a3bd13","lastModified":1411752702000,"owner_id":"456a01e4-f5c7-460b-9f22-743397aa7e30","group_id":"3f0fdf68-f5c6-4e59-84b2-47e64810acca","name":"new attribute def","type":"string"},{"id":"bece68d8-5829-4945-acca-35b8a654820a","lastModified":1411752327000,"owner_id":"456a01e4-f5c7-460b-9f22-743397aa7e30","group_id":"3f0fdf68-f5c6-4e59-84b2-47e64810acca","name":"made in","type":"string"}]
+
+

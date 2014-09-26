@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceInstance;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ServiceInstanceResponseMessage extends AbstractMainEnityResponse implements EntityResponseMessage
+public class ServiceInstanceResponseMessage extends AbstractCoreEnityResponse implements EntityResponseMessage
 {
 	
 	
@@ -32,7 +32,7 @@ public class ServiceInstanceResponseMessage extends AbstractMainEnityResponse im
 		reputation = si.getReputation();
 		data_provenance_collection = si.isCollectProvenance();
 		payment = si.isPayment();
-
+		attributeValues = si.getApprovedAttributeValues(si.getAttributes());
 	}
 
 	public ServiceInstanceResponseMessage() 

@@ -20,6 +20,7 @@ TOKEN=... copy here what comes in the response as token
 
 #get data for a user
 curl -H "Authorization: Bearer $TOKEN"   -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/user/fc8698ab-634c-4c46-8546-928816b6fa5f
+
 #expected response
 #{"id":"fc8698ab-634c-4c46-8546-928816b6fa5f","username":"test2","lastModified":1406201171000,"approvedMemberships":[]}
 

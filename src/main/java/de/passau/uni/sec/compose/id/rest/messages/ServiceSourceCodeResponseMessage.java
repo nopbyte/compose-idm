@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceSourceCode;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ServiceSourceCodeResponseMessage extends AbstractMainEnityResponse implements EntityResponseMessage
+public class ServiceSourceCodeResponseMessage extends AbstractCoreEnityResponse implements EntityResponseMessage
 {
 	
 	
@@ -29,6 +29,7 @@ public class ServiceSourceCodeResponseMessage extends AbstractMainEnityResponse 
 		this.version = sc.getVersion();
 		this.reputation = sc.getReputation();
 		this.payment = sc.isPayment();
+		this.attributeValues = sc.getApprovedAttributeValues(sc.getAttributes());
 
 	}
 

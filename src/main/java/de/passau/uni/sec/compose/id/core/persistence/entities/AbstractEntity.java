@@ -11,6 +11,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.passau.uni.sec.compose.id.rest.messages.AttributeValueResponseMessage;
 import de.passau.uni.sec.compose.id.rest.messages.EntityGroupMembershipResponseMessage;
 import de.passau.uni.sec.compose.id.rest.messages.EntityResponseMessage;
 import de.passau.uni.sec.compose.id.rest.messages.ExtraAttributeMessage;
@@ -52,7 +53,7 @@ public abstract class AbstractEntity implements IEntity {
     /**
      * List all the memeberships as messages
      * @param memberships all the memberships that need to be converted
-     * @return List of EntityGroupMembershipMessage corresponding to the parameter memberships.
+     * @return List of EntityGroupMembershipMessage corresponding to the APPROVED memberships.
      */
     public List<EntityGroupMembershipResponseMessage> getApprovedGroups(Collection<EntityGroupMembership> memberships)
     {
@@ -61,6 +62,22 @@ public abstract class AbstractEntity implements IEntity {
     	{
     		if(memb.isApprovedByGroupOwner() && memb.isApprovedBySelfOwner())
     				ret.add(new EntityGroupMembershipResponseMessage( memb ) );
+    	}
+    	return ret;
+    }
+    
+    /**
+     * List all the attribute values as messages (AttributeValueResponseMessage)
+     * @param values all the attributevalues that need to be converted
+     * @return List of corresponding  AttributeValueResponseMessage to the APPROVED values for the values provided as parameter .
+     */
+    public List<AttributeValueResponseMessage> getApprovedAttributeValues(Collection<AttributeValue> values)
+    {
+    	List<AttributeValueResponseMessage> ret = new LinkedList<>();
+    	for(AttributeValue attr: values)
+    	{
+    		if(attr.isApproved())
+    				ret.add(new AttributeValueResponseMessage( attr) );
     	}
     	return ret;
     }

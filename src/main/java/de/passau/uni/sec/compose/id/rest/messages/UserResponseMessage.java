@@ -17,6 +17,7 @@ public class UserResponseMessage implements EntityResponseMessage
 	 */
 	private List<MembershipResponseMessage> approvedGroupMemberships;
 	
+	private List<AttributeValueResponseMessage> approvedAttributes;
 
 	
 	public UserResponseMessage(User u)
@@ -24,7 +25,7 @@ public class UserResponseMessage implements EntityResponseMessage
 		username = (u.getUsername());
 		id = u.getId();
 		approvedGroupMemberships =  u.getApprovedMemberships();
-		
+		approvedAttributes = u.getApprovedAttributeValues();
 		lastModified = u.getLastModified();
 	}
 	
@@ -56,6 +57,15 @@ public class UserResponseMessage implements EntityResponseMessage
 
 	public void setLastModified(Date lastModified) {
 		this.lastModified = lastModified;
+	}
+
+	public List<AttributeValueResponseMessage> getApprovedAttributes() {
+		return approvedAttributes;
+	}
+
+	public void setApprovedAttributes(
+			List<AttributeValueResponseMessage> approvedAttributes) {
+		this.approvedAttributes = approvedAttributes;
 	}
 	
 	

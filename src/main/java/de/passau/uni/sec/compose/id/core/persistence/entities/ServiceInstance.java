@@ -18,6 +18,9 @@ public class ServiceInstance extends AbstractEntity implements CoreEntity{
     @OneToMany(mappedBy = "serviceInstance", cascade = CascadeType.ALL)
     Collection<EntityGroupMembership> groups = new LinkedList<>();
 
+    @OneToMany(mappedBy = "serviceInstance", cascade = CascadeType.ALL)
+    Collection<AttributeValue> attributes= new LinkedList<>();
+    
     @OneToOne
     private ServiceSourceCode serviceSourceCode;
 
@@ -85,4 +88,14 @@ public class ServiceInstance extends AbstractEntity implements CoreEntity{
     public void setPayment(boolean payment) {
         this.payment = payment;
     }
+
+	public Collection<AttributeValue> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(Collection<AttributeValue> attributes) {
+		this.attributes = attributes;
+	}
+    
+    
 }

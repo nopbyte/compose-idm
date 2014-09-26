@@ -1,0 +1,28 @@
+
+#Create an attribute definition
+$To create an attribute definition first, please refer to attribute_definitions.txt
+
+#This call returns 409 in case the value already exists, 403, 401, 404 if the attribute definition, or 400 if the entity associated with the attribute is not found, 500 or 201 in case of success
+## B
+curl   -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8" -d '{"attribute_definition_id":"attribute_definition_id","value":"Germany"}' -X POST http://localhost:8080/idm/attribute_values/serviceobject/serviceobjectid/
+
+#This call returns 412 if there is a concurrent modification. For security issues it returns 403, 401, or 404 if the attribute definition or  the entity associated with the attribute is not found, 500 or 200 in case of success
+#This call will remove the approval previously granted (if any) when the value is updated!!! 
+## B
+curl   -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411651669000" -d '{"value":"duude"}' -X PUT http://localhost:8080/idm/attribute_values/89bde590-646c-4059-a723-78566ee06563/
+
+#Get all the possible attribute value approvals for a given user
+## B
+curl -H "Authorization: Bearer $TOKENOWNER"  -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/attribute_values/approve/
+
+#Attempt to approve a given attribute value
+## B
+curl -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411650361000" -X PUT http://localhost:8080/idm/attribute_values/approve/89bde590-646c-4059-a723-78566ee06563/
+
+#Delete a given attribute value
+## B
+curl -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1411390625000" -X DELETE http://localhost:8080/idm/attribute_values/1a3470c3-cf39-427e-a2a7-f27503c9bfc2/
+
+#Put an attribute to a user
+## B
+curl   -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8" -d '{"attribute_definition_id":"asdf","value":"Germany"}' -X POST http://localhost:8080/idm/attribute_values/user/14911794-29eb-4677-9c47-ca81d4ff7693/
