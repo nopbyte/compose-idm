@@ -94,7 +94,8 @@ The links to the documentation for specific sections of the API is available her
 * API for Service Objects: http://docs.composeidmserviceobjects.apiary.io/
 * API for Users: http://docs.composeidmusers.apiary.io/
 
-Please keep in mind, we try to keep the documentation as up-to-date as possible. However, we recommend to use the curl lines in the 'curl' folder for testing and experimentation with compose-idm.
+Please keep in mind, we try to keep the documentation as up-to-date as possible. However, we recommend to use the curl lines in the 'curl' folder for testing and experimentation with compose-idm. Further, although apiary is a great tool for autogenerating stubs for API (API mockups), it shouldn't be use as an integration guideline because it doesn't support (to the extend of my knowledge) http-digest authentication. 
+
 
 
 ## Importing the project as an eclipse java project
