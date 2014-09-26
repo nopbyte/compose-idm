@@ -105,8 +105,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	  @Bean
 	  public DigestAuthenticationEntryPoint digestEntryPoint ()
 	  {
-	    DigestAuthenticationEntryPoint digestAuthenticationEntryPoint = new DigestAuthenticationEntryPoint();
-		//DigestAuthenticationEntryPoint digestAuthenticationEntryPoint = new CustomDigestAuthenticationEntryPoint();
+	    //DigestAuthenticationEntryPoint digestAuthenticationEntryPoint = new DigestAuthenticationEntryPoint();
+		DigestAuthenticationEntryPoint digestAuthenticationEntryPoint = new CustomDigestAuthenticationEntryPoint();
 	    digestAuthenticationEntryPoint.setKey(env.getProperty("digest.key"));
 	    digestAuthenticationEntryPoint.setRealmName(env.getProperty("digest.realm"));
 	    digestAuthenticationEntryPoint.setNonceValiditySeconds(3);
