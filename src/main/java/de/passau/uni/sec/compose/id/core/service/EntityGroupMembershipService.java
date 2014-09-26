@@ -445,7 +445,7 @@ public class EntityGroupMembershipService extends AbstractBasicListEntityService
 		if ( user.getOpenId().getUser_id().equals(membership.getGroup().getOwner().getId()) )
 			return true;
 		//if it was not any of the previous conditions, the last chance it is that the user owns the entity
-		return membership.getEntity().getOwner().getId().equals(user);
+		return membership.getEntity().getOwner().getId().equals(u.getId());
 		
 	}
 }
