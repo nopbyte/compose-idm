@@ -43,23 +43,59 @@ By default Identity Management can be run  as a stand-alone jar file embedding a
 Modify the file located in  src/main/resources/application.properties to set port to run the IDM if required.
 Modify src/main/resources/datasource.properties to set up the database connection to point to an existing (but empty) database.
 Modify src/test/resources/datasource.properties to set up the database connection to point to an existing (but empty) database.
+Modify src/test/resources/authentication.properties to set your own username and password for HTTP digest authentication.
+Modify src/test/resources/uaa.properties to set up the client credentials, and the url to point to an installation of Cloud Foundry's UAA.
 
 Other than creating a database and putting the name of the database in the previosly mentioned configuration files, there is no need to execute SQL scripts.
 The database tables will be created afterwards during the building process (gradle build).
 
 
-#### Run the java component as a jar file 
+#### Run the compose-idm 
+
+To get the code run: 
 
 	$ git clone https://github.com/nopobyte/compose-idm
 	$ cd compose-idm
+	
+You can build compose-idm as a jar file to execute with a simple "java -jar " command, or you can also build it as a war file, to deploy it in a Tomcat7 server, for example.
+
+#### Run as a jar file
+
+There is a section to build a jar file in the build.gradle file. It is surrounded by comments stating //jar changes... and //end of jar changes...
+After uncommenting the lines between those to separators (i.e. the lines containing the 'jar' element) run the following.
+
 	$ gradle build
 	$ java -jar build/libs/COMPOSEIdentityManagement-0.5.0.jar 
 	
+
+### Run as a war file
+
+Comment all the lines in the build.gradle for the jar element (pointed between the //jar changes comments). And uncomment the lines between //these are the war changes and //end of war changes... This would enable the proper configurations in gradle to build the war file. Afterwards execute the shell script called compile_war.sh or execute the following commands:
+
+	$ gradle clean
+	$ gradle build -x test
+	$ gradle wrapper
+	$ ./gradlew build -x test
 
 
 ### Testing IDM from the command line
 
 To test this component there is a set of curl command lines available in the curl/tests-digest-authentication folder.
+
+## Documentation 
+
+The links to the documentation for specific sections of the API is available here:
+
+* API for Groups: http://docs.composeidentitymanagement.apiary.io/
+* API for Applications: http://docs.composeidmapplications.apiary.io/
+* API for Service instances: http://docs.composeidmservices.apiary.io/
+* API for Service Compositions: http://docs.composeidmservicecompositions.apiary.io/
+* API for Service Source Code: http://docs.composeidmservicesourcecode.apiary.io/
+* API for Service Objects: http://docs.composeidmserviceobjects.apiary.io/
+* API for Users: http://docs.composeidmusers.apiary.io/
+
+Please keep in mind, we try to keep the documentation as up-to-date as possible. However, we recommend to use the curl lines in the 'curl' folder for testing and experimentation with compose-idm.
+
 
 ## Importing the project as an eclipse java project
 
