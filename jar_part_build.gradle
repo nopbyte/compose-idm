@@ -1,0 +1,4 @@
+jar {
+    baseName = 'COMPOSEIdentityManagement'
+    version =  '0.8.0'
+}

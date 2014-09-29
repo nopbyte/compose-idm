@@ -1,0 +1,5 @@
+apply plugin: 'war'
+war {
+    baseName = 'COMPOSEIdentityManagement'
+    version =  '0.8.0'
+}
