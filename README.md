@@ -52,6 +52,11 @@ The database tables will be created afterwards during the building process (grad
 
 #### Run the compose-idm 
 
+#### Run in vagrant
+
+We have created a vagrant project that will get your compose-idm instance up and running with a couple of commands! 
+Check the documentation of the vagrant project to build compose-idm here: https://github.com/nopbyte/compose-idm-vagrant
+
 To get the code run: 
 
 	$ git clone https://github.com/nopobyte/compose-idm
