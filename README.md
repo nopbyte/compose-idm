@@ -22,6 +22,11 @@ This component is a Spring Java project. It requires the CloudFoundry User Accou
 We have created a vagrant project that will get your compose-idm instance up and running with a couple of commands! 
 Check the documentation of the vagrant project to build compose-idm here: https://github.com/nopbyte/compose-idm-vagrant
 
+
+## Quick Start
+
+### Getting the code
+
 To get the code run: 
 
 	$ git clone https://github.com/nopobyte/compose-idm
@@ -29,7 +34,6 @@ To get the code run:
 	
 You can build compose-idm as a jar file to execute with a simple "java -jar " command, or you can also build it as a war file, to deploy it in a Tomcat7 server, for example.
 
-## Quick Start
 
 ### Installing the UAA
 
