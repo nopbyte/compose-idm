@@ -63,29 +63,18 @@ Other than creating a database and putting the name of the database in the previ
 The database tables will be created afterwards during the building process (gradle build).
 
 
-#### Run the compose-idm 
+#### Run the compose-idm as a Jar or as a war file
 
-#### Run in vagrant
+You can compile automattically a war file by executing this script:
 
-See above (quickest start)
-
-#### Run as a jar file
-
-There is a section to build a jar file in the build.gradle file. It is surrounded by comments stating //jar changes... and //end of jar changes...
-After uncommenting the lines between those to separators (i.e. the lines containing the 'jar' element) run the following.
-
-	$ gradle build
-	$ java -jar build/libs/COMPOSEIdentityManagement-0.5.0.jar 
+	$ ./compile_war.sh
 	
+Afterwards you will find the war file in build/libs/.
 
-### Run as a war file
-
-Comment all the lines in the build.gradle for the jar element (pointed between the //jar changes comments). And uncomment the lines between //these are the war changes and //end of war changes... This would enable the proper configurations in gradle to build the war file. Afterwards execute the shell script called compile_war.sh or execute the following commands:
-
-	$ gradle clean
-	$ gradle build -x test
-	$ gradle wrapper
-	$ ./gradlew build -x test
+Alternatively you can compile the project as a jar file in this way.
+	
+	$ ./compile_jar.sh
+	$ java -jar build/libs/COMPOSEIdentityManagement-0.5.0.jar 
 
 
 ### Testing IDM from the command line
