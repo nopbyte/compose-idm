@@ -29,6 +29,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.ibm.cloudfoundry.IDMConnector;
 import com.sun.org.apache.xerces.internal.util.URI;
 import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
@@ -59,6 +60,8 @@ public class UAAClient implements UsersAuthzAndAuthClient
 	private String scope;
 
 	private String redirectUriBase;
+	
+	private String cCurl;
 	
 	private String getOauthAdminAuthToken() throws IdManagementException
 	{
@@ -91,6 +94,7 @@ public class UAAClient implements UsersAuthzAndAuthClient
         this.password = properties.getProperty("client.credentials.admin.pass");
         this.clientId = properties.getProperty("compose.client.id");
         this.redirectUriBase = properties.getProperty("compose.client.redirect");
+        this.cCurl = properties.getProperty("cCurl");
     }
 
 	@Override
@@ -130,11 +134,28 @@ public class UAAClient implements UsersAuthzAndAuthClient
 			tr.setToken_type(val);
 		
 		return tr;
-
+		
 	}
 	
 	public TokenResponse getImplicitTokenCredentials(String client, String username, String password) throws IdManagementException
 	{
+		
+		try{
+		    IDMConnector cc = new IDMConnector(cCurl,null,username,password);
+		    TokenResponse res = cc.getTokenForUserAndPassword(LOG);
+		    return res;
+		}catch(IdManagementException ex)
+		{
+			throw ex;
+		}
+		catch(Exception e)
+		{
+			if(e.getMessage().contains("401"))
+					throw new IdManagementException("Authentication failed, wrong credentials ",null, LOG," Incorrect credentials while authenticating with UAA",Level.ERROR, 401);
+			LOG.error("Problems while getting token using IDMCConnector from Cloud Foundry (IBM)"+IdManagementException.getStackTrace(e));
+			throw new IdManagementException("An error ocurred while communicating UAA through Library for CloudFoundry (IBM)",e,LOG,"An error ocurred while communicating UAA through Library for CloudFoundry (IBM)",Level.ERROR,500);
+		}
+		/*
 		if(client == null)
 			client = this.clientId;
 		
@@ -201,7 +222,7 @@ public class UAAClient implements UsersAuthzAndAuthClient
 		throw new IdManagementException("Authentication failed.",null, LOG," Incorrect credentials \""+username+"\" and \""+password+"\"",Level.ERROR, responseEntity.getStatusCode().value());
 		
 		
-		 
+		 */
 		
 	}
 	
