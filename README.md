@@ -1,5 +1,6 @@
-compose-idm
+compose-idm (Cloud Foundry)
 ===========
+
 
 This project includes the code for the COMPOSE Identity Management. See http://www.compose-project.eu/
 This component is a Spring Java project. It requires the CloudFoundry User Account and Authentication (UAA) Server in order to work out-of-the-box. 
