@@ -60,6 +60,6 @@ public interface UsersAuthzAndAuthClient
 	 * @param new_password new password
 	 */
 	public void changePassword(String token, String id,  String old_password,
-			String new_password) throws IdManagementException;	
+			String new_password) throws IdManagementException;
 	
 }

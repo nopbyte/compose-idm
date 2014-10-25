@@ -29,9 +29,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.ibm.cloudfoundry.CloudUserRegistration;
 import com.ibm.cloudfoundry.IDMConnector;
-import com.sun.org.apache.xerces.internal.util.URI;
-import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
+
 
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException.Level;
@@ -54,14 +54,17 @@ public class UAAClient implements UsersAuthzAndAuthClient
 	private String password;
 	
 	private String username;
-    
-	private String clientId;
-	
-	private String scope;
-
-	private String redirectUriBase;
 	
 	private String cCurl;
+	
+	private String adminuser;
+	
+	private String adminpassword;
+	
+	private String org;
+	
+	private String space;
+	
 	
 	private String getOauthAdminAuthToken() throws IdManagementException
 	{
@@ -92,9 +95,14 @@ public class UAAClient implements UsersAuthzAndAuthClient
         this.UAAUrl = properties.getProperty("uaa.url");
         this.username = properties.getProperty("client.credentials.admin.username");
         this.password = properties.getProperty("client.credentials.admin.pass");
-        this.clientId = properties.getProperty("compose.client.id");
-        this.redirectUriBase = properties.getProperty("compose.client.redirect");
+        //this.clientId = properties.getProperty("compose.client.id");
+        //this.redirectUriBase = properties.getProperty("compose.client.redirect");
         this.cCurl = properties.getProperty("cCurl");
+        this.adminuser= properties.getProperty("admin-user");
+        this.adminpassword = properties.getProperty("admin-password");
+        this.org = properties.getProperty("org");
+        this.space = properties.getProperty("space");
+        
     }
 
 	@Override
@@ -415,7 +423,12 @@ public class UAAClient implements UsersAuthzAndAuthClient
 		
 	}
 	
-	
+	public void setupUserInCloud(String username, String password) throws IdManagementException
+	{
+		CloudUserRegistration cr = new CloudUserRegistration();
+		cr.setupUserInCloud(cCurl, username, password, this.org, this.space, this.adminuser, this.adminpassword); 
+		//cr.setupUserInCloud(password, username, password, org, space, adminUser, adminPass);
+	}
 	
 	
 }
