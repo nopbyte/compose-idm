@@ -65,6 +65,12 @@ public class UAAClient implements UsersAuthzAndAuthClient
 	
 	private String space;
 	
+	private String clientId;
+	
+	private String scope;
+	
+	private String redirectUriBase;
+	
 	
 	private String getOauthAdminAuthToken() throws IdManagementException
 	{
@@ -95,8 +101,8 @@ public class UAAClient implements UsersAuthzAndAuthClient
         this.UAAUrl = properties.getProperty("uaa.url");
         this.username = properties.getProperty("client.credentials.admin.username");
         this.password = properties.getProperty("client.credentials.admin.pass");
-        //this.clientId = properties.getProperty("compose.client.id");
-        //this.redirectUriBase = properties.getProperty("compose.client.redirect");
+        this.clientId = properties.getProperty("compose.client.id");
+        this.redirectUriBase = properties.getProperty("compose.client.redirect");
         this.cCurl = properties.getProperty("cCurl");
         this.adminuser= properties.getProperty("admin-user");
         this.adminpassword = properties.getProperty("admin-password");

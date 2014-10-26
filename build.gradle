@@ -45,6 +45,9 @@ dependencies {
     //CustomSecurity Digest Authentication
     compile ("commons-codec:commons-codec:1.9")
     
+    //Cloud Controller
+    compile ("com.google.code.gson:gson:2.2.4")
+    
     //default boot and tomcat dependencies
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     compile("org.springframework.boot:spring-boot-starter-web")

@@ -1,6 +1,7 @@
 package de.passau.uni.sec.compose.id.core.service;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -16,18 +17,18 @@ import de.passau.uni.sec.compose.id.core.domain.ComposeComponentPrincipal;
 import de.passau.uni.sec.compose.id.core.domain.ComposeUserPrincipal;
 import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
 import de.passau.uni.sec.compose.id.core.event.CreateUserEvent;
-import de.passau.uni.sec.compose.id.core.event.DetailsIdEvent;
 import de.passau.uni.sec.compose.id.core.event.Event;
 import de.passau.uni.sec.compose.id.core.event.GetUserEvent;
+import de.passau.uni.sec.compose.id.core.event.DetailsIdEvent;
 import de.passau.uni.sec.compose.id.core.event.UpdateUserEvent;
 import de.passau.uni.sec.compose.id.core.persistence.entities.IEntity;
+import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceInstance;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
 import de.passau.uni.sec.compose.id.core.persistence.repository.UserRepository;
 import de.passau.uni.sec.compose.id.core.service.reputation.ReputationManager;
 import de.passau.uni.sec.compose.id.core.service.security.Authorization;
 import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
 import de.passau.uni.sec.compose.id.core.service.security.UsersAuthzAndAuthClient;
-import de.passau.uni.sec.compose.id.core.service.security.uaa.UAAClient;
 import de.passau.uni.sec.compose.id.core.service.security.uaa.UAAUserRequest;
 import de.passau.uni.sec.compose.id.core.service.security.uaa.UAAUserRequestName;
 import de.passau.uni.sec.compose.id.rest.messages.EntityResponseMessage;
@@ -83,9 +84,6 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		if(id == null)
 			throw new IdManagementException("Internal communication error",null,LOG,"UAA Creation of user doesn't have an id"+UAAResponse,Level.ERROR,500);
 		
-		CloudUserRegistration cur = new CloudUserRegistration();
-		((UAAClient)uaa).setupUserInCloud(create.getUserMessage().getUsername(),create.getUserMessage().getPassword());
-		
 		//create user in the local database
 		User u = new User();
 		u.setId(id);
@@ -94,8 +92,8 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		//u.setLastModified(new Date(System.currentTimeMillis()));
 		
 		u = userRepository.save(u);		
-		
-		UserResponseMessage res = new UserResponseMessage(u);
+		CloudUserRegistration cur = new CloudUserRegistration();
+		uaa.setupUserInCloud(create.getUserMessage().getUsername(),create.getUserMessage().getPassword());UserResponseMessage res = new UserResponseMessage(u);
 		return res;
 	}
 
