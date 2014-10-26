@@ -1,5 +1,6 @@
 package de.passau.uni.sec.compose.id.configuration;
 
+import java.io.IOException;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -22,6 +23,13 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "de.passau.uni.sec.compose.id.core.persistence.repository")
@@ -39,6 +47,12 @@ public class DatabaseConfiguration {
     private static final String PROPERTY_NAME_HIBERNATE_HBM2DDL = "hibernate.hbm2ddl.auto";
     private static final String PROPERTY_NAME_ENTITY_MANAGER_PACKAGES_TO_SCAN = "entitymanager.packages_to_scan";
 
+    private String database;
+    private String port;
+    private String user;
+    private String host;
+    private String password;
+	
     @Resource
     private Environment env;
 
@@ -46,12 +60,38 @@ public class DatabaseConfiguration {
     public DataSource dataSource() {
 
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-
-        dataSource.setDriverClassName(env.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+        
+        ObjectMapper mapper = new ObjectMapper();
+	    JsonNode root;
+		try {
+			root = mapper.readTree(System.getenv("VCAP_SERVICES"));
+			root.findValue("mysqlShared");
+			String database = root.findValue("name").asText();
+			String port = root.findValue("port").asText();
+			String user = root.findValue("user").asText();
+			String host = root.findValue("hostname").asText();
+			String password = root.findValue("password").asText();
+			
+			
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+        /*dataSource.setDriverClassName(env.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
         dataSource.setUrl(env.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
         dataSource.setUsername(env.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
         dataSource.setPassword(env.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
-
+         */
+		dataSource.setDriverClassName(env.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+        //jdbc:mysql://localhost:3306/composeidentity2
+		dataSource.setUrl("jdbc:mysql://"+host+":"+port+"/"+database);
+        dataSource.setUsername(user);
+        dataSource.setPassword(password);
+         
         return dataSource;
     }
 
