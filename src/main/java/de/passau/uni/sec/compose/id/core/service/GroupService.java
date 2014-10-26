@@ -2,7 +2,6 @@ package de.passau.uni.sec.compose.id.core.service;
 
 import java.util.Collection;
 import java.util.List;
-
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException.Level;
-
-
 import de.passau.uni.sec.compose.id.core.domain.ComposeUserPrincipal;
 import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
 import de.passau.uni.sec.compose.id.core.event.CreateGroupEvent;
@@ -29,6 +26,7 @@ import de.passau.uni.sec.compose.id.core.persistence.entities.Membership;
 import de.passau.uni.sec.compose.id.core.persistence.entities.Role;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
 import de.passau.uni.sec.compose.id.core.persistence.repository.GroupRepository;
+import de.passau.uni.sec.compose.id.core.persistence.repository.MembershipRepository;
 import de.passau.uni.sec.compose.id.core.persistence.repository.RoleRepository;
 import de.passau.uni.sec.compose.id.core.persistence.repository.UserRepository;
 import de.passau.uni.sec.compose.id.core.service.security.Authorization;
@@ -65,7 +63,8 @@ public class GroupService extends AbstractSecureEntityBasicEntityService impleme
 	@Autowired
 	Authorization authz;
 	
-	
+	@Autowired
+	MembershipRepository membershipRepository;
 	
 	@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
@@ -96,9 +95,27 @@ public class GroupService extends AbstractSecureEntityBasicEntityService impleme
 			g.setName(message.getName());
 			g.setOwner(u);
 			groupRepository.save(g);
-			
+			//So that the user has memberships of ADMIN for the groups he owns
+			createGroupMembershipAdmin(g,u);			
 			GroupResponseMessage res = new GroupResponseMessage(g);
 			return res;	
+	}
+
+	private void createGroupMembershipAdmin(Group g, User u) 
+	{
+		Role r = roleRepository.findOne(Role.ADMIN);
+		if(r!=null)
+		{
+			Membership memb = new Membership();
+			memb.setApprovedByGroupOwner(true);
+			memb.setApprovedByUser(true);
+			memb.setGroup(g);
+			memb.setId(UUID.randomUUID().toString());
+			memb.setRole(r);
+			memb.setUser(u);
+			membershipRepository.save(memb);
+		}		
+
 	}
 
 	@Override
