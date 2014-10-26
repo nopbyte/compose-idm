@@ -7,6 +7,8 @@ import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -23,10 +25,11 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.passau.uni.sec.compose.id.core.service.AbstractBasicEntityService;
 
 
 
@@ -56,6 +59,10 @@ public class DatabaseConfiguration {
     @Resource
     private Environment env;
 
+    private Logger LOG = LoggerFactory.getLogger(DatabaseConfiguration.class);
+	
+	
+    
     @Bean
     public DataSource dataSource() {
 
@@ -88,9 +95,13 @@ public class DatabaseConfiguration {
          */
 		dataSource.setDriverClassName(env.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
         //jdbc:mysql://localhost:3306/composeidentity2
-		dataSource.setUrl("jdbc:mysql://"+host+":"+port+"/"+database);
+		String url = "jdbc:mysql://"+host+":"+port+"/"+database;
+		dataSource.setUrl(url);
         dataSource.setUsername(user);
         dataSource.setPassword(password);
+        LOG.error("NOT ERROR: this is the url used for the database connectoin: "+url+". This is the username:"+user+" this is the pass:"+password);
+        
+        
          
         return dataSource;
     }
