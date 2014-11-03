@@ -72,7 +72,7 @@ DriverManagerDataSource dataSource = new DriverManagerDataSource();
 	    JsonNode root;
 		try {
 			root = mapper.readTree(System.getenv("VCAP_SERVICES"));
-			root.findValue("mysqlShared");
+			root = root.findValue("credentials");
 			String database = root.findValue("name").asText();
 			String port = root.findValue("port").asText();
 			String user = root.findValue("user").asText();
