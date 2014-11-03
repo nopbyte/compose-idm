@@ -1,5 +1,6 @@
 package de.passau.uni.sec.compose.id.configuration;
 
+import java.io.IOException;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -23,6 +24,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 @EnableTransactionManagement
@@ -46,19 +50,53 @@ public class DatabaseConfiguration {
 
     @Bean
     public DataSource dataSource() {
-
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        //JsonParser parser = new JsonParser();
-        
+    	
+    	String vcap = env.getRequiredProperty("cloudfoundry.vcap.datasource");
+    	if(vcap !=null && !vcap.equals("") && vcap.equals("yes"))
+    		return VCAPDataSource();
+    	
+    	DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(env.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
         dataSource.setUrl(env.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
         dataSource.setUsername(env.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
         dataSource.setPassword(env.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
-
         return dataSource;
+
+        
     }
 
-    @Bean
+    private DataSource VCAPDataSource() {
+DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        System.out.println("LOADING VCAP DATASOURCE!");
+        ObjectMapper mapper = new ObjectMapper();
+	    JsonNode root;
+		try {
+			root = mapper.readTree(System.getenv("VCAP_SERVICES"));
+			root.findValue("mysqlShared");
+			String database = root.findValue("name").asText();
+			String port = root.findValue("port").asText();
+			String user = root.findValue("user").asText();
+			String host = root.findValue("hostname").asText();
+			String password = root.findValue("password").asText();
+   		    dataSource.setDriverClassName(env.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+   		 String url = "jdbc:mysql://"+host+":"+port+"/"+database;
+ 		 dataSource.setUrl(url);
+         dataSource.setUsername(user);
+         dataSource.setPassword(password);
+         System.out.println("INFO!!: this is the url used for the database connectoin: "+url+". This is the username:"+user+" this is the pass:"+password);
+		 return dataSource;
+			
+			
+		} catch (JsonProcessingException e) {
+			System.err.println("Error Parsing the configuration from VCAP_SERVICES environment variable" );
+		} catch (IOException e) {
+			System.err.println("Error Parsing the configuration from VCAP_SERVICES environment variable" );
+		}
+		System.err.println("returning null data source!");
+		return null;
+	}
+
+	@Bean
     public JpaVendorAdapter jpaVendorAdapter() {
         HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
         jpaVendorAdapter.setDatabase(Database.MYSQL);
