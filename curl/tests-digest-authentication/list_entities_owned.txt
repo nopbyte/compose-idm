@@ -1,0 +1,15 @@
+#The id after /user/ is the id of the user for which we want to find the entities owned by.
+#Get SOs owned by a user
+curl -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/user/14911794-29eb-4677-9c47-ca81d4ff7693/serviceobject/
+
+#Get Service instances owned by a user
+curl -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/user/14911794-29eb-4677-9c47-ca81d4ff7693/serviceinstance/
+
+#Get Service sources owned by user
+curl -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/user/14911794-29eb-4677-9c47-ca81d4ff7693/servicesourcecode/
+
+#Get service compositions
+curl -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/user/14911794-29eb-4677-9c47-ca81d4ff7693/servicecomposition/
+
+#Get applications
+curl -H "Authorization: Bearer $TOKEN"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/user/14911794-29eb-4677-9c47-ca81d4ff7693/application/
