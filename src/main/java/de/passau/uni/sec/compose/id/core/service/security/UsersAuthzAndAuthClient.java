@@ -64,5 +64,7 @@ public interface UsersAuthzAndAuthClient
 	
 	public void setupUserInCloud(String uid) throws IdManagementException;
 	
+	public void removeUserFromCloud(String uid) throws IdManagementException;
+	
 	
 }

@@ -32,7 +32,6 @@ import org.springframework.web.client.RestTemplate;
 import com.ibm.cloudfoundry.CloudUserRegistration;
 import com.ibm.cloudfoundry.IDMConnector;
 
-
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException.Level;
 import de.passau.uni.sec.compose.id.core.service.security.TokenResponse;
@@ -434,6 +433,14 @@ public class UAAClient implements UsersAuthzAndAuthClient
 		CloudUserRegistration cr = new CloudUserRegistration();
 		cr.setupUserInCloud(cCurl, uid , this.org, this.space, this.adminuser, this.adminpassword); 
 		//cr.setupUserInCloud(password, username, password, org, space, adminUser, adminPass);
+	}
+
+
+	@Override
+	public void removeUserFromCloud(String uid) throws IdManagementException 
+	{
+		CloudUserRegistration cr = new CloudUserRegistration();
+		cr.unregisterUserFromCloud(cCurl, uid ,  this.adminuser, this.adminpassword);
 	}
 	
 	

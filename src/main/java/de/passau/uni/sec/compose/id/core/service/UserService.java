@@ -179,7 +179,9 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		User sc = userRepository.getOne(event.getEntityId());
 		//the user repository will throw exception if the user still has any associations (groups...etc), so we do it first
 		userRepository.delete(sc);
+		uaa.removeUserFromCloud(sc.getId());
 		uaa.deleteUser(sc.getId());
+		
 		
 	}
 
