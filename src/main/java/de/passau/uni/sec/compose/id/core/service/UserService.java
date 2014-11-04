@@ -93,7 +93,8 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		
 		u = userRepository.save(u);		
 		CloudUserRegistration cur = new CloudUserRegistration();
-		uaa.setupUserInCloud(create.getUserMessage().getUsername(),create.getUserMessage().getPassword());UserResponseMessage res = new UserResponseMessage(u);
+		uaa.setupUserInCloud(id);
+		UserResponseMessage res = new UserResponseMessage(u);
 		return res;
 	}
 
