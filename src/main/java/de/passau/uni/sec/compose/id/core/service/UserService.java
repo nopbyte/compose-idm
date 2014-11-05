@@ -93,7 +93,9 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		
 		u = userRepository.save(u);		
 		CloudUserRegistration cur = new CloudUserRegistration();
-		uaa.setupUserInCloud(id);
+		//uaa.setupUserInCloud(id);
+		uaa.setupUserInCloud(create.getUserMessage().getUsername()+":"+create.getUserMessage().getPassword());
+		
 		UserResponseMessage res = new UserResponseMessage(u);
 		return res;
 	}
@@ -178,9 +180,9 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		
 		User sc = userRepository.getOne(event.getEntityId());
 		//the user repository will throw exception if the user still has any associations (groups...etc), so we do it first
-		userRepository.delete(sc);
 		uaa.removeUserFromCloud(sc.getId());
 		uaa.deleteUser(sc.getId());
+		userRepository.delete(sc);
 		
 		
 	}
