@@ -90,11 +90,10 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		u.setReputation(rep.getReputationValueforNewUser());
 		u.setUsername(create.getUserMessage().getUsername());
 		//u.setLastModified(new Date(System.currentTimeMillis()));
-		
 		u = userRepository.save(u);		
 		CloudUserRegistration cur = new CloudUserRegistration();
 		//uaa.setupUserInCloud(id);
-		uaa.setupUserInCloud(create.getUserMessage().getUsername()+":"+create.getUserMessage().getPassword()+":"+id);
+		uaa.setupUserInCloud(create.getUserMessage().getUsername(),create.getUserMessage().getPassword(),id);
 		
 		UserResponseMessage res = new UserResponseMessage(u);
 		return res;
@@ -180,11 +179,9 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		
 		User sc = userRepository.getOne(event.getEntityId());
 		//the user repository will throw exception if the user still has any associations (groups...etc), so we do it first
+		userRepository.delete(sc);
 		uaa.removeUserFromCloud(sc.getId());
 		uaa.deleteUser(sc.getId());
-		userRepository.delete(sc);
-		
-		
 	}
 
 	@Override

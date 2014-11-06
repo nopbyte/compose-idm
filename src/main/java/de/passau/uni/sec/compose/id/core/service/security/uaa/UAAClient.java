@@ -428,12 +428,7 @@ public class UAAClient implements UsersAuthzAndAuthClient
 		
 	}
 	
-	public void setupUserInCloud(String uid) throws IdManagementException
-	{
-		CloudUserRegistration cr = new CloudUserRegistration();
-		cr.setupUserInCloud(cCurl, uid , this.org, this.space, this.adminuser, this.adminpassword); 
-		//cr.setupUserInCloud(password, username, password, org, space, adminUser, adminPass);
-	}
+
 
 
 	@Override
@@ -441,6 +436,17 @@ public class UAAClient implements UsersAuthzAndAuthClient
 	{
 		CloudUserRegistration cr = new CloudUserRegistration();
 		cr.unregisterUserFromCloud(cCurl, uid ,  this.adminuser, this.adminpassword);
+	}
+
+
+	@Override
+	public void setupUserInCloud(String username, String password, String id)
+			throws IdManagementException {
+		
+		CloudUserRegistration cr = new CloudUserRegistration();
+		cr.setupUserInCloud(cCurl,username, password, id , this.org, this.space, this.adminuser, this.adminpassword); 
+		
+		
 	}
 	
 	
