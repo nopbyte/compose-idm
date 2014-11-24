@@ -56,8 +56,8 @@ public class Oauth2 {
 	
     @RequestMapping(value ={"/login","/oauth/login"}, method = RequestMethod.POST)
     public String login(
-    		@RequestParam(value="response_type", required=false, defaultValue="token") String resposeType,
-    		@RequestParam(value="client_id", required=false, defaultValue="clientId") String clientId,
+    		@RequestParam(value="response_type", required=true, defaultValue="token") String resposeType,
+    		@RequestParam(value="client_id", required=true) String clientId,
     		@RequestParam(value="state", required=false, defaultValue="pre") String state,
     		@RequestParam(value="redirect_uri", required=true) String url,
     		@RequestParam(value="username", required=true) String username,
