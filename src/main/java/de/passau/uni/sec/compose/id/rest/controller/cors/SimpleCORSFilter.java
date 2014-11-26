@@ -1,5 +1,4 @@
-package de.passau.uni.sec.compose.id.configuration;
-
+package de.passau.uni.sec.compose.id.rest.controller.cors;
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

@@ -37,7 +37,8 @@ public class CORSController {
     		@RequestBody(required=false) MultiValueMap<String, String> body ) {
     	LOG.info("executing OPTIONS request for CORS");
   	    HttpHeaders headers = new HttpHeaders();
-        headers.add("Access-Control-Allow-Origin", "*");
+        //This is located in the CORS filter
+  	    //headers.add("Access-Control-Allow-Origin", "*");
         headers.add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     	headers.add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
     	headers.add("Access-Control-Max-Age", "3600");
