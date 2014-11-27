@@ -1,27 +1,37 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Login</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
 
 <body>
 
-    <p th:text="${response_type}+ '!'" />
-    <p th:text="${client_id}+ '!'" />
-    <p th:text="${state}+ '!'" />
-    <p th:text="${redirect_uri}+ '!'" />
-    
-    <p th:text="'Hello, ' + ${name} + '!'" />
-    <form action="login/" method="post">
-    	<input name="username" type="text" />
-    	<input name="password" type="text" />
-    	
-    	<input name="response_type" type="hidden" th:value="${response_type}"/>
+	<h2 align="center" style="color: DarkBlue;">Authenticate User</h2>
+
+	<form method="post" action="/login">
+		        
+		<table align="center">
+			<tr>
+				<td>User name:</td>
+				<td><input type="text" id="username" name="username" />
+					                </td>
+			</tr>
+
+			<tr>
+				<td>Password:</td>
+				<td><input type="text" id="password" name="password" />
+					                </td>
+			</tr>
+
+			<tr>
+				<td><input type="submit" value="Login"/></td>
+			</tr>
+
+		</table>
+		<input name="response_type" type="hidden" th:value="${response_type}"/>
     	<input name="client_id" type="hidden" th:value="${client_id}"/>
     	<input name="state" type="hidden" th:value="${state}"/>
     	<input name="redirect_uri" type="hidden" th:value="${redirect_uri}"/>
-  		<input type="submit" value="Login"/>
-    </form>
+  		
+	</form>
+
+	<div id="resultDivContainer" align="center"></div>
 </body>
 </html>
