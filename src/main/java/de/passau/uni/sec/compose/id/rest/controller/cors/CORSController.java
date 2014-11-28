@@ -39,7 +39,7 @@ public class CORSController {
   	    HttpHeaders headers = new HttpHeaders();
         //This is located in the CORS filter
   	    //headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        headers.add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept,  Authorization");
     	headers.add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
     	headers.add("Access-Control-Max-Age", "3600");
     	headers.add("Access-Control-Allow-Headers", "x-requested-with");
