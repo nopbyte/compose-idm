@@ -61,6 +61,9 @@ public class GroupService extends AbstractSecureEntityBasicEntityService impleme
 	RestAuthentication authentication;
 	
 	@Autowired
+	UserMembershipService memberships;
+	
+	@Autowired
 	Authorization authz;
 	
 	@Autowired
@@ -104,17 +107,22 @@ public class GroupService extends AbstractSecureEntityBasicEntityService impleme
 	private void createGroupMembershipAdmin(Group g, User u) 
 	{
 		Role r = roleRepository.findOne(Role.ADMIN);
-		if(r!=null)
+		if(r==null)
 		{
-			Membership memb = new Membership();
-			memb.setApprovedByGroupOwner(true);
-			memb.setApprovedByUser(true);
-			memb.setGroup(g);
-			memb.setId(UUID.randomUUID().toString());
-			memb.setRole(r);
-			memb.setUser(u);
-			membershipRepository.save(memb);
-		}		
+			memberships.initializeRoles();
+			r = roleRepository.findOne(Role.ADMIN);
+			if(r==null)
+				LOG.error("could not find ADMIN role after initialization of roles!");
+		}
+		Membership memb = new Membership();
+		memb.setApprovedByGroupOwner(true);
+		memb.setApprovedByUser(true);
+		memb.setGroup(g);
+		memb.setId(UUID.randomUUID().toString());
+		memb.setRole(r);
+		memb.setUser(u);
+		membershipRepository.save(memb);
+		
 
 	}
 
