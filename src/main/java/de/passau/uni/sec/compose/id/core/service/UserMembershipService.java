@@ -76,7 +76,7 @@ public class UserMembershipService extends AbstractBasicListEntityService implem
 	/**
 	 * Method that initializes roles when database is empty. This is done, so this application can be deployed without requiring creation of any additional entries in the database.
 	 */
-	private void initializeRoles() {
+	public void initializeRoles() {
 		
 		Role role = null;
 		String value = null;

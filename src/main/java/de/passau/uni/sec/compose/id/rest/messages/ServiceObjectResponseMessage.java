@@ -39,7 +39,8 @@ public class ServiceObjectResponseMessage extends AbstractCoreEnityResponse impl
 		this.reputation = so.getReputation();
 		this.data_provenance_collection = so.isCollectProvenance();
 		this.payment = so.isPayment();
-		
+		//TODO change this... this was only for the review
+		this.data_provenance_collection = true;
 	}
 
 	public ServiceObjectResponseMessage() 
