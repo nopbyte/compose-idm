@@ -1,6 +1,5 @@
 
 #Create a group
-
 curl -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8" -d '{"name":"grouptest"}' http://localhost:8080/idm/group/
 
 #idReceived: 895ff5a3-f7d2-4bea-ba84-b796015fa3f1
@@ -23,3 +22,6 @@ curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json;charse
 #get all attributes of a group
 ##
 curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/group_attributes/71afc9ae-9c2b-4f2c-8657-5f8da6b1cffd/
+
+
+curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/group/?page=1
