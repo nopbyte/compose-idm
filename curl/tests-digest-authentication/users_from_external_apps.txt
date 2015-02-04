@@ -1,0 +1,27 @@
+#Get a session Id
+curl -XGET http://localhost:8080/external_user_create/
+
+#Get the image for the captcha (with a browser, it works too)
+wget  http://localhost:8080/external_user_create/captcha/?session_id=893668764
+#You will see the captcha file in index.html?session_id=893668764
+
+#Send the request to create the user
+curl  -H "Content-Type: application/json;charset=UTF-8" -d '{"session_id": "1580137786", "captcha_text": "izahunefe", "username":"my_captcha_test","password":"pass"}' http://localhost:8080/external_user_create/
+
+
+#Addtional aspects
+
+If if the user didn't like the captcha image, it is possible to get a new one by executing the GET request to the /captcha endpoint as many times as he likes.
+
+
+#Sync for the captcha.
+
+If there is a POST request to the external_user_create/ endpoint trying to validate the 
+captcha, regardless  of the output (verification successful or not) the value of the captcha 
+is renewed.
+
+As a result, when there is an unsuccessful attempt to create a user, the user must 
+retrieve the captcha image and try to solve the new one.
+
+
+
