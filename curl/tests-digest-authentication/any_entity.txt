@@ -1,4 +1,6 @@
 
+curl   -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"test2","password":"pass"}' -X POST http://localhost:8080/auth/user/
+
 #Get any kind of entity... just by providing an id.
 TOKEN= put token for a user here
 curl --digest -u "composecontroller:composecontrollerpassword"  -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'","id":"app_id"'',"name":"application1"}' http://localhost:8080/idm/application/

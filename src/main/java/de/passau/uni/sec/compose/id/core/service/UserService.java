@@ -57,6 +57,11 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 	@Autowired
 	RestAuthentication auth;
 	
+	@Autowired
+	Random random;
+	
+	
+	
 	@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
 			throws IdManagementException {
@@ -88,7 +93,7 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		u.setReputation(rep.getReputationValueforNewUser());
 		u.setUsername(create.getUserMessage().getUsername());
 		//u.setLastModified(new Date(System.currentTimeMillis()));
-		
+		u.setRandom_auth_token(random.getRandomToken());
 		u = userRepository.save(u);		
 		
 		UserResponseMessage res = new UserResponseMessage(u);
@@ -107,8 +112,17 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		else{
 			ComposeUserPrincipal comp = auth.getComposeUser(event.getPrincipals());
 			u = userRepository.getOne(comp.getOpenId().getUser_id());
+			
 		}
 		UserResponseMessage res = new UserResponseMessage(u);
+		try{
+		     authz.authorizeIfOwnerOrComponent(event.getPrincipals(), u);
+		 	res.setRandom_auth_token(u.getRandom_auth_token());
+			
+		}catch(IdManagementException ex)
+		{
+			//Its ok, he is not asking data about himself...
+		}
 		return res;
 		
 

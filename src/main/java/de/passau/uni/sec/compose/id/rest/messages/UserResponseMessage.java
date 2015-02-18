@@ -3,8 +3,11 @@ package de.passau.uni.sec.compose.id.rest.messages;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class UserResponseMessage implements EntityResponseMessage
 {
 	private String id;
@@ -19,6 +22,7 @@ public class UserResponseMessage implements EntityResponseMessage
 	
 	private List<AttributeValueResponseMessage> approvedAttributes;
 
+	private String random_auth_token;
 	
 	public UserResponseMessage(User u)
 	{
@@ -66,6 +70,23 @@ public class UserResponseMessage implements EntityResponseMessage
 	public void setApprovedAttributes(
 			List<AttributeValueResponseMessage> approvedAttributes) {
 		this.approvedAttributes = approvedAttributes;
+	}
+
+	public List<MembershipResponseMessage> getApprovedGroupMemberships() {
+		return approvedGroupMemberships;
+	}
+
+	public void setApprovedGroupMemberships(
+			List<MembershipResponseMessage> approvedGroupMemberships) {
+		this.approvedGroupMemberships = approvedGroupMemberships;
+	}
+
+	public String getRandom_auth_token() {
+		return random_auth_token;
+	}
+
+	public void setRandom_auth_token(String random_auth_token) {
+		this.random_auth_token = random_auth_token;
 	}
 	
 	

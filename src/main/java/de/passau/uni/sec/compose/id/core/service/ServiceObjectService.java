@@ -60,6 +60,8 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 	@Autowired
 	PolicyManager policyManager;
 	
+	@Autowired
+	Random random;
 		
 	
 	@Override
@@ -75,7 +77,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			User u = authentication.getUserFromEvent(event);
 			ServiceObject so = new ServiceObject();
 			if(message.isRequires_token())
-				so.setApiToken(getRandomToken());
+				so.setApiToken(random.getRandomToken());
 			
 			so.setId(message.getId());
 			so.setCollectProvenance(message.isData_provenance_collection());
@@ -89,24 +91,6 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			return res;	
 	}
 
-	private String getRandomToken() 
-	{
-		byte[] array = new byte[33];
-		SecureRandom random;
-		try {
-			random = SecureRandom.getInstance("SHA1PRNG");
-			random.nextBytes(array);
-			
-		} catch (NoSuchAlgorithmException e) {
-
-			sun.security.provider.SecureRandom r = new sun.security.provider.SecureRandom();
-			r.engineNextBytes(array);
-			LOG.warn("Using a newly created SecureRandom object to generate tokens for SO: SHA1PRNG instance of SecureRandom was not found!");
-			
-		}
-		String token = DatatypeConverter.printBase64Binary(array);
-		return token;
-	}
 
 	@Override
 	protected EntityResponseMessage postACGetEntity(Event event)
@@ -157,7 +141,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			ServiceObject so = serviceObjectRepository.findOne(event.getEntityId());
 			if(so.getApiToken().equals(tokenUpdate.getMessage().getOld_api_token()))
 			{
-				String newToken = getRandomToken();
+				String newToken = random.getRandomToken();
 				so.setApiToken(newToken);
 				so.UpdateLastModifiedToNow();
 				serviceObjectRepository.save(so);
