@@ -84,6 +84,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			so.setPayment(message.isPayment());
 			so.setOwner(u);
 			so.setReputation(rep.getReputationValueForNewServiceObject(u.getId()));
+			so.setCollectProvenance(true);
 			so = serviceObjectRepository.save(so);
 			List<Map<String, Object>> policy = policyManager.getPolicyForNewServiceObject(u.getId(), so);
 			//in this case the policy needs to be included in the ServiceObject response in order for the Service Object registry to keep a copy of it.
