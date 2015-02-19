@@ -60,7 +60,10 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 	@Autowired
 	Random random;
 	
+	@Autowired
+	UniqueValidation check;
 	
+
 	
 	@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
@@ -95,7 +98,7 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		//u.setLastModified(new Date(System.currentTimeMillis()));
 		u.setRandom_auth_token(random.getRandomToken());
 		u = userRepository.save(u);		
-		
+		check.insertUnique(id, check.USER);
 		UserResponseMessage res = new UserResponseMessage(u);
 		return res;
 	}

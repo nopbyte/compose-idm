@@ -42,6 +42,10 @@ public class ServiceSourceCodeService extends AbstractSecureEntityBasicEntitySer
 	@Autowired
 	ReputationManager rep;
 	
+	@Autowired
+	UniqueValidation check;
+	
+	
 	@Override
 	protected void verifyAccessControlCreateEntity(Event event)
 			throws IdManagementException {
@@ -57,6 +61,8 @@ public class ServiceSourceCodeService extends AbstractSecureEntityBasicEntitySer
 			//After this call we are sure there is a user, otherwise an exception would have been thrown
 			ServiceSourceCodeCreateMessage message = ((CreateServiceSourceCodeEvent) event).getMessage();
 			
+			check.verifyUnique(message.getId());
+					
 			if(serviceSourceCodeRepository.exists(message.getId()))
 				throw new IdManagementException("Service source code already exists",null,LOG,"Conflict while attempting to create a service source code: "+event.getLoggingDetails(),Level.ERROR,409);
 			
@@ -69,6 +75,7 @@ public class ServiceSourceCodeService extends AbstractSecureEntityBasicEntitySer
 			sc.setName(message.getName());
 			sc = serviceSourceCodeRepository.save(sc);
 			EntityResponseMessage res = new ServiceSourceCodeResponseMessage(sc);
+			check.insertUnique(message.getId(), check.SERVICE_SOURCE);
 			return res;	
 	}
 

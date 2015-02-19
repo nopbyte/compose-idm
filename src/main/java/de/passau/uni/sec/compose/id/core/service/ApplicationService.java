@@ -38,6 +38,8 @@ public class ApplicationService extends AbstractSecureEntityBasicEntityService i
 	@Autowired
 	Authorization authz;
 	
+	@Autowired
+	UniqueValidation check;
 	
 	@Autowired
 	ReputationManager rep;
@@ -57,6 +59,8 @@ public class ApplicationService extends AbstractSecureEntityBasicEntityService i
 			
 			//After this call we are sure there is a user, otherwise an exception would have been thrown
 			ApplicationCreateMessage message = ((CreateApplicationEvent) event).getMessage();
+			
+			check.verifyUnique(message.getId());
 			
 			if(applicationRepository.exists(message.getId()))
 				throw new IdManagementException("Application already exists",null,LOG,"Conflict while attempting to create an  Application: "+event.getLoggingDetails(),Level.ERROR,409);

@@ -63,6 +63,10 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 	@Autowired
 	Random random;
 		
+	@Autowired
+	UniqueValidation check;
+	
+	
 	
 	@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
@@ -70,6 +74,8 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			
 			//After this call we are sure there is a user, otherwise an exception would have been thrown
 			ServiceObjectCreateMessage message = ((CreateServiceObjectEvent) event).getMessage();
+			
+			check.verifyUnique(message.getId());
 			
 			if(serviceObjectRepository.exists(message.getId()))
 				throw new IdManagementException("ServiceObject already exists",null,LOG,"Conflict while attempting to crete a service objcet: "+event.getLoggingDetails(),Level.ERROR,409);
@@ -86,6 +92,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			so.setReputation(rep.getReputationValueForNewServiceObject(u.getId()));
 			so.setCollectProvenance(true);
 			so = serviceObjectRepository.save(so);
+			check.insertUnique(message.getId(),check.SERVICE_OBJECT);
 			List<Map<String, Object>> policy = policyManager.getPolicyForNewServiceObject(u.getId(), so);
 			//in this case the policy needs to be included in the ServiceObject response in order for the Service Object registry to keep a copy of it.
 			ServiceObjectResponseMessage res = new ServiceObjectResponseMessage (so,policy);
