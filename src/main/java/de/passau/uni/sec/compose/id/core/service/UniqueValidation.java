@@ -59,12 +59,14 @@ public class UniqueValidation {
 
 	public void verifyUnique(String id) throws IdManagementException {
 		
-		if(applicationRepository.findOne(id)!=null ||
+		Global u = uniqueRepository.findOne(id);
+		if(u!=null)
+		/*if(applicationRepository.findOne(id)!=null ||
 				siRepository.findOne(id)!=null ||
 				ssRepository.findOne(id)!=null ||
 				soRepository.findOne(id)!=null ||
 				scRepository.findOne(id)!=null ||
-				uRepository.findOne(id)!=null )
+				uRepository.findOne(id)!=null )*/
 			{
 				throw new IdManagementException("Entity with the same id already exists",null,LOG,"Entity with id "+id+" already exists",Level.DEBUG,409); 
 			}
