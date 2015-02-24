@@ -66,10 +66,10 @@ public class UniqueValidation {
 				scRepository.findOne(id)!=null ||
 				uRepository.findOne(id)!=null )
 			{
-				 
+				throw new IdManagementException("Entity with the same id already exists",null,LOG,"Entity with id "+id+" already exists",Level.DEBUG,409); 
 			}
 			else{
-				throw new IdManagementException("Entity with the same id already exists",null,LOG,"Entity with id "+id+" already exists",Level.DEBUG,409);
+				
 			}		
 	}
 }
