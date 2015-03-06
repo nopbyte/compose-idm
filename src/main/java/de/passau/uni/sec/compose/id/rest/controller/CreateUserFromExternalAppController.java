@@ -56,6 +56,7 @@ public class CreateUserFromExternalAppController {
     				  {
     					  os =new ByteArrayOutputStream();
     					  cage.draw(text, os);
+    					  LOG.info("returning captcha with text:"+text);
     				  	  return os.toByteArray();
     				  }
     				  return null;
@@ -116,6 +117,7 @@ public class CreateUserFromExternalAppController {
 						 cage.setText(message.getSession_id(), "");
 					 	 return new ResponseEntity<Object>(res, HttpStatus.OK);
 					}
+					LOG.info("received wrong captcha with text:"+message.getCaptcha_text()+" for session: "+message.getSession_id());
 					//delete the text always, to prevent brute force attacks and repetitions...
 					cage.setText(message.getSession_id(), "");
 					
