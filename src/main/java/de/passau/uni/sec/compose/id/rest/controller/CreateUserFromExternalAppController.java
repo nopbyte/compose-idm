@@ -56,7 +56,7 @@ public class CreateUserFromExternalAppController {
     				  {
     					  os =new ByteArrayOutputStream();
     					  cage.draw(text, os);
-    					  LOG.info("returning captcha with text:"+text);
+    					  LOG.info("returning captcha with text:"+text+ " for session: "+session);
     				  	  return os.toByteArray();
     				  }
     				  return null;
