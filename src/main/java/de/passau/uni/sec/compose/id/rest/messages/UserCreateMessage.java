@@ -9,10 +9,10 @@ public class UserCreateMessage
 {
 
 	@NotNull
-	private String username;
+	protected String username;
 	
 	@NotNull
-	private String password;
+	protected String password;
 	
 	
 	public String getUsername() {

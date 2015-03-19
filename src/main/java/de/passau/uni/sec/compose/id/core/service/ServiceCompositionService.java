@@ -41,6 +41,10 @@ public class ServiceCompositionService extends AbstractSecureEntityBasicEntitySe
 	@Autowired
 	ReputationManager rep;
 	
+	@Autowired
+	UniqueValidation check;
+	
+	
 	@Override
 	protected void verifyAccessControlCreateEntity(Event event)
 			throws IdManagementException {
@@ -56,6 +60,8 @@ public class ServiceCompositionService extends AbstractSecureEntityBasicEntitySe
 			//After this call we are sure there is a user, otherwise an exception would have been thrown
 			ServiceCompositionCreateMessage message = ((CreateServiceCompositionEvent) event).getMessage();
 			
+			check.verifyUnique(message.getId());
+			
 			if(serviceCompositionRepository.exists(message.getId()))
 				throw new IdManagementException("Service composition already exists",null,LOG,"Conflict while attempting to create a service composition: "+event.getLoggingDetails(),Level.ERROR,409);
 			
@@ -64,6 +70,7 @@ public class ServiceCompositionService extends AbstractSecureEntityBasicEntitySe
 			sc.setId(message.getId());
 			sc.setOwner(u);
 			sc = serviceCompositionRepository.save(sc);
+			check.insertUnique(message.getId(),check.SERVICE_COMPOSITION);
 			EntityResponseMessage res = new ServiceCompositionResponseMessage(sc);
 			return res;	
 	}

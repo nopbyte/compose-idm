@@ -46,6 +46,10 @@ public class ServiceInstanceService extends AbstractSecureEntityBasicEntityServi
 	@Autowired
 	ReputationManager rep;
 	
+	@Autowired
+	UniqueValidation check;
+	
+	
 	
 	@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
@@ -53,6 +57,8 @@ public class ServiceInstanceService extends AbstractSecureEntityBasicEntityServi
 			
 			//After this call we are sure there is a user, otherwise an exception would have been thrown
 			ServiceInstanceCreateMessage message = ((CreateServiceInstanceEvent) event).getMessage();
+			
+			check.verifyUnique(message.getId());
 			
 			if(serviceInstanceRepository.exists(message.getId()))
 				throw new IdManagementException("Service Instance already exists",null,LOG,"Conflict while attempting to create a Service Instance: "+event.getLoggingDetails(),Level.ERROR,409);
@@ -70,6 +76,7 @@ public class ServiceInstanceService extends AbstractSecureEntityBasicEntityServi
 			si.setOwner(u);
 			si.setURI(message.getUri());
 			si = serviceInstanceRepository.save(si);
+			check.insertUnique(message.getId(),check.SERVICE_INSTANCE);
 			EntityResponseMessage res = new ServiceInstanceResponseMessage(si);
 			return res;	
 	}

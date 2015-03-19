@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
 import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
-
+import de.passau.uni.sec.compose.id.rest.messages.UserCreateFromExternalAppMessage;
 import de.passau.uni.sec.compose.id.rest.messages.UserCreateMessage;
 
 public class CreateUserEvent extends AbstractEvent implements Event
@@ -16,6 +16,8 @@ public class CreateUserEvent extends AbstractEvent implements Event
 
 	
 	private UserCreateMessage userMessage;
+	
+	private boolean fromExternalApp = false;
 	
 	private static Logger LOG = LoggerFactory.getLogger(CreateUserEvent.class);
 	
@@ -45,10 +47,18 @@ public class CreateUserEvent extends AbstractEvent implements Event
 		
 	}
 
+	public CreateUserEvent(UserCreateFromExternalAppMessage message,
+			Collection<IPrincipal> principals) {
+		
+		this.userMessage = message;		
+		this.principals = principals;
+		this.fromExternalApp = true;
+	}
+
 	@Override
 	public String getLoggingDetails() 
 	{
-		return "Creating user with username: "+this.userMessage.getUsername ()+ " principals: "+RestAuthentication.getBasicInfoPrincipals(principals);
+		return "Creating user "+(fromExternalApp?"from external app":"")+" with username: "+this.userMessage.getUsername ()+ " principals: "+RestAuthentication.getBasicInfoPrincipals(principals);
 	}
 
 

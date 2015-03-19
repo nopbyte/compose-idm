@@ -33,6 +33,7 @@ repositories {
     mavenCentral()
     maven { url "http://repo.spring.io/libs-snapshot" }
 	maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
+	
 }
 
 //Required for war because of the dependencies already present in tomcat
@@ -87,6 +88,10 @@ dependencies {
     //persistence dependencies removed explicit hibernate because it is already included
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtime 'mysql:mysql-connector-java:5.1.30'
+
+	//captcha stuff
+	
+    compile files('./src/main/resources/lib/cage.jar')
 
     testCompile 'org.springframework:spring-test'
     testCompile 'com.jayway.jsonpath:json-path-assert:0.8.1'
