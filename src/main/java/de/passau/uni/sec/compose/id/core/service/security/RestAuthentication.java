@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +26,7 @@ import de.passau.uni.sec.compose.id.core.persistence.repository.UserRepository;
 import de.passau.uni.sec.compose.id.core.service.security.uaa.OpenIdUserData;
 
 @Service
+@PropertySource("classpath:anonymousUser.properties")
 public class RestAuthentication
 {
 	 private static final String UPPER_CASE_TOKEN_OAUTH2 = "BEARER";
@@ -69,13 +71,34 @@ public class RestAuthentication
 				cred = cred.substring(UPPER_CASE_TOKEN_OAUTH2.length());
 				cred = cred.trim();
 				credentialsUsedToAuthenticate=cred;
-				OpenIdUserData openId = uaa.getOpenIdData(cred);
-				principal = new ComposeUserPrincipal();
-				principal.setTokenCredentials(cred);
-				((ComposeUserPrincipal)principal).setOpenId(openId);
-				userThere=true;
-				principals.add(principal);
-				LOG.debug("User with user_id: "+openId.getUser_id()+" has been authenticated");
+				
+				//if the user provides the generic token set for anonymous 
+				//create a garbage uaa token and set principals accordingly
+				if(credentialsUsedToAuthenticate.equals(env.getRequiredProperty("anontoken"))) {
+				        String username = env.getProperty("anonusername"); 	    
+				        OpenIdUserData openId = new OpenIdUserData();
+				        openId.setEmail(env.getProperty("anonemail"));
+				        openId.setFamily_name("compose");
+				        openId.setGiven_name(username);
+				        openId.setName(username + " compose");
+				        openId.setUser_id(env.getProperty("anonid"));
+				        openId.setUser_name(username);
+				        
+				        principal = new ComposeUserPrincipal();
+				        principal.setTokenCredentials("anonymousUserUaaToken");
+				        ((ComposeUserPrincipal)principal).setOpenId(openId);
+	                                userThere=true;
+	                                principals.add(principal);
+	                                LOG.debug("User with user_id: "+openId.getUser_id()+" has been authenticated");
+				}else {
+        				OpenIdUserData openId = uaa.getOpenIdData(cred);
+        				principal = new ComposeUserPrincipal();
+        				principal.setTokenCredentials(cred);
+        				((ComposeUserPrincipal)principal).setOpenId(openId);
+        				userThere=true;
+        				principals.add(principal);
+        				LOG.debug("User with user_id: "+openId.getUser_id()+" has been authenticated");
+				}
 			}
 			
 		}

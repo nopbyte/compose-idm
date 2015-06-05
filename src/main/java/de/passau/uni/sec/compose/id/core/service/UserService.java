@@ -4,9 +4,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
@@ -34,6 +38,7 @@ import de.passau.uni.sec.compose.id.rest.messages.UserResponseMessage;
 
 
 @Service
+@PropertySource("classpath:anonymousUser.properties")
 public class UserService extends AbstractSecureEntityBasicEntityService implements EntityService 
 {
 
@@ -43,7 +48,7 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 	 * Should be passed to ComposeRepository to manage exceptions... never access it directly
 	 */
 	@Autowired
-    UserRepository userRepository;
+        UserRepository userRepository;
 	
 	@Autowired
 	UsersAuthzAndAuthClient uaa;
@@ -63,7 +68,28 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 	@Autowired
 	UniqueValidation check;
 	
-
+	@Autowired
+	private Environment env;
+	
+	/**
+	 * Put an anonymous user in local database.
+	 * @throws IdManagementException 
+	 */
+        @PostConstruct
+        public void initAnonuser() throws IdManagementException {
+              
+                // create an anonymous user in the local database
+                User u = new User();
+                u.setId(env.getRequiredProperty("anonid"));
+                u.setReputation(rep.getReputationValueforNewUser());
+                u.setUsername(env.getRequiredProperty("anonusername"));
+                // u.setLastModified(new Date(System.currentTimeMillis()));
+                u.setRandom_auth_token(env.getRequiredProperty("anontoken"));
+                u = userRepository.save(u);
+                check.insertUnique(env.getRequiredProperty("anonid"), check.USER);
+        }
+        
+	
 	
 	@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
