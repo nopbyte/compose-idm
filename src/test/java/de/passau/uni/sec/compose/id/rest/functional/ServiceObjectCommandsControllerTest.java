@@ -3,7 +3,10 @@ package de.passau.uni.sec.compose.id.rest.functional;
 import static de.passau.uni.sec.compose.id.rest.functional.util.Fixtures.digestRestTemplate;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -259,5 +262,58 @@ public class ServiceObjectCommandsControllerTest {
                         HttpMethod.DELETE, deletionEntity, Object.class);
 
         assertEquals(HttpStatus.OK, responseEntityDeletion.getStatusCode());
+    }
+    
+    @Test
+    public void anonymousCreateAndDeleteServiceObject() {
+
+        Properties props = new Properties();
+        InputStream is = ClassLoader
+                .getSystemResourceAsStream("anonymousTestUser.properties");
+        try {
+            props.load(is);
+        } catch (IOException e) {
+        }
+
+        // create a service object
+        ServiceObjectCreateMessage serviceObjectCreateMessage = new ServiceObjectCreateMessage();
+        serviceObjectCreateMessage.setAuthorization("BEARER " + props.getProperty("anontoken"));
+        serviceObjectCreateMessage.setData_provenance_collection(false);
+        serviceObjectCreateMessage.setId(SERVICEOBJECTID);
+        serviceObjectCreateMessage.setPayment(false);
+        serviceObjectCreateMessage.setRequires_token(false);
+
+        HttpEntity<ServiceObjectCreateMessage> creationEntity = new HttpEntity<ServiceObjectCreateMessage>(
+                serviceObjectCreateMessage);
+
+        ResponseEntity<Object> responseEntityCreation = digestRestTemplate
+                .exchange(URL + "idm/serviceobject/", HttpMethod.POST,
+                        creationEntity, Object.class);
+
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, Object> soCreateResponse = (LinkedHashMap<String, Object>) responseEntityCreation
+                .getBody();
+
+        assertEquals(HttpStatus.CREATED, responseEntityCreation.getStatusCode());
+        assertEquals(SERVICEOBJECTID, (String) soCreateResponse.get("id"));
+        assertEquals(props.getProperty("anonid"), (String) soCreateResponse.get("owner_id"));
+
+        long lastModified = (long) soCreateResponse.get("lastModified");
+
+        // delete service object
+        AuthenticatedEmptyMessage authenticateEmptyMes = new AuthenticatedEmptyMessage();
+        authenticateEmptyMes.setAuthorization("Bearer " + props.getProperty("anontoken"));
+
+        HttpHeaders header = new HttpHeaders();
+        header.set("If-Unmodified-Since", String.valueOf(lastModified));
+        HttpEntity<AuthenticatedEmptyMessage> deletionEntity = new HttpEntity<AuthenticatedEmptyMessage>(
+                authenticateEmptyMes, header);
+
+        ResponseEntity<Object> responseEntityDeletion = digestRestTemplate
+                .exchange(URL + "idm/serviceobject/" + SERVICEOBJECTID,
+                        HttpMethod.DELETE, deletionEntity, Object.class);
+
+        assertEquals(HttpStatus.OK, responseEntityDeletion.getStatusCode());
+
     }
 }

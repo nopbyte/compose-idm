@@ -3,7 +3,10 @@ package de.passau.uni.sec.compose.id.rest.functional;
 import static de.passau.uni.sec.compose.id.rest.functional.util.Fixtures.digestRestTemplate;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -165,5 +168,34 @@ public class ServiceCompositionDetailsControllerTest {
         } catch (HttpClientErrorException e) {
             assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
         }
+    }
+
+    @Test
+    public void anonymousRequestServiceCompositionDetailsTest() {
+
+        Properties props = new Properties();
+        InputStream is = ClassLoader
+                .getSystemResourceAsStream("anonymousTestUser.properties");
+        try {
+            props.load(is);
+        } catch (IOException e) {
+        }
+
+        // Request service composition details
+        HttpHeaders header = new HttpHeaders();
+        header.set("Authorization", "BEARER " + props.getProperty("anontoken"));
+        HttpEntity<String> serviceDetails = new HttpEntity<String>(header);
+
+        ResponseEntity<Object> responseEntityDetails = restTemplate.exchange(
+                URL + "idm/servicecomposition/" + SERVICECOMPID,
+                HttpMethod.GET, serviceDetails, Object.class);
+
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, Object> scCreateResponse = (LinkedHashMap<String, Object>) responseEntityDetails
+                .getBody();
+
+        assertEquals(HttpStatus.OK, responseEntityDetails.getStatusCode());
+        assertEquals(SERVICECOMPID, (String) scCreateResponse.get("id"));
+        assertEquals(userId, (String) scCreateResponse.get("owner_id"));
     }
 }

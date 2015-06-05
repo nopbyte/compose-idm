@@ -16,14 +16,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import de.passau.uni.sec.compose.id.rest.messages.AttributeDefinitionCreateMessage;
 import de.passau.uni.sec.compose.id.rest.messages.GroupCreateMessage;
 import de.passau.uni.sec.compose.id.rest.messages.UserCreateMessage;
 import de.passau.uni.sec.compose.id.rest.messages.UserCredentials;
 
-public class GroupDetailsControllerTest {
+public class AttributeDefinitionsControllerTest {
 
     private RestTemplate digestRestTemplate;
 
@@ -35,6 +35,10 @@ public class GroupDetailsControllerTest {
 
     private static final String GROUPNAME = "testGroupName";
 
+    private static final String ATTDEFNAME = "attdefname";
+
+    private static final String ATTDEFTYPE = "attdeftype";
+
     private static final String URL = "http://localhost:8080/";
 
     private String accessToken;
@@ -44,6 +48,8 @@ public class GroupDetailsControllerTest {
     private String groupId;
 
     private long userLastModified;
+
+    private long groupLastModified;
 
     @Before
     public void setup() {
@@ -105,10 +111,25 @@ public class GroupDetailsControllerTest {
                 .getBody();
 
         groupId = (String) groupCreationResponse.get("id");
+        groupLastModified = (long) groupCreationResponse.get("lastModified");
     }
 
     @After
     public void tearDown() {
+
+        // delete group
+        HttpHeaders tokenHeader = new HttpHeaders();
+        tokenHeader.set("Authorization", "Bearer " + accessToken);
+        tokenHeader.set("If-Unmodified-Since", String.valueOf(groupLastModified));
+        HttpEntity<String> deleteEntity = new HttpEntity<String>(tokenHeader);
+
+        ResponseEntity<Object> responseEntityDeletion = restTemplate.exchange(
+                "http://localhost:8080/idm/group/" + groupId,
+                HttpMethod.DELETE, deleteEntity, Object.class);
+
+        assertEquals(HttpStatus.OK, responseEntityDeletion.getStatusCode());
+
+        // delete user
         HttpHeaders header = new HttpHeaders();
         header.set("If-Unmodified-Since", String.valueOf(userLastModified));
         HttpEntity<String> deletionEntity = new HttpEntity<String>(header);
@@ -118,44 +139,52 @@ public class GroupDetailsControllerTest {
     }
 
     @Test
-    public void requestGroupDetailsTest() {
+    public void createAndDeleteAttributeDefinitionsTest() {
 
-        // Request group details
+        AttributeDefinitionCreateMessage attDef = new AttributeDefinitionCreateMessage();
+        attDef.setName(ATTDEFNAME);
+        attDef.setType(ATTDEFTYPE);
+
+        // Set attribute details
         HttpHeaders header = new HttpHeaders();
         header.set("Authorization", "BEARER " + accessToken);
-        HttpEntity<String> groupDetails = new HttpEntity<String>(header);
+        HttpEntity<AttributeDefinitionCreateMessage> setAttDef = new HttpEntity<AttributeDefinitionCreateMessage>(
+                attDef, header);
 
         ResponseEntity<Object> responseEntityDetails = restTemplate.exchange(
-                URL + "idm/group/" + groupId, HttpMethod.GET, groupDetails,
-                Object.class);
+                URL + "idm/group/" + groupId + "/attribute_definition/",
+                HttpMethod.POST, setAttDef, Object.class);
 
         @SuppressWarnings("unchecked")
-        LinkedHashMap<String, Object> groupDetailsResponse = (LinkedHashMap<String, Object>) responseEntityDetails
+        LinkedHashMap<String, Object> groupResponse = (LinkedHashMap<String, Object>) responseEntityDetails
                 .getBody();
 
-        assertEquals(HttpStatus.OK, responseEntityDetails.getStatusCode());
-        assertEquals(GROUPNAME, (String) groupDetailsResponse.get("name"));
-        assertEquals(userId, (String) groupDetailsResponse.get("owner_id"));
-        assertEquals(groupId, (String) groupDetailsResponse.get("id"));
-    }
+        assertEquals(HttpStatus.CREATED, responseEntityDetails.getStatusCode());
+        assertEquals(ATTDEFNAME, (String) groupResponse.get("name"));
+        assertEquals(ATTDEFTYPE, (String) groupResponse.get("type"));
+        assertEquals(userId, (String) groupResponse.get("owner_id"));
+        assertEquals(groupId, (String) groupResponse.get("group_id"));
 
-    @Test
-    public void unauthorizedUserDetailsRequestTest() {
+        // delete attribute details
 
-        HttpHeaders header = new HttpHeaders();
-        header.set("Authorization", "BEARER " + accessToken + "modified");
-        HttpEntity<String> groupDetails = new HttpEntity<String>(header);
+        System.out.println(groupResponse.get("lastModified"));
+        long attLastModified = (long) groupResponse.get("lastModified");
 
-        try {
-            restTemplate.exchange(URL + "idm/group/" + groupId, HttpMethod.GET,
-                    groupDetails, Object.class);
-        } catch (HttpClientErrorException e) {
-            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
-        }
+        header = new HttpHeaders();
+        header.set("Authorization", "BEARER " + accessToken);
+        header.set("If-Unmodified-Since", String.valueOf(attLastModified));
+        HttpEntity<String> deleteEntity = new HttpEntity<String>(header);
+
+        ResponseEntity<Object> responseDeleteEntityDetails = restTemplate
+                .exchange(URL + "idm/group/attribute_definition/"
+                        + groupResponse.get("id") + "/", HttpMethod.DELETE,
+                        deleteEntity, Object.class);
+
+        assertEquals(HttpStatus.OK, responseDeleteEntityDetails.getStatusCode());
     }
     
     @Test
-    public void anonymousRequestGroupDetailsTest() {
+    public void AnonymousCreateAndDeleteAttributeDefinitionsTest() {
         
         Properties props = new Properties();
         InputStream is = ClassLoader
@@ -165,56 +194,73 @@ public class GroupDetailsControllerTest {
         } catch (IOException e) {
         }
         
-        // create group
+        // Create Group
         GroupCreateMessage groupCreateMessage = new GroupCreateMessage();
-        groupCreateMessage.setName(GROUPNAME);
+        groupCreateMessage.setName(GROUPNAME + "anon");
 
         HttpHeaders tokenHeader = new HttpHeaders();
         tokenHeader.set("Authorization", "Bearer " + props.getProperty("anontoken"));
         HttpEntity<GroupCreateMessage> requestEntity = new HttpEntity<GroupCreateMessage>(
                 groupCreateMessage, tokenHeader);
 
-        ResponseEntity<Object> responseEntityCreation = restTemplate.exchange(
-                "http://localhost:8080/idm/group/", HttpMethod.POST,
-                requestEntity, Object.class);
+        ResponseEntity<Object> responseEntityGroupCreation = restTemplate
+                .exchange("http://localhost:8080/idm/group/", HttpMethod.POST,
+                        requestEntity, Object.class);
 
         @SuppressWarnings("unchecked")
-        LinkedHashMap<String, Object> groupCreationResponse = (LinkedHashMap<String, Object>) responseEntityCreation
+        LinkedHashMap<String, Object> groupCreationResponse = (LinkedHashMap<String, Object>) responseEntityGroupCreation
                 .getBody();
 
-        assertEquals(HttpStatus.CREATED, responseEntityCreation.getStatusCode());
-        assertEquals(GROUPNAME,
-                (String) (String) groupCreationResponse.get("name"));
-        assertEquals(props.getProperty("anonid"), (String) groupCreationResponse.get("owner_id"));
-        
-        // Request group details
+        String groupIdAnon = (String) groupCreationResponse.get("id");
+
+        AttributeDefinitionCreateMessage attDef = new AttributeDefinitionCreateMessage();
+        attDef.setName(ATTDEFNAME);
+        attDef.setType(ATTDEFTYPE);
+
+        // Set attribute details
         HttpHeaders header = new HttpHeaders();
         header.set("Authorization", "BEARER " + props.getProperty("anontoken"));
-        HttpEntity<String> groupDetails = new HttpEntity<String>(header);
+        HttpEntity<AttributeDefinitionCreateMessage> setAttDef = new HttpEntity<AttributeDefinitionCreateMessage>(
+                attDef, header);
 
         ResponseEntity<Object> responseEntityDetails = restTemplate.exchange(
-                URL + "idm/group/" + groupCreationResponse.get("id"), HttpMethod.GET, groupDetails,
-                Object.class);
+                URL + "idm/group/" + groupIdAnon + "/attribute_definition/",
+                HttpMethod.POST, setAttDef, Object.class);
 
         @SuppressWarnings("unchecked")
-        LinkedHashMap<String, Object> groupDetailsResponse = (LinkedHashMap<String, Object>) responseEntityDetails
+        LinkedHashMap<String, Object> groupResponse = (LinkedHashMap<String, Object>) responseEntityDetails
                 .getBody();
 
-        assertEquals(HttpStatus.OK, responseEntityDetails.getStatusCode());
-        assertEquals(GROUPNAME, (String) groupDetailsResponse.get("name"));
-        assertEquals(props.getProperty("anonid"), (String) groupDetailsResponse.get("owner_id"));
-        assertEquals(groupCreationResponse.get("id"), (String) groupDetailsResponse.get("id"));
+        assertEquals(HttpStatus.CREATED, responseEntityDetails.getStatusCode());
+        assertEquals(ATTDEFNAME, (String) groupResponse.get("name"));
+        assertEquals(ATTDEFTYPE, (String) groupResponse.get("type"));
+        assertEquals(groupIdAnon, (String) groupResponse.get("group_id"));
+
+        // delete attribute details
+        long attLastModified = (long) groupResponse.get("lastModified");
+
+        header = new HttpHeaders();
+        header.set("Authorization", "BEARER " + props.getProperty("anontoken"));
+        header.set("If-Unmodified-Since", String.valueOf(attLastModified));
+        HttpEntity<String> deleteEntity = new HttpEntity<String>(header);
+
+        ResponseEntity<Object> responseDeleteEntityDetails = restTemplate
+                .exchange(URL + "idm/group/attribute_definition/"
+                        + groupResponse.get("id") + "/", HttpMethod.DELETE,
+                        deleteEntity, Object.class);
+
+        assertEquals(HttpStatus.OK, responseDeleteEntityDetails.getStatusCode());
         
-        //delete group
+        // delete group
         tokenHeader = new HttpHeaders();
         tokenHeader.set("Authorization", "Bearer " + props.getProperty("anontoken"));
-        tokenHeader.set("If-Unmodified-Since", String.valueOf(groupCreationResponse.get("lastModified")));
-        HttpEntity<String> deleteEntity = new HttpEntity<String>(tokenHeader);
-        
+        tokenHeader.set("If-Unmodified-Since", String.valueOf(groupLastModified));
+        HttpEntity<String> deleteEntityGroup = new HttpEntity<String>(tokenHeader);
+
         ResponseEntity<Object> responseEntityDeletion = restTemplate.exchange(
-                "http://localhost:8080/idm/group/" + groupCreationResponse.get("id"), HttpMethod.DELETE,
-                deleteEntity, Object.class);
-        
+                "http://localhost:8080/idm/group/" + groupIdAnon,
+                HttpMethod.DELETE, deleteEntityGroup, Object.class);
+
         assertEquals(HttpStatus.OK, responseEntityDeletion.getStatusCode());
     }
 
