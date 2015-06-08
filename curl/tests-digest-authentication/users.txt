@@ -33,4 +33,9 @@ curl --digest -u "composecontroller:composecontrollerpassword"   -H "If-Unmodifi
 
 
 
+################	Anonymous user #####################################
+
+curl -H "Authorization: Bearer anonymousToken"   -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/user/info/
+
+
 

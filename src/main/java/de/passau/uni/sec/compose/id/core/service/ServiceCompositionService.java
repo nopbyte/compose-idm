@@ -11,10 +11,12 @@ import de.passau.uni.sec.compose.id.core.event.CreateServiceCompositionEvent;
 import de.passau.uni.sec.compose.id.core.event.Event;
 import de.passau.uni.sec.compose.id.core.event.GetServiceCompositionEvent;
 import de.passau.uni.sec.compose.id.core.event.DetailsIdEvent;
+import de.passau.uni.sec.compose.id.core.persistence.entities.Global;
 import de.passau.uni.sec.compose.id.core.persistence.entities.IEntity;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceComposition;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
 import de.passau.uni.sec.compose.id.core.persistence.repository.ServiceCompositionRepository;
+import de.passau.uni.sec.compose.id.core.persistence.repository.UniqueRepository;
 import de.passau.uni.sec.compose.id.core.service.reputation.ReputationManager;
 import de.passau.uni.sec.compose.id.core.service.security.Authorization;
 import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
@@ -43,6 +45,9 @@ public class ServiceCompositionService extends AbstractSecureEntityBasicEntitySe
 	
 	@Autowired
 	UniqueValidation check;
+	
+	@Autowired
+	UniqueRepository uniqueRepository;
 	
 	
 	@Override
@@ -116,6 +121,8 @@ public class ServiceCompositionService extends AbstractSecureEntityBasicEntitySe
 		
 		ServiceComposition sc = serviceCompositionRepository.getOne(event.getEntityId());
 		serviceCompositionRepository.delete(sc);
+		Global entity = uniqueRepository.findOne(event.getEntityId());
+		uniqueRepository.delete(entity);
 	}
 
 	@Override

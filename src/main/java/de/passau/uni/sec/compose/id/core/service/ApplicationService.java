@@ -12,9 +12,11 @@ import de.passau.uni.sec.compose.id.core.event.Event;
 import de.passau.uni.sec.compose.id.core.event.GetApplicationEvent;
 import de.passau.uni.sec.compose.id.core.event.DetailsIdEvent;
 import de.passau.uni.sec.compose.id.core.persistence.entities.Application;
+import de.passau.uni.sec.compose.id.core.persistence.entities.Global;
 import de.passau.uni.sec.compose.id.core.persistence.entities.IEntity;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
 import de.passau.uni.sec.compose.id.core.persistence.repository.ApplicationRepository;
+import de.passau.uni.sec.compose.id.core.persistence.repository.UniqueRepository;
 import de.passau.uni.sec.compose.id.core.service.reputation.ReputationManager;
 import de.passau.uni.sec.compose.id.core.service.security.Authorization;
 import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
@@ -43,6 +45,9 @@ public class ApplicationService extends AbstractSecureEntityBasicEntityService i
 	
 	@Autowired
 	ReputationManager rep;
+	
+	@Autowired
+	UniqueRepository uniqueRepository;
 	
 	@Override
 	protected void verifyAccessControlCreateEntity(Event event)
@@ -118,6 +123,8 @@ public class ApplicationService extends AbstractSecureEntityBasicEntityService i
 		
 		Application app = applicationRepository.getOne(event.getEntityId());
 		applicationRepository.delete(app);
+		Global entity = uniqueRepository.findOne(event.getEntityId());
+		uniqueRepository.delete(entity);
 	}
 
 	@Override
