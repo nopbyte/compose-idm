@@ -35,13 +35,13 @@ public class ServiceInstanceDetailsControllerTest {
 
     private static final String PASSWORD = "testPassword";
 
-    private static final String SERVICESOURCEID = "testServiceId";
+    private static final String SERVICESOURCEID = "testServiceSourceId";
 
     private static final String SERVICESOURCENAME = "testServiceName";
 
     private static final String SERVICESOURCEVERSION = "testServiceVersion";
 
-    private static final String SERVICEINSTID = "testServiceId";
+    private static final String SERVICEINSTID = "testServiceInstId";
 
     private static final String URL = "http://localhost:8080/";
 
