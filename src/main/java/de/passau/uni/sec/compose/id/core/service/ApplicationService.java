@@ -77,6 +77,7 @@ public class ApplicationService extends AbstractSecureEntityBasicEntityService i
 			app.setOwner(u);
 			app.setReputation(rep.getReputationValueForNewApplication(u.getId()));
 			app = applicationRepository.save(app);
+			check.insertUnique(message.getId(),check.APPLICATION);
 			EntityResponseMessage res = new ApplicationResponseMessage(app);
 			return res;	
 	}
