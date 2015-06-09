@@ -72,6 +72,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 	@Autowired
 	UniqueRepository uniqueRepository;
 	
+	
 	@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
 			throws IdManagementException {
@@ -96,13 +97,21 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			so.setReputation(rep.getReputationValueForNewServiceObject(u.getId()));
 			so.setCollectProvenance(true);
 			so = serviceObjectRepository.save(so);
-			check.insertUnique(message.getId(),check.SERVICE_OBJECT);
-			List<Map<String, Object>> policy = policyManager.getPolicyForNewServiceObject(u.getId(), so);
-			//in this case the policy needs to be included in the ServiceObject response in order for the Service Object registry to keep a copy of it.
-			ServiceObjectResponseMessage res = new ServiceObjectResponseMessage (so,policy);
-			return res;	
+			try{
+			
+				List<Map<String, Object>> policy = policyManager.getPolicyForNewServiceObject(u.getId(), so);
+				//in this case the policy needs to be included in the ServiceObject response in order for the Service Object registry to keep a copy of it.
+				ServiceObjectResponseMessage res = new ServiceObjectResponseMessage (so,policy);
+				check.insertUnique(message.getId(),check.SERVICE_OBJECT);
+				return res;	
+			}
+			catch(IdManagementException ex)
+			{
+				serviceObjectRepository.delete(so);
+				throw ex;
+			}
+			
 	}
-
 
 	@Override
 	protected EntityResponseMessage postACGetEntity(Event event)
