@@ -2,6 +2,7 @@ package de.passau.uni.sec.compose.id.rest.functional;
 
 import static de.passau.uni.sec.compose.id.rest.functional.util.Fixtures.digestRestTemplate;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,14 +17,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import de.passau.uni.sec.compose.id.rest.messages.UserCreateMessage;
 import de.passau.uni.sec.compose.id.rest.messages.UserCredentials;
 
-public class UserDetailsControllerTest {
-
+public class AnyEntityControllerTest {
     private RestTemplate digestRestTemplate;
 
     private RestTemplate restTemplate;
@@ -103,111 +102,52 @@ public class UserDetailsControllerTest {
                 detailsTokenHeader);
 
         ResponseEntity<Object> responseEntityDetails = restTemplate.exchange(
-                URL + "idm/user/" + userId, HttpMethod.GET, requestEntity,
+                URL + "idm/any/" + userId + "/", HttpMethod.GET, requestEntity,
                 Object.class);
 
         @SuppressWarnings("unchecked")
         LinkedHashMap<String, Object> userDetailsResponse = (LinkedHashMap<String, Object>) responseEntityDetails
                 .getBody();
 
-        assertEquals(HttpStatus.OK, responseEntityDetails.getStatusCode());
-        assertEquals(USERNAME, (String) userDetailsResponse.get("username"));
-        assertEquals(userId, (String) userDetailsResponse.get("id"));
-    }
+        assertNotNull(userDetailsResponse.get("user"));
+     
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, Object> userDetails = (LinkedHashMap<String, Object>) userDetailsResponse
+                .get("user");
 
+        assertEquals(HttpStatus.OK, responseEntityDetails.getStatusCode());
+        assertEquals(userId, (String) userDetails.get("id"));
+        assertEquals(USERNAME, (String) userDetails.get("username"));
+    }
+    
     @Test
     public void requestUserDetailsWithTokenTest() {
 
         // Request user details
+        LinkedHashMap<String,String> idMap= new LinkedHashMap<String, String>();
+        idMap.put("id", userId);
+     
         HttpHeaders detailsTokenHeader = new HttpHeaders();
         detailsTokenHeader.set("Authorization", "Bearer " + accessToken);
-        HttpEntity<String> requestEntity = new HttpEntity<String>(
-                detailsTokenHeader);
+        HttpEntity<LinkedHashMap<String,String>> requestEntity = new HttpEntity<LinkedHashMap<String,String>>(
+                idMap,detailsTokenHeader);
 
         ResponseEntity<Object> responseEntityDetails = restTemplate.exchange(
-                URL + "idm/user/info/", HttpMethod.GET, requestEntity,
+                URL + "idm/any/", HttpMethod.POST, requestEntity,
                 Object.class);
 
         @SuppressWarnings("unchecked")
         LinkedHashMap<String, Object> userDetailsResponse = (LinkedHashMap<String, Object>) responseEntityDetails
                 .getBody();
-
-        assertEquals(HttpStatus.OK, responseEntityDetails.getStatusCode());
-        assertEquals(USERNAME, (String) userDetailsResponse.get("username"));
-        assertEquals(userId, (String) userDetailsResponse.get("id"));
-    }
-
-    @Test
-    public void unauthorizedUserDetailsWithIdRequestTest() {
-
-        // Request user details with modified access token
-        HttpHeaders detailsTokenHeader = new HttpHeaders();
-        detailsTokenHeader.set("Authorization", "Bearer " + accessToken
-                + "modified");
-        HttpEntity<String> requestEntity = new HttpEntity<String>(
-                detailsTokenHeader);
-
-        try {
-            restTemplate.exchange(URL + "idm/user/" + userId, HttpMethod.GET,
-                    requestEntity, Object.class);
-        } catch (HttpClientErrorException e) {
-            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
-        }
-    }
-
-    @Test
-    public void unauthorizedUserDetailsWithTokenRequestTest() {
-
-        // Request user details with modified access token
-        HttpHeaders detailsTokenHeader = new HttpHeaders();
-        detailsTokenHeader.set("Authorization", "Bearer " + accessToken
-                + "modified");
-        HttpEntity<String> requestEntity = new HttpEntity<String>(
-                detailsTokenHeader);
-
-        try {
-            restTemplate.exchange(URL + "idm/user/info", HttpMethod.GET,
-                    requestEntity, Object.class);
-        } catch (HttpClientErrorException e) {
-            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
-        }
-    }
-
-    @Test
-    public void requestAnonymousUserDetailsWithTokenTest() {
-
-        Properties props = new Properties();
-        InputStream is = ClassLoader
-                .getSystemResourceAsStream("anonymousTestUser.properties");
-        try {
-            props.load(is);
-        } catch (IOException e) {
-        }
-
-        // Request user details with fixed token
-        HttpHeaders detailsTokenHeader = new HttpHeaders();
-        detailsTokenHeader.set("Authorization",
-                "Bearer " + props.getProperty("anontoken"));
-        HttpEntity<String> requestEntity = new HttpEntity<String>(
-                detailsTokenHeader);
-
-        ResponseEntity<Object> responseEntityDetails = restTemplate.exchange(
-                URL + "idm/user/info/", HttpMethod.GET, requestEntity,
-                Object.class);
-
+        
         @SuppressWarnings("unchecked")
-        LinkedHashMap<String, Object> userDetailsResponse = (LinkedHashMap<String, Object>) responseEntityDetails
-                .getBody();
+        LinkedHashMap<String, Object> userDetailsResponseUser = (LinkedHashMap<String, Object>) userDetailsResponse.get("user");
 
         assertEquals(HttpStatus.OK, responseEntityDetails.getStatusCode());
-        assertEquals(props.getProperty("anonid"),
-                (String) userDetailsResponse.get("id"));
-        assertEquals(props.getProperty("anonusername"),
-                (String) userDetailsResponse.get("username"));
-        assertEquals(props.getProperty("anontoken"),
-                (String) userDetailsResponse.get("random_auth_token"));
+        assertEquals(USERNAME, (String) userDetailsResponseUser.get("username"));
+        assertEquals(userId, (String) userDetailsResponseUser.get("id"));
     }
-
+    
     @Test
     public void requestAnonymousUserDetailsWithIdTest() {
 
@@ -219,27 +159,66 @@ public class UserDetailsControllerTest {
         } catch (IOException e) {
         }
 
-        // Request user details with fixed token
         HttpHeaders detailsTokenHeader = new HttpHeaders();
-        detailsTokenHeader.set("Authorization",
-                "Bearer " + props.getProperty("anontoken"));
+        detailsTokenHeader.set("Authorization", "Bearer " + props.getProperty("anontoken"));
         HttpEntity<String> requestEntity = new HttpEntity<String>(
                 detailsTokenHeader);
 
         ResponseEntity<Object> responseEntityDetails = restTemplate.exchange(
-                URL + "idm/user/" + props.getProperty("anonid"),
-                HttpMethod.GET, requestEntity, Object.class);
+                URL + "idm/any/" + props.getProperty("anonid") + "/", HttpMethod.GET, requestEntity,
+                Object.class);
 
         @SuppressWarnings("unchecked")
         LinkedHashMap<String, Object> userDetailsResponse = (LinkedHashMap<String, Object>) responseEntityDetails
                 .getBody();
 
+        assertNotNull(userDetailsResponse.get("user"));
+     
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, Object> userDetails = (LinkedHashMap<String, Object>) userDetailsResponse
+                .get("user");
+
         assertEquals(HttpStatus.OK, responseEntityDetails.getStatusCode());
         assertEquals(props.getProperty("anonid"),
-                (String) userDetailsResponse.get("id"));
+                (String) userDetails.get("id"));
         assertEquals(props.getProperty("anonusername"),
-                (String) userDetailsResponse.get("username"));
+                (String) userDetails.get("username"));
         assertEquals(props.getProperty("anontoken"),
-                (String) userDetailsResponse.get("random_auth_token"));
+                (String) userDetails.get("random_auth_token"));
+    }
+    
+    @Test
+    public void requestAnonymousUserDetailsWithTokenTest() {
+
+        Properties props = new Properties();
+        InputStream is = ClassLoader
+                .getSystemResourceAsStream("anonymousTestUser.properties");
+        try {
+            props.load(is);
+        } catch (IOException e) {
+        }
+        
+        LinkedHashMap<String,String> idMap= new LinkedHashMap<String, String>();
+        idMap.put("id", props.getProperty("anonid"));
+     
+        HttpHeaders detailsTokenHeader = new HttpHeaders();
+        detailsTokenHeader.set("Authorization", "Bearer " + props.getProperty("anontoken"));
+        HttpEntity<LinkedHashMap<String,String>> requestEntity = new HttpEntity<LinkedHashMap<String,String>>(
+                idMap,detailsTokenHeader);
+
+        ResponseEntity<Object> responseEntityDetails = restTemplate.exchange(
+                URL + "idm/any/", HttpMethod.POST, requestEntity,
+                Object.class);
+
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, Object> userDetailsResponse = (LinkedHashMap<String, Object>) responseEntityDetails
+                .getBody();
+        
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, Object> userDetailsResponseUser = (LinkedHashMap<String, Object>) userDetailsResponse.get("user");
+
+        assertEquals(HttpStatus.OK, responseEntityDetails.getStatusCode());
+        assertEquals(props.getProperty("anonusername"), (String) userDetailsResponseUser.get("username"));
+        assertEquals(props.getProperty("anonid"), (String) userDetailsResponseUser.get("id"));
     }
 }

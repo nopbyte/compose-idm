@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -27,6 +28,10 @@ public class ServiceComposition extends AbstractEntity implements CoreEntity{
     @OneToMany(mappedBy = "serviceComposition", cascade = CascadeType.ALL)
     Collection<AttributeValue> attributes= new LinkedList<>();
 
+    @Column
+    private String authenticationCode=null;
+    
+    
     public User getOwner() {
         return owner;
     }
@@ -49,6 +54,16 @@ public class ServiceComposition extends AbstractEntity implements CoreEntity{
 
 	public void setAttributes(Collection<AttributeValue> attributes) {
 		this.attributes = attributes;
+	}
+
+	public String getAuthenticationCode()
+	{
+		return authenticationCode;
+	}
+
+	public void setAuthenticationCode(String authenticationCode)
+	{
+		this.authenticationCode = authenticationCode;
 	}
 	
 	

@@ -3,7 +3,10 @@ package de.passau.uni.sec.compose.id.rest.functional;
 import static de.passau.uni.sec.compose.id.rest.functional.util.Fixtures.digestRestTemplate;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,6 +26,7 @@ import de.passau.uni.sec.compose.id.rest.messages.UserCreateMessage;
 import de.passau.uni.sec.compose.id.rest.messages.UserCredentials;
 
 public class ServiceInstanceCommandsControllerTest {
+    
     private RestTemplate digestRestTemplate;
 
     private RestTemplate restTemplate;
@@ -31,13 +35,13 @@ public class ServiceInstanceCommandsControllerTest {
 
     private static final String PASSWORD = "testPassword";
 
-    private static final String SERVICESOURCEID = "testServiceId";
+    private static final String SERVICESOURCEID = "testServiceSourcId";
 
     private static final String SERVICESOURCENAME = "testServiceName";
 
     private static final String SERVICESOURCEVERSION = "testServiceVersion";
 
-    private static final String SERVICEINSTID = "testServiceId";
+    private static final String SERVICEINSTID = "testServiceInstId";
 
     private static final String URL = "http://localhost:8080/";
 
@@ -286,7 +290,7 @@ public class ServiceInstanceCommandsControllerTest {
                 (String) siCreateResponse.get("source_code_id"));
 
         long lastModified = (long) siCreateResponse.get("lastModified");
-       
+
         // Attempt deletion of service instance with modified access token
         AuthenticatedEmptyMessage authenticateEmptyMes = new AuthenticatedEmptyMessage();
         authenticateEmptyMes.setAuthorization("Bearer " + accessToken
@@ -321,4 +325,61 @@ public class ServiceInstanceCommandsControllerTest {
 
         assertEquals(HttpStatus.OK, responseEntityDeletion.getStatusCode());
     }
+    
+    @Test
+    public void anonymousCreateAndDeleteServiceInstance() {
+        
+        Properties props = new Properties();
+        InputStream is = ClassLoader
+                .getSystemResourceAsStream("anonymousTestUser.properties");
+        try {
+            props.load(is);
+        } catch (IOException e) {
+        }
+
+        // create a service instance
+        ServiceInstanceCreateMessage serviceInstanceCreateMessage = new ServiceInstanceCreateMessage();
+        serviceInstanceCreateMessage.setAuthorization("BEARER " + props.getProperty("anontoken"));
+        serviceInstanceCreateMessage.setData_provenance_collection(false);
+        serviceInstanceCreateMessage.setPayment(false);
+        serviceInstanceCreateMessage.setId(SERVICEINSTID);
+        serviceInstanceCreateMessage.setSource_code_id(SERVICESOURCEID);
+        serviceInstanceCreateMessage.setUri("https://google.com");
+
+        HttpEntity<ServiceInstanceCreateMessage> creationEntity = new HttpEntity<ServiceInstanceCreateMessage>(
+                serviceInstanceCreateMessage);
+
+        ResponseEntity<Object> responseEntityCreation = digestRestTemplate
+                .exchange(URL + "idm/serviceinstance/", HttpMethod.POST,
+                        creationEntity, Object.class);
+
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, Object> siCreateResponse = (LinkedHashMap<String, Object>) responseEntityCreation
+                .getBody();
+
+        assertEquals(HttpStatus.CREATED, responseEntityCreation.getStatusCode());
+        assertEquals(SERVICEINSTID, (String) siCreateResponse.get("id"));
+        assertEquals(props.getProperty("anonid"), (String) siCreateResponse.get("owner_id"));
+        assertEquals(SERVICESOURCEID,
+                (String) siCreateResponse.get("source_code_id"));
+
+        long lastModified = (long) siCreateResponse.get("lastModified");
+
+        // delete service instance
+        AuthenticatedEmptyMessage authenticateEmptyMes = new AuthenticatedEmptyMessage();
+        authenticateEmptyMes.setAuthorization("Bearer " + props.getProperty("anontoken"));
+
+        HttpHeaders header = new HttpHeaders();
+        header.set("If-Unmodified-Since", String.valueOf(lastModified));
+        HttpEntity<AuthenticatedEmptyMessage> deletionEntity = new HttpEntity<AuthenticatedEmptyMessage>(
+                authenticateEmptyMes, header);
+
+        RestTemplate digestDeleteRestTemplate = digestRestTemplate();
+        ResponseEntity<Object> responseEntityDeletion = digestDeleteRestTemplate
+                .exchange(URL + "idm/serviceinstance/" + SERVICEINSTID,
+                        HttpMethod.DELETE, deletionEntity, Object.class);
+
+        assertEquals(HttpStatus.OK, responseEntityDeletion.getStatusCode());
+    }
+
 }

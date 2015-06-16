@@ -11,11 +11,13 @@ import de.passau.uni.sec.compose.id.core.event.CreateServiceSourceCodeEvent;
 import de.passau.uni.sec.compose.id.core.event.Event;
 import de.passau.uni.sec.compose.id.core.event.GetServiceSourceCodeEvent;
 import de.passau.uni.sec.compose.id.core.event.DetailsIdEvent;
+import de.passau.uni.sec.compose.id.core.persistence.entities.Global;
 import de.passau.uni.sec.compose.id.core.persistence.entities.IEntity;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceObject;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceSourceCode;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
 import de.passau.uni.sec.compose.id.core.persistence.repository.ServiceSourceCodeRepository;
+import de.passau.uni.sec.compose.id.core.persistence.repository.UniqueRepository;
 import de.passau.uni.sec.compose.id.core.service.reputation.ReputationManager;
 import de.passau.uni.sec.compose.id.core.service.security.Authorization;
 import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
@@ -45,6 +47,8 @@ public class ServiceSourceCodeService extends AbstractSecureEntityBasicEntitySer
 	@Autowired
 	UniqueValidation check;
 	
+	@Autowired
+	UniqueRepository uniqueRepository;
 	
 	@Override
 	protected void verifyAccessControlCreateEntity(Event event)
@@ -123,6 +127,8 @@ public class ServiceSourceCodeService extends AbstractSecureEntityBasicEntitySer
 		
 		ServiceSourceCode sc = serviceSourceCodeRepository.getOne(event.getEntityId());
 		serviceSourceCodeRepository.delete(sc);
+		Global entity = uniqueRepository.findOne(event.getEntityId());
+		uniqueRepository.delete(entity);
 	}
 
 	@Override

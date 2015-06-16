@@ -3,12 +3,15 @@ package de.passau.uni.sec.compose.id.rest.controller;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +39,7 @@ import de.passau.uni.sec.compose.id.rest.messages.UserResponseMessage;
 
 @Controller
 @RequestMapping("/idm/user")
+@PropertySource("classpath:anonymousUser.properties")
 public class UserCommandsController {
 
 	private static Logger LOG = LoggerFactory.getLogger(UserCommandsController.class);
@@ -45,6 +49,10 @@ public class UserCommandsController {
 	
 	@Autowired
 	private RestAuthentication authenticator;
+	
+	@Resource
+	private Environment env;
+	        
 	
     /**
      * Create a new user
@@ -104,18 +112,21 @@ public class UserCommandsController {
     	Collection<String> credentials = new LinkedList<String>();
     	credentials.add(token);
 		try{
-			 
+                    if(uid.equals(env.getProperty("anonid"))) {
+                        return new ResponseEntity<Object>(null, headers, HttpStatus.UNAUTHORIZED);
+                    } else {
 			//This method just authenticates... it doesn't do access control
 			Collection<IPrincipal> principals = authenticator.authenticatePrincipals(LOG,credentials);
 			UserResponseMessage res = (UserResponseMessage) userService.updateEntity(new UpdateUserEvent(uid,message,principals,lastKnownUpdate));
 			/*
-    		 UserResponseMessage res = userService.createUser(new CreateUserEvent(message,principals));
-    		 headers.setLocation(
-                 builder.path( req.getServletPath()+"/{id}")
-                         .buildAndExpand(res.getId().toString()).toUri());
+    		        UserResponseMessage res = userService.createUser(new CreateUserEvent(message,principals));
+    		        headers.setLocation(
+                        builder.path( req.getServletPath()+"/{id}")
+                        .buildAndExpand(res.getId().toString()).toUri());
     		 
-    		 return new ResponseEntity<Object>(res, headers, HttpStatus.CREATED);*/
-			 return new ResponseEntity<Object>(res, headers, HttpStatus.OK);
+    		        return new ResponseEntity<Object>(res, headers, HttpStatus.CREATED);*/
+			return new ResponseEntity<Object>(res, headers, HttpStatus.OK);
+                    }
     	 }
     	 catch(IdManagementException idm){
     		 //since the creation of the exception generated the log entries for the stacktrace, we don't do it again here
@@ -141,11 +152,13 @@ public class UserCommandsController {
 	    	Collection<String> cred = new LinkedList<String>();
 
 			try{
-				
-				 Collection<IPrincipal> principals = authenticator.authenticatePrincipals(LOG,cred);
-	    		 userService.deleteEntity(new DeleteUserEvent(uid,principals,lastKnownUpdate));
-	    		 return new ResponseEntity<Object>(null, headers, HttpStatus.OK);
-	    		 
+			    if(uid.equals(env.getProperty("anonid"))) {
+			        return new ResponseEntity<Object>(null, headers, HttpStatus.UNAUTHORIZED);
+			    } else {
+        		        Collection<IPrincipal> principals = authenticator.authenticatePrincipals(LOG,cred);
+        	    	        userService.deleteEntity(new DeleteUserEvent(uid,principals,lastKnownUpdate));
+        	    	        return new ResponseEntity<Object>(null, headers, HttpStatus.OK);
+			    }
 	    	 }
 	    	 catch(IdManagementException idm){
 	    		 //since the creation of the exception generated the log entries for the stacktrace, we don't do it again here

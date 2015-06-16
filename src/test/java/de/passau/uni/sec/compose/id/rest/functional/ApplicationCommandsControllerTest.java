@@ -2,7 +2,10 @@ package de.passau.uni.sec.compose.id.rest.functional;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -19,7 +22,6 @@ import de.passau.uni.sec.compose.id.rest.messages.ApplicationCreateMessage;
 import de.passau.uni.sec.compose.id.rest.messages.AuthenticatedEmptyMessage;
 import de.passau.uni.sec.compose.id.rest.messages.UserCreateMessage;
 import de.passau.uni.sec.compose.id.rest.messages.UserCredentials;
-
 import static de.passau.uni.sec.compose.id.rest.functional.util.Fixtures.digestRestTemplate;
 
 /**
@@ -256,6 +258,53 @@ public class ApplicationCommandsControllerTest {
         responseEntityDeletion = digestRestTemplate.exchange(URL
                 + "idm/application/" + APPID, HttpMethod.DELETE,
                 deletionEntity, Object.class);
+
+        assertEquals(HttpStatus.OK, responseEntityDeletion.getStatusCode());
+    }
+    
+    public void anonymousApplicationCreationAndDeletionTest() {
+        Properties props = new Properties();
+        InputStream is = ClassLoader
+                .getSystemResourceAsStream("anonymousTestUser.properties");
+        try {
+            props.load(is);
+        } catch (IOException e) {
+        }
+
+        // Create application
+        ApplicationCreateMessage applicationCreateMessage = new ApplicationCreateMessage();
+        applicationCreateMessage.setAuthorization("BEARER " + props.getProperty("anontoken"));
+        applicationCreateMessage.setId(APPID);
+        applicationCreateMessage.setName(APPNAME);
+
+        HttpEntity<ApplicationCreateMessage> createApp = new HttpEntity<ApplicationCreateMessage>(
+                applicationCreateMessage);
+
+        ResponseEntity<Object> responseEntityAppCreated = digestRestTemplate
+                .exchange(URL + "idm/application/", HttpMethod.POST, createApp,
+                        Object.class);
+
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, Object> appCreateResponse = (LinkedHashMap<String, Object>) responseEntityAppCreated
+                .getBody();
+        long lastModified = (long) appCreateResponse.get("lastModified");
+
+        assertEquals(APPNAME, (String) appCreateResponse.get("name"));
+        assertEquals(APPID, (String) appCreateResponse.get("id"));
+        assertEquals(HttpStatus.CREATED, responseEntityAppCreated.getStatusCode());
+
+        // Delete application
+        AuthenticatedEmptyMessage authenticateEmptyMes = new AuthenticatedEmptyMessage();
+        authenticateEmptyMes.setAuthorization("Bearer " + props.getProperty("anontoken"));
+
+        HttpHeaders header = new HttpHeaders();
+        header.set("If-Unmodified-Since", String.valueOf(lastModified));
+        HttpEntity<AuthenticatedEmptyMessage> deletionEntity = new HttpEntity<AuthenticatedEmptyMessage>(
+                authenticateEmptyMes, header);
+
+        ResponseEntity<Object> responseEntityDeletion = digestRestTemplate
+                .exchange(URL + "idm/application/" + APPID, HttpMethod.DELETE,
+                        deletionEntity, Object.class);
 
         assertEquals(HttpStatus.OK, responseEntityDeletion.getStatusCode());
     }

@@ -54,8 +54,6 @@ public class GroupService extends AbstractSecureEntityBasicEntityService impleme
 	@Autowired 
 	RoleRepository roleRepository;
 	
-	@Autowired
-	UsersAuthzAndAuthClient uaa;
 	
 	@Autowired 
 	RestAuthentication authentication;

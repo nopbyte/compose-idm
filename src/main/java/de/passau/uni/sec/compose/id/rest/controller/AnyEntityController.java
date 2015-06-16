@@ -119,7 +119,7 @@ private static Logger LOG = LoggerFactory.getLogger(AnyEntityController.class);
 			 
 			 try{
 				 r = soService.getEntity(new GetServiceObjectEvent(uid,principals));
-				 res.put("service_object_code",r);
+				 res.put("service_object",r);
 				 r=null;
 			 }catch(IdManagementException ex)
 			 {

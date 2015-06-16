@@ -33,6 +33,10 @@ public class ServiceInstance extends AbstractEntity implements CoreEntity{
     @Column
     private boolean payment;
 
+    @Column
+    private String authenticationCode=null;
+
+    
     public String getURI() {
         return URI;
     }
@@ -96,6 +100,18 @@ public class ServiceInstance extends AbstractEntity implements CoreEntity{
 	public void setAttributes(Collection<AttributeValue> attributes) {
 		this.attributes = attributes;
 	}
+
+	public String getAuthenticationCode()
+	{
+		return authenticationCode;
+	}
+
+	public void setAuthenticationCode(String authenticationCode)
+	{
+		this.authenticationCode = authenticationCode;
+	}
+	
+	
     
     
 }

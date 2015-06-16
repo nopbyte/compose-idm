@@ -3,7 +3,10 @@ package de.passau.uni.sec.compose.id.rest.functional;
 import static de.passau.uni.sec.compose.id.rest.functional.util.Fixtures.digestRestTemplate;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -178,5 +181,39 @@ public class ServiceSourceDetailsControllerTest {
         } catch (HttpClientErrorException e) {
             assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
         }
+    }
+
+    @Test
+    public void requestAnonymousServiceSourceCodeDetailsTest() {
+        
+        Properties props = new Properties();
+        InputStream is = ClassLoader
+                .getSystemResourceAsStream("anonymousTestUser.properties");
+        try {
+            props.load(is);
+        } catch (IOException e) {
+        }
+
+        // Request service source code details
+        HttpHeaders header = new HttpHeaders();
+        header.set("Authorization", "BEARER " + props.getProperty("anontoken"));
+        HttpEntity<String> serviceDetails = new HttpEntity<String>(header);
+
+        ResponseEntity<Object> responseEntityDetails = restTemplate.exchange(
+                URL + "idm/servicesourcecode/" + SERVICESOURCEID,
+                HttpMethod.GET, serviceDetails, Object.class);
+
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, Object> sscRequestResponse = (LinkedHashMap<String, Object>) responseEntityDetails
+                .getBody();
+
+        assertEquals(HttpStatus.OK, responseEntityDetails.getStatusCode());
+        assertEquals(SERVICESOURCEID, (String) sscRequestResponse.get("id"));
+        assertEquals(userId, (String) sscRequestResponse.get("owner_id"));
+        assertEquals(SERVICESOURCENAME, (String) sscRequestResponse.get("name"));
+        assertEquals(SERVICESOURCEVERSION,
+                (String) sscRequestResponse.get("version"));
+        assertEquals(false, (boolean) sscRequestResponse.get("payment"));
+
     }
 }
