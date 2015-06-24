@@ -105,7 +105,7 @@ curl -H "Authorization: Bearer $TOKENOWNER"  -H "Transferjson;charset=UTF-8" -H 
 curl -H "Authorization: Bearer $TOKENOWNER"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/user/2e0165be-0c4b-42c0-896c-4b2e5e140964
 
 #Now dummy notices this, and deletes the membership from evil!
-curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1399305205000" -X DELETE http://localhost:8080/idm/memberships/delete/8edd9f9c-1bb3-46ff-952c-1847ad4c255e
+curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8"  -H "If-Unmodified-Since: 1399305205000" -X DELETE http://localhost:8080/idm/memberships/8edd9f9c-1bb3-46ff-952c-1847ad4c255e
 
 #see evil info. HE should be out!
 curl -H "Authorization: Bearer $TOKENDUMMY"  -H "Transferjson;charset=UTF-8" -H "Content-Type: application/json;charset=UTF-8" -X GET http://localhost:8080/idm/user/2e0165be-0c4b-42c0-896c-4b2e5e140964
