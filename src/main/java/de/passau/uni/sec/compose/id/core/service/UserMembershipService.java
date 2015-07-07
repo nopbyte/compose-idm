@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import sun.security.acl.GroupImpl;
-
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException.Level;
 import de.passau.uni.sec.compose.id.core.domain.ComposeComponentPrincipal;
@@ -73,6 +74,14 @@ public class UserMembershipService extends AbstractBasicListEntityService implem
 	@Autowired
 	ReputationManager rep;
 
+	@PostConstruct
+    public void initAnonuser() throws IdManagementException 
+    {
+    	List<Role> all = roleRepository.findAll();
+		if(all.isEmpty())
+			initializeRoles();
+     
+    }
 	/**
 	 * Method that initializes roles when database is empty. This is done, so this application can be deployed without requiring creation of any additional entries in the database.
 	 */
