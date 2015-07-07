@@ -72,15 +72,6 @@ public class UserResponseMessage implements EntityResponseMessage
 		this.approvedAttributes = approvedAttributes;
 	}
 
-	public List<MembershipResponseMessage> getApprovedGroupMemberships() {
-		return approvedGroupMemberships;
-	}
-
-	public void setApprovedGroupMemberships(
-			List<MembershipResponseMessage> approvedGroupMemberships) {
-		this.approvedGroupMemberships = approvedGroupMemberships;
-	}
-
 	public String getRandom_auth_token() {
 		return random_auth_token;
 	}
