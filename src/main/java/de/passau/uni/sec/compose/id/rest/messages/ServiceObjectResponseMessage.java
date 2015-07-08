@@ -18,7 +18,7 @@ public class ServiceObjectResponseMessage extends AbstractCoreEnityResponse impl
 	 
 	private int reputation;
 	   
-	private boolean data_provenance_collection;
+	private boolean data_provenance_collection = true;
 	
 	private boolean payment;
 	    

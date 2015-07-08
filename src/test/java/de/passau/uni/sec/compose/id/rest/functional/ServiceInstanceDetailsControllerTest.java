@@ -3,7 +3,10 @@ package de.passau.uni.sec.compose.id.rest.functional;
 import static de.passau.uni.sec.compose.id.rest.functional.util.Fixtures.digestRestTemplate;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,13 +35,13 @@ public class ServiceInstanceDetailsControllerTest {
 
     private static final String PASSWORD = "testPassword";
 
-    private static final String SERVICESOURCEID = "testServiceId";
+    private static final String SERVICESOURCEID = "testServiceSourceId";
 
     private static final String SERVICESOURCENAME = "testServiceName";
 
     private static final String SERVICESOURCEVERSION = "testServiceVersion";
 
-    private static final String SERVICEINSTID = "testServiceId";
+    private static final String SERVICEINSTID = "testServiceInstId";
 
     private static final String URL = "http://localhost:8080/";
 
@@ -221,5 +224,36 @@ public class ServiceInstanceDetailsControllerTest {
         } catch (HttpClientErrorException e) {
             assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
         }
+    }
+    
+    @Test
+    public void anonymousRequestServiceInstanceDetailsTest() {
+        
+        Properties props = new Properties();
+        InputStream is = ClassLoader
+                .getSystemResourceAsStream("anonymousTestUser.properties");
+        try {
+            props.load(is);
+        } catch (IOException e) {
+        }
+
+        // Request service composition details
+        HttpHeaders header = new HttpHeaders();
+        header.set("Authorization", "BEARER " + props.getProperty("anontoken"));
+        HttpEntity<String> serviceDetails = new HttpEntity<String>(header);
+
+        ResponseEntity<Object> responseEntityDetails = restTemplate.exchange(
+                URL + "idm/serviceinstance/" + SERVICEINSTID, HttpMethod.GET,
+                serviceDetails, Object.class);
+
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, Object> siCreateResponse = (LinkedHashMap<String, Object>) responseEntityDetails
+                .getBody();
+
+        assertEquals(HttpStatus.OK, responseEntityDetails.getStatusCode());
+        assertEquals(SERVICEINSTID, (String) siCreateResponse.get("id"));
+        assertEquals(userId, (String) siCreateResponse.get("owner_id"));
+        assertEquals(SERVICESOURCEID,
+                (String) siCreateResponse.get("source_code_id"));
     }
 }

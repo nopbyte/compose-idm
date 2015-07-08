@@ -11,7 +11,7 @@ curl --digest -u "composecontroller:composecontrollerpassword"    -H "Content-Ty
 
 
 #Get data from the service instance
-curl -H "Authorization: Bearer $TOKEN"   -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceinstance/si1
+curl -H "Authorization: Bearer $TOKEN"   -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/serviceinstance/si1/
 
 #delete 
 curl -H "If-Unmodified-Since: 1400861573000" --digest -u "composecontroller:composecontrollerpassword"   -H "Content-Type: application/json;charset=UTF-8" -d  '{"authorization": "'"Bearer $TOKEN"'"}' -X DELETE http://localhost:8080/idm/serviceinstance/si1

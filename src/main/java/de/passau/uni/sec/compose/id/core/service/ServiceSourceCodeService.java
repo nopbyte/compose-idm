@@ -11,11 +11,13 @@ import de.passau.uni.sec.compose.id.core.event.CreateServiceSourceCodeEvent;
 import de.passau.uni.sec.compose.id.core.event.Event;
 import de.passau.uni.sec.compose.id.core.event.GetServiceSourceCodeEvent;
 import de.passau.uni.sec.compose.id.core.event.DetailsIdEvent;
+import de.passau.uni.sec.compose.id.core.persistence.entities.Global;
 import de.passau.uni.sec.compose.id.core.persistence.entities.IEntity;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceObject;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceSourceCode;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
 import de.passau.uni.sec.compose.id.core.persistence.repository.ServiceSourceCodeRepository;
+import de.passau.uni.sec.compose.id.core.persistence.repository.UniqueRepository;
 import de.passau.uni.sec.compose.id.core.service.reputation.ReputationManager;
 import de.passau.uni.sec.compose.id.core.service.security.Authorization;
 import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
@@ -42,6 +44,12 @@ public class ServiceSourceCodeService extends AbstractSecureEntityBasicEntitySer
 	@Autowired
 	ReputationManager rep;
 	
+	@Autowired
+	UniqueValidation check;
+	
+	@Autowired
+	UniqueRepository uniqueRepository;
+	
 	@Override
 	protected void verifyAccessControlCreateEntity(Event event)
 			throws IdManagementException {
@@ -57,6 +65,8 @@ public class ServiceSourceCodeService extends AbstractSecureEntityBasicEntitySer
 			//After this call we are sure there is a user, otherwise an exception would have been thrown
 			ServiceSourceCodeCreateMessage message = ((CreateServiceSourceCodeEvent) event).getMessage();
 			
+			check.verifyUnique(message.getId());
+					
 			if(serviceSourceCodeRepository.exists(message.getId()))
 				throw new IdManagementException("Service source code already exists",null,LOG,"Conflict while attempting to create a service source code: "+event.getLoggingDetails(),Level.ERROR,409);
 			
@@ -69,6 +79,7 @@ public class ServiceSourceCodeService extends AbstractSecureEntityBasicEntitySer
 			sc.setName(message.getName());
 			sc = serviceSourceCodeRepository.save(sc);
 			EntityResponseMessage res = new ServiceSourceCodeResponseMessage(sc);
+			check.insertUnique(message.getId(), check.SERVICE_SOURCE);
 			return res;	
 	}
 
@@ -116,6 +127,8 @@ public class ServiceSourceCodeService extends AbstractSecureEntityBasicEntitySer
 		
 		ServiceSourceCode sc = serviceSourceCodeRepository.getOne(event.getEntityId());
 		serviceSourceCodeRepository.delete(sc);
+		Global entity = uniqueRepository.findOne(event.getEntityId());
+		uniqueRepository.delete(entity);
 	}
 
 	@Override

@@ -2,7 +2,12 @@ package de.passau.uni.sec.compose.id.rest.functional;
 
 import static de.passau.uni.sec.compose.id.rest.functional.util.Fixtures.digestRestTemplate;
 import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
+import java.util.Properties;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -141,6 +146,75 @@ public class ApplicationDetailsControllerTest {
         // Delete application
         AuthenticatedEmptyMessage authenticateEmptyMes = new AuthenticatedEmptyMessage();
         authenticateEmptyMes.setAuthorization("Bearer " + accessToken);
+
+        HttpHeaders header = new HttpHeaders();
+        header.set("If-Unmodified-Since", String.valueOf(lastModified));
+        HttpEntity<AuthenticatedEmptyMessage> deletionEntity = new HttpEntity<AuthenticatedEmptyMessage>(
+                authenticateEmptyMes, header);
+
+        ResponseEntity<Object> responseEntityDeletion = digestRestTemplate
+                .exchange(URL + "idm/application/" + APPID, HttpMethod.DELETE,
+                        deletionEntity, Object.class);
+
+        assertEquals(HttpStatus.OK, responseEntityDeletion.getStatusCode());
+    }
+    
+    @Test
+    public void anonymousApplicationRequestDetails() {
+        
+        Properties props = new Properties();
+        InputStream is = ClassLoader
+                .getSystemResourceAsStream("anonymousTestUser.properties");
+        try {
+            props.load(is);
+        } catch (IOException e) {
+        }
+
+        // Create application
+        ApplicationCreateMessage applicationCreateMessage = new ApplicationCreateMessage();
+        applicationCreateMessage.setAuthorization("BEARER " + props.getProperty("anontoken"));
+        applicationCreateMessage.setId(APPID);
+        applicationCreateMessage.setName(APPNAME);
+
+        HttpEntity<ApplicationCreateMessage> createApp = new HttpEntity<ApplicationCreateMessage>(
+                applicationCreateMessage);
+
+        ResponseEntity<Object> responseEntityAppCreated = digestRestTemplate
+                .exchange(URL + "idm/application/", HttpMethod.POST, createApp,
+                        Object.class);
+
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, Object> appCreateResponse = (LinkedHashMap<String, Object>) responseEntityAppCreated
+                .getBody();
+        long lastModified = (long) appCreateResponse.get("lastModified");
+
+        assertEquals(APPNAME, (String) appCreateResponse.get("name"));
+        assertEquals(APPID, (String) appCreateResponse.get("id"));
+        assertEquals(HttpStatus.CREATED, responseEntityAppCreated.getStatusCode());
+
+        // Request application details
+        HttpHeaders detailsTokenHeader = new HttpHeaders();
+        detailsTokenHeader.set("Authorization", "Bearer " + props.getProperty("anontoken"));
+        HttpEntity<String> requestEntity = new HttpEntity<String>(
+                detailsTokenHeader);
+
+        ResponseEntity<Object> responseEntityDetails = restTemplate.exchange(
+                URL + "idm/application/" + APPID, HttpMethod.GET,
+                requestEntity, Object.class);
+
+        @SuppressWarnings("unchecked")
+        LinkedHashMap<String, Object> appDetailsResponse = (LinkedHashMap<String, Object>) responseEntityDetails
+                .getBody();
+
+        assertEquals(APPNAME, (String) appDetailsResponse.get("name"));
+        assertEquals(APPID, (String) appDetailsResponse.get("id"));
+        assertEquals(props.getProperty("anonid"), (String) appDetailsResponse.get("owner_id"));
+        assertEquals(lastModified,
+                (long) appDetailsResponse.get("lastModified"));
+
+        // Delete application
+        AuthenticatedEmptyMessage authenticateEmptyMes = new AuthenticatedEmptyMessage();
+        authenticateEmptyMes.setAuthorization("Bearer " + props.getProperty("anontoken"));
 
         HttpHeaders header = new HttpHeaders();
         header.set("If-Unmodified-Since", String.valueOf(lastModified));

@@ -29,6 +29,9 @@ public class User extends AbstractEntity implements CoreEntity{
 
     @Column
     private String username;
+    
+    @Column
+    private String random_auth_token;
 
     public Collection<Group> getGroups() {
         return groups;
@@ -116,6 +119,14 @@ public class User extends AbstractEntity implements CoreEntity{
 				ret.add(new AttributeValueResponseMessage(v));
 		}
 		return ret;
+	}
+
+	public String getRandom_auth_token() {
+		return random_auth_token;
+	}
+
+	public void setRandom_auth_token(String random_auth_token) {
+		this.random_auth_token = random_auth_token;
 	}
 	
     

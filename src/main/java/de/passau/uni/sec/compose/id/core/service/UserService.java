@@ -4,9 +4,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
@@ -19,9 +23,11 @@ import de.passau.uni.sec.compose.id.core.event.Event;
 import de.passau.uni.sec.compose.id.core.event.GetUserEvent;
 import de.passau.uni.sec.compose.id.core.event.DetailsIdEvent;
 import de.passau.uni.sec.compose.id.core.event.UpdateUserEvent;
+import de.passau.uni.sec.compose.id.core.persistence.entities.Global;
 import de.passau.uni.sec.compose.id.core.persistence.entities.IEntity;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceInstance;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
+import de.passau.uni.sec.compose.id.core.persistence.repository.UniqueRepository;
 import de.passau.uni.sec.compose.id.core.persistence.repository.UserRepository;
 import de.passau.uni.sec.compose.id.core.service.reputation.ReputationManager;
 import de.passau.uni.sec.compose.id.core.service.security.Authorization;
@@ -34,6 +40,7 @@ import de.passau.uni.sec.compose.id.rest.messages.UserResponseMessage;
 
 
 @Service
+@PropertySource("classpath:anonymousUser.properties")
 public class UserService extends AbstractSecureEntityBasicEntityService implements EntityService 
 {
 
@@ -43,7 +50,7 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 	 * Should be passed to ComposeRepository to manage exceptions... never access it directly
 	 */
 	@Autowired
-    UserRepository userRepository;
+        UserRepository userRepository;
 	
 	@Autowired
 	UsersAuthzAndAuthClient uaa;
@@ -56,6 +63,39 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 	
 	@Autowired
 	RestAuthentication auth;
+	
+	@Autowired
+	Random random;
+	
+	@Autowired
+	UniqueValidation check;
+	
+	@Autowired
+	private Environment env;
+	
+	
+	@Autowired
+	UniqueRepository uniqueRepository;
+	
+	/**
+	 * Put an anonymous user in local database.
+	 * @throws IdManagementException 
+	 */
+        @PostConstruct
+        public void initAnonuser() throws IdManagementException {
+              
+                // create an anonymous user in the local database
+                User u = new User();
+                u.setId(env.getRequiredProperty("anonid"));
+                u.setReputation(rep.getReputationValueforNewUser());
+                u.setUsername(env.getRequiredProperty("anonusername"));
+                // u.setLastModified(new Date(System.currentTimeMillis()));
+                u.setRandom_auth_token(env.getRequiredProperty("anontoken"));
+                u = userRepository.save(u);
+                check.insertUnique(env.getRequiredProperty("anonid"), check.USER);
+        }
+        
+	
 	
 	@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
@@ -88,9 +128,9 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		u.setReputation(rep.getReputationValueforNewUser());
 		u.setUsername(create.getUserMessage().getUsername());
 		//u.setLastModified(new Date(System.currentTimeMillis()));
-		
+		u.setRandom_auth_token(random.getRandomToken());
 		u = userRepository.save(u);		
-		
+		check.insertUnique(id, check.USER);
 		UserResponseMessage res = new UserResponseMessage(u);
 		return res;
 	}
@@ -107,8 +147,17 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		else{
 			ComposeUserPrincipal comp = auth.getComposeUser(event.getPrincipals());
 			u = userRepository.getOne(comp.getOpenId().getUser_id());
+			
 		}
 		UserResponseMessage res = new UserResponseMessage(u);
+		try{
+		     authz.authorizeIfOwnerOrComponent(event.getPrincipals(), u);
+		 	res.setRandom_auth_token(u.getRandom_auth_token());
+			
+		}catch(IdManagementException ex)
+		{
+			//Its ok, he is not asking data about himself...
+		}
 		return res;
 		
 
@@ -176,7 +225,10 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		User sc = userRepository.getOne(event.getEntityId());
 		//the user repository will throw exception if the user still has any associations (groups...etc), so we do it first
 		userRepository.delete(sc);
+		Global entity = uniqueRepository.findOne(event.getEntityId());
+		uniqueRepository.delete(entity);
 		uaa.deleteUser(sc.getId());
+		
 		
 	}
 

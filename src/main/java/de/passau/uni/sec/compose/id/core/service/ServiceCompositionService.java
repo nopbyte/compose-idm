@@ -1,5 +1,7 @@
 package de.passau.uni.sec.compose.id.core.service;
 
+import java.util.Collection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,14 +9,19 @@ import org.springframework.stereotype.Service;
 
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException.Level;
+import de.passau.uni.sec.compose.id.core.domain.ComposeComponentPrincipal;
+import de.passau.uni.sec.compose.id.core.domain.ComposeUserPrincipal;
+import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
 import de.passau.uni.sec.compose.id.core.event.CreateServiceCompositionEvent;
 import de.passau.uni.sec.compose.id.core.event.Event;
 import de.passau.uni.sec.compose.id.core.event.GetServiceCompositionEvent;
 import de.passau.uni.sec.compose.id.core.event.DetailsIdEvent;
+import de.passau.uni.sec.compose.id.core.persistence.entities.Global;
 import de.passau.uni.sec.compose.id.core.persistence.entities.IEntity;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceComposition;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
 import de.passau.uni.sec.compose.id.core.persistence.repository.ServiceCompositionRepository;
+import de.passau.uni.sec.compose.id.core.persistence.repository.UniqueRepository;
 import de.passau.uni.sec.compose.id.core.service.reputation.ReputationManager;
 import de.passau.uni.sec.compose.id.core.service.security.Authorization;
 import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
@@ -41,6 +48,13 @@ public class ServiceCompositionService extends AbstractSecureEntityBasicEntitySe
 	@Autowired
 	ReputationManager rep;
 	
+	@Autowired
+	UniqueValidation check;
+	
+	@Autowired
+	UniqueRepository uniqueRepository;
+	
+	
 	@Override
 	protected void verifyAccessControlCreateEntity(Event event)
 			throws IdManagementException {
@@ -56,6 +70,8 @@ public class ServiceCompositionService extends AbstractSecureEntityBasicEntitySe
 			//After this call we are sure there is a user, otherwise an exception would have been thrown
 			ServiceCompositionCreateMessage message = ((CreateServiceCompositionEvent) event).getMessage();
 			
+			check.verifyUnique(message.getId());
+			
 			if(serviceCompositionRepository.exists(message.getId()))
 				throw new IdManagementException("Service composition already exists",null,LOG,"Conflict while attempting to create a service composition: "+event.getLoggingDetails(),Level.ERROR,409);
 			
@@ -64,6 +80,7 @@ public class ServiceCompositionService extends AbstractSecureEntityBasicEntitySe
 			sc.setId(message.getId());
 			sc.setOwner(u);
 			sc = serviceCompositionRepository.save(sc);
+			check.insertUnique(message.getId(),check.SERVICE_COMPOSITION);
 			EntityResponseMessage res = new ServiceCompositionResponseMessage(sc);
 			return res;	
 	}
@@ -77,6 +94,14 @@ public class ServiceCompositionService extends AbstractSecureEntityBasicEntitySe
 		if(sc == null)
 			throw new IdManagementException("Entity not found",null,LOG,"Entity not found, event :"+get.getLoggingDetails(),Level.DEBUG,404);
 		
+		Collection<IPrincipal> principals = event.getPrincipals();
+		//Only give code to ComposeComponents or when the owner is querying the API
+		if( (principals.size()==1 && principals.iterator().next() instanceof ComposeComponentPrincipal) ||
+					(principals.size()==1 && principals.iterator().next() instanceof ComposeUserPrincipal && ((ComposeUserPrincipal)principals.iterator().next()).getOpenId().getUser_id().equals(sc.getOwner().getId()))
+			 ){
+		}
+		else
+			sc.setAuthenticationCode(null);
 		EntityResponseMessage res = new ServiceCompositionResponseMessage(sc);
 		return res;
 	}
@@ -109,6 +134,8 @@ public class ServiceCompositionService extends AbstractSecureEntityBasicEntitySe
 		
 		ServiceComposition sc = serviceCompositionRepository.getOne(event.getEntityId());
 		serviceCompositionRepository.delete(sc);
+		Global entity = uniqueRepository.findOne(event.getEntityId());
+		uniqueRepository.delete(entity);
 	}
 
 	@Override

@@ -25,10 +25,12 @@ import de.passau.uni.sec.compose.id.core.event.DetailsIdEvent;
 import de.passau.uni.sec.compose.id.core.event.Event;
 import de.passau.uni.sec.compose.id.core.event.GetServiceObjectEvent;
 import de.passau.uni.sec.compose.id.core.event.UpdateServiceObjectTokenEvent;
+import de.passau.uni.sec.compose.id.core.persistence.entities.Global;
 import de.passau.uni.sec.compose.id.core.persistence.entities.IEntity;
 import de.passau.uni.sec.compose.id.core.persistence.entities.ServiceObject;
 import de.passau.uni.sec.compose.id.core.persistence.entities.User;
 import de.passau.uni.sec.compose.id.core.persistence.repository.ServiceObjectRepository;
+import de.passau.uni.sec.compose.id.core.persistence.repository.UniqueRepository;
 import de.passau.uni.sec.compose.id.core.service.policy.PolicyManager;
 import de.passau.uni.sec.compose.id.core.service.reputation.ReputationManager;
 import de.passau.uni.sec.compose.id.core.service.security.Authorization;
@@ -60,7 +62,16 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 	@Autowired
 	PolicyManager policyManager;
 	
+	@Autowired
+	Random random;
 		
+	@Autowired
+	UniqueValidation check;
+	
+	
+	@Autowired
+	UniqueRepository uniqueRepository;
+	
 	
 	@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
@@ -69,43 +80,37 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			//After this call we are sure there is a user, otherwise an exception would have been thrown
 			ServiceObjectCreateMessage message = ((CreateServiceObjectEvent) event).getMessage();
 			
+			check.verifyUnique(message.getId());
+			
 			if(serviceObjectRepository.exists(message.getId()))
 				throw new IdManagementException("ServiceObject already exists",null,LOG,"Conflict while attempting to crete a service objcet: "+event.getLoggingDetails(),Level.ERROR,409);
 			
 			User u = authentication.getUserFromEvent(event);
 			ServiceObject so = new ServiceObject();
 			if(message.isRequires_token())
-				so.setApiToken(getRandomToken());
+				so.setApiToken(random.getRandomToken());
 			
 			so.setId(message.getId());
 			so.setCollectProvenance(message.isData_provenance_collection());
 			so.setPayment(message.isPayment());
 			so.setOwner(u);
 			so.setReputation(rep.getReputationValueForNewServiceObject(u.getId()));
+			so.setCollectProvenance(true);
 			so = serviceObjectRepository.save(so);
-			List<Map<String, Object>> policy = policyManager.getPolicyForNewServiceObject(u.getId(), so);
-			//in this case the policy needs to be included in the ServiceObject response in order for the Service Object registry to keep a copy of it.
-			ServiceObjectResponseMessage res = new ServiceObjectResponseMessage (so,policy);
-			return res;	
-	}
-
-	private String getRandomToken() 
-	{
-		byte[] array = new byte[33];
-		SecureRandom random;
-		try {
-			random = SecureRandom.getInstance("SHA1PRNG");
-			random.nextBytes(array);
+			try{
 			
-		} catch (NoSuchAlgorithmException e) {
-
-			sun.security.provider.SecureRandom r = new sun.security.provider.SecureRandom();
-			r.engineNextBytes(array);
-			LOG.warn("Using a newly created SecureRandom object to generate tokens for SO: SHA1PRNG instance of SecureRandom was not found!");
+				List<Map<String, Object>> policy = policyManager.getPolicyForNewServiceObject(u.getId(), so);
+				//in this case the policy needs to be included in the ServiceObject response in order for the Service Object registry to keep a copy of it.
+				ServiceObjectResponseMessage res = new ServiceObjectResponseMessage (so,policy);
+				check.insertUnique(message.getId(),check.SERVICE_OBJECT);
+				return res;	
+			}
+			catch(IdManagementException ex)
+			{
+				serviceObjectRepository.delete(so);
+				throw ex;
+			}
 			
-		}
-		String token = DatatypeConverter.printBase64Binary(array);
-		return token;
 	}
 
 	@Override
@@ -157,7 +162,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			ServiceObject so = serviceObjectRepository.findOne(event.getEntityId());
 			if(so.getApiToken().equals(tokenUpdate.getMessage().getOld_api_token()))
 			{
-				String newToken = getRandomToken();
+				String newToken = random.getRandomToken();
 				so.setApiToken(newToken);
 				so.UpdateLastModifiedToNow();
 				serviceObjectRepository.save(so);
@@ -205,6 +210,8 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 		
 		ServiceObject sc = serviceObjectRepository.getOne(event.getEntityId());
 		serviceObjectRepository.delete(sc);
+		Global entity = uniqueRepository.findOne(event.getEntityId());
+		uniqueRepository.delete(entity);
 	}
 
 	@Override

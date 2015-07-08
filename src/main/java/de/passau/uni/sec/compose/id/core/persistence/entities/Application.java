@@ -24,6 +24,8 @@ public class Application extends AbstractEntity implements CoreEntity{
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL)
     Collection<AttributeValue> attributes= new LinkedList<>();
 
+    @Column
+    private String authenticationCode=null;
     
     @Column
     private String name;
@@ -69,6 +71,16 @@ public class Application extends AbstractEntity implements CoreEntity{
 
 	public void setAttributes(Collection<AttributeValue> attributes) {
 		this.attributes = attributes;
+	}
+
+	public String getAuthenticationCode()
+	{
+		return authenticationCode;
+	}
+
+	public void setAuthenticationCode(String authenticationCode)
+	{
+		this.authenticationCode = authenticationCode;
 	}
     
 	
