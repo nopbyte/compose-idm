@@ -15,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException.Level;
 import de.passau.uni.sec.compose.id.core.domain.ComposeComponentPrincipal;
@@ -181,11 +183,11 @@ public class RestAuthentication
 		throw new IdManagementException("No user authenticated successfully for the request",null,LOG,"There is no user in principals priovided for the request, or it is not in the local database: "+ event.getLoggingDetails(),Level.ERROR,401);
 	}
 	
-	/*private String createBasicHTTPAuthenticationToken(String username, String password)
+	public String createBasicHTTPAuthenticationToken(String username, String password)
 	{
 		String plainCreds = username + ":" + password;
         byte[] plainCredsBytes = plainCreds.getBytes();
-        String base64Creds = DatatypeConverter.printBase64Binary(plainCredsBytes);
+        String base64Creds = Base64.encode(plainCredsBytes);        		
         return base64Creds;
-	}*/
+	}
 }
