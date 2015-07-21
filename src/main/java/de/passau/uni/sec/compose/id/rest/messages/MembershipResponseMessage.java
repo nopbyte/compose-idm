@@ -14,6 +14,10 @@ public class MembershipResponseMessage implements EntityResponseMessage
 	
 	private String group_id;
 	
+	private String group_name;
+	
+	private String user_name;
+	
 	private Date lastModified;
 
 	public MembershipResponseMessage(Membership mem)
@@ -23,6 +27,8 @@ public class MembershipResponseMessage implements EntityResponseMessage
 		role = mem.getRole().getName();
 		lastModified = mem.getLastModified();
 		user_id=mem.getUser().getId();
+		group_name = mem.getGroup().getName();
+		user_name = mem.getUser().getUsername();
 		
 	}
 	
@@ -63,8 +69,26 @@ public class MembershipResponseMessage implements EntityResponseMessage
 	public void setId(String id) {
 		this.id = id;
 	}
-	
-	
+
+	public String getGroup_name()
+	{
+		return group_name;
+	}
+
+	public void setGroup_name(String group_name)
+	{
+		this.group_name = group_name;
+	}
+
+	public String getUser_name()
+	{
+		return user_name;
+	}
+
+	public void setUser_name(String user_name)
+	{
+		this.user_name = user_name;
+	}
 	
 	
 }

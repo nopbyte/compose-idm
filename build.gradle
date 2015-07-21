@@ -70,6 +70,9 @@ dependencies {
     //modified security dependencies
     compile("org.springframework.boot:spring-boot-starter-security")
 
+	//inclusion of web-pages
+	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+	
     compile 'org.slf4j:slf4j-api:1.7.5'
     //runtime 'org.slf4j:slf4j-jdk14:1.7.5'
     

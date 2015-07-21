@@ -163,7 +163,19 @@ public class GroupService extends AbstractSecureEntityBasicEntityService impleme
 			throws IdManagementException {
 		
 		Group g = groupRepository.getOne(event.getEntityId());
-		groupRepository.delete(g);
+		List<Membership> memb = membershipRepository.findByGroup(g);
+		String userIdFromMembership = memb.get(0).getUser().getId();
+		User userFromEvent = authentication.getUserFromEvent(event);
+		if( memb.size() == 0 ||  
+			(memb.size() == 1 && userFromEvent.getId().equals(userIdFromMembership))
+		   ) 
+		{
+			membershipRepository.delete(memb.get(0));
+			groupRepository.delete(g);	
+		}
+		else
+			throw new IdManagementException("Conflict: group has memberships",null,LOG,"group has memberships: group id"+event.getEntityId(),Level.DEBUG,409);
+		
 	}
 
 	@Override
