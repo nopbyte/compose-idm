@@ -5,8 +5,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,6 +92,9 @@ public class AttributeValueService extends AbstractBasicListEntityService implem
 	@Autowired 
 	RestAuthentication authentication;
 
+	@Autowired
+	UpdateManager updater;
+	
 	/**
 	 * 
 	 * @param event Event for creation of the entity
@@ -302,7 +308,9 @@ public class AttributeValueService extends AbstractBasicListEntityService implem
 				value.setApproved(false);
 				value.setLastModified(new Date( (new Date().getTime()/1000)*1000 ));
 				value = attributeRepository.save(value);
+				updater.handleUpdateForEntity(value.getEnityId(),event.getPrincipals());
 				return new AttributeValueResponseMessage(value);
+				
 			}
 			else
 				throw new IdManagementException("The principal calling the API does not have enough permissions to update the attribute with id: "+event.getEntityId(),null, LOG,"Principal attempting to approve the attribute value didn't have sufficient permissions. Attribute Vaue id"+value.getId()+" Attribute definition "+value.getDefinition().getId()+" Group for the definition: "+value.getDefinition().getGroup().getId()
@@ -333,6 +341,7 @@ public class AttributeValueService extends AbstractBasicListEntityService implem
 			{
 				value.setApprovedBy(u.getId());
 				value.setApproved(true);
+				updater.handleUpdateForEntity(value.getEnityId(),event.getPrincipals());
 			}
 			else
 					
@@ -397,6 +406,7 @@ public class AttributeValueService extends AbstractBasicListEntityService implem
 		
 		AttributeValue attempted = attributeRepository.getOne(event.getEntityId());
 		attributeRepository.delete(attempted);
+		updater.handleUpdateForEntity(attempted.getEnityId(),event.getPrincipals());
 		
 	}
 

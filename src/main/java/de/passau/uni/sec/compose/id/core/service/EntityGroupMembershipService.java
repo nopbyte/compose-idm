@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import sun.security.acl.GroupImpl;
-
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException.Level;
 import de.passau.uni.sec.compose.id.core.domain.ComposeComponentPrincipal;
@@ -98,6 +99,11 @@ public class EntityGroupMembershipService extends AbstractBasicListEntityService
 	
 	@Autowired 
 	RestAuthentication authentication;
+	
+	@Autowired
+	UpdateManager updater;
+
+
 
 	private EntityGroupMembership buildEntityGroupMembership(User u, CreateEntityGroupMembershipEvent event) throws IdManagementException {
 	
@@ -212,6 +218,9 @@ public class EntityGroupMembershipService extends AbstractBasicListEntityService
 		m.setGroup(group);
 		m.setId(UUID.randomUUID().toString());
 		membershipRepository.save(m);
+		if(m.isApprovedByGroupOwner() && m.isApprovedBySelfOwner())
+			updater.handleUpdateForEntity(m.getEnityId(),event.getPrincipals());
+			
 		
 		return new EntityGroupMembershipResponseMessage(m);
 	}
@@ -279,8 +288,11 @@ public class EntityGroupMembershipService extends AbstractBasicListEntityService
 				updated=true;
 			}
 				
-			//the principal is admin in the group -approved- and the attempted membership requires that group admin or owners approve it
-			if(!updated)
+
+			if(updated)
+				updater.handleUpdateForEntity(attemptedMembership.getEnityId(),event.getPrincipals());
+				
+			else			//the principal is admin in the group -approved- and the attempted membership requires that group admin or owners approve it
 				throw new IdManagementException("There was no pending approval from the principal calling the API",null, LOG,"Principal attempting to approve a entity group membership that he didn't have to approve. Membership group"+attemptedMembership.getGroup().getId()
 						+"Entity involved in membership id: "+entityInMembership.getId()+", Entity id : "+attemptedMembership.getEnityId()+" Entity type:"+attemptedMembership.getEntityType()+". princpals: "+RestAuthentication.getBasicInfoPrincipals(event.getPrincipals()),Level.INFO, 403);
 		}
@@ -383,7 +395,10 @@ public class EntityGroupMembershipService extends AbstractBasicListEntityService
 			throws IdManagementException {
 		
 		EntityGroupMembership attempted = membershipRepository.getOne(event.getEntityId());
+		String entityId = attempted.getEnityId();
 		membershipRepository.delete(attempted);
+		updater.handleUpdateForEntity(entityId,event.getPrincipals());
+		 
 	}
 
 	@Override

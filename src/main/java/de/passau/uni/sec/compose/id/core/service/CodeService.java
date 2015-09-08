@@ -10,7 +10,6 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
@@ -70,15 +69,16 @@ public class CodeService
 			c.setType(type);
 			codeRepo.save(c);
 			ret = true;
-			LOG.debug("code added with code "+code+" and reference:"+reference);
+			LOG.info("code added with code "+code+" and reference:"+reference);
 		}
-		
+		LOG.error("not possible to add code with id"+code+" it seems it was already there...");
 		cleanUp();
 		return ret;
 	}
 	 public void deleteCode(Code c)
 	 {
 		 codeRepo.delete(c);
+		 LOG.info("Code with code:"+c.getCode()+" was deleted");
 	 }
 	/**
 	 * 
@@ -92,8 +92,25 @@ public class CodeService
 		Code ret = null;
 		if(list !=null && !list.isEmpty())
 			ret = list.get(0);
-		
+			
+		LOG.info("code with code"+code+ "and type"+type+(ret== null?" not found": " found in the database"));
 		cleanUp();
 		return ret;
 	}
+
+	public boolean updateCodeReference(String code, String text,
+			String type)
+	{
+		List<Code> list = codeRepo.findByCodeAndType(code, type);
+		Code ret = null;
+		if(list !=null && !list.isEmpty())
+		{
+			ret = list.get(0);
+			ret.setReference(text);
+			codeRepo.save(ret);
+			LOG.info("updated code with code"+code+ "and type"+type+" to include reference"+text);
+			return true;
+		}
+		LOG.info("failed to update code with code"+code+ "and type"+type);
+		return false;	}
 }

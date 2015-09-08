@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,21 +66,21 @@ public class GroupService extends AbstractSecureEntityBasicEntityService impleme
 	@Autowired
 	MembershipRepository membershipRepository;
 	
+	@Autowired
+	private CloudPublisher pub;
+
+
+	@Autowired
+	UpdateManager updater;
+
+
+	
 	@Override
 	protected EntityResponseMessage postACCreateEntity(Event event)
 			throws IdManagementException {
 			
 		
-		
-		// To be moved something else...
-					/*Role r = new Role();
-					r.setName("DEVELOPER");
-					r.setId("DEVELOPER");
-					roleRepository.save(r);
-					*/
-					//end 
-			
-			//After this call we are sure there is a user, otherwise an exception would have been thrown
+		   //After this call we are sure there is a user, otherwise an exception would have been thrown
 			CreateGroupEvent group = (CreateGroupEvent) event;
 			User u = authentication.getUserFromEvent(event);
 			
@@ -94,7 +96,8 @@ public class GroupService extends AbstractSecureEntityBasicEntityService impleme
 			g.setOwner(u);
 			groupRepository.save(g);
 			//So that the user has memberships of ADMIN for the groups he owns
-			createGroupMembershipAdmin(g,u);			
+			createGroupMembershipAdmin(g,u);
+			updater.handleUpdateForEntity(u.getId(),event.getPrincipals());
 			GroupResponseMessage res = new GroupResponseMessage(g);
 			return res;	
 	}
@@ -172,6 +175,9 @@ public class GroupService extends AbstractSecureEntityBasicEntityService impleme
 		{
 			membershipRepository.delete(memb.get(0));
 			groupRepository.delete(g);	
+			updater.handleUpdateForEntity(userIdFromMembership,event.getPrincipals());
+			
+			
 		}
 		else
 			throw new IdManagementException("Conflict: group has memberships",null,LOG,"group has memberships: group id"+event.getEntityId(),Level.DEBUG,409);

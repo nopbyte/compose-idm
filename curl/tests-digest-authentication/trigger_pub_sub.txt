@@ -1,0 +1,9 @@
+
+curl   -H "Content-Type: application/json;charset=UTF-8" -d '{"username":"test2","password":"pass"}' -X POST http://localhost:8080/auth/user/
+
+#Get any kind of entity... just by providing an id.
+TOKEN= put token for a user here
+
+curl -XGET -H "Authorization: Bearer $TOKEN"  -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/update/push/8b80b7a8.8825/
+
+

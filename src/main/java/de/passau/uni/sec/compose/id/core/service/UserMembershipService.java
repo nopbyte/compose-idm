@@ -73,10 +73,17 @@ public class UserMembershipService extends AbstractBasicListEntityService implem
 	
 	@Autowired
 	ReputationManager rep;
+	
+	@Autowired
+	UpdateManager updater;
 
+
+	
+	
 	@PostConstruct
     public void initAnonuser() throws IdManagementException 
     {
+		
     	List<Role> all = roleRepository.findAll();
 		if(all.isEmpty())
 			initializeRoles();
@@ -150,10 +157,12 @@ public class UserMembershipService extends AbstractBasicListEntityService implem
 		m.setUser(u);
 		m.setId(UUID.randomUUID().toString());
 		membershipRepository.save(m);
+		if(m.isApprovedByGroupOwner() && m.isApprovedByUser())
+			updater.handleUpdateForEntity(m.getUser().getId(),event.getPrincipals());
 		
 		return new MembershipResponseMessage(m);
 	}
-
+		
 
 	@Override
 	protected EntityResponseMessage postACGetEntity(Event event)
@@ -198,8 +207,9 @@ public class UserMembershipService extends AbstractBasicListEntityService implem
 				updated=true;
 			}
 				
-			//the principal is admin in the group -approved- and the attempted membership requires that group admin or owners approve it
-			if(!updated)
+			if(updated)	//update local caches through pub sub. update Id of the user joining the membership oficially
+				updater.handleUpdateForEntity(attemptedMembership.getUser().getId(),event.getPrincipals());
+			else   //the principal is admin in the group -approved- and the attempted membership requires that group admin or owners approve it
 				throw new IdManagementException("There was no pending approval from the principal calling the API",null, LOG,"Principal attempting to approve a membership that he didn't have to approve. Membership group"+attemptedMembership.getGroup().getId()
 						+"Attempted membership role: "+attemptedMembership.getRole().getName()+", Attempted membership user: "+attemptedMembership.getUser().getId()+". princpals: "+RestAuthentication.getBasicInfoPrincipals(event.getPrincipals()),Level.INFO, 403);
 		}
@@ -339,7 +349,10 @@ public class UserMembershipService extends AbstractBasicListEntityService implem
 			throws IdManagementException {
 		
 		Membership attempted = membershipRepository.getOne(event.getEntityId());
+		String userId = attempted.getUser().getId();
 		membershipRepository.delete(attempted);
+		//update userinfo
+		updater.handleUpdateForEntity(userId,event.getPrincipals());
 	}
 
 	@Override

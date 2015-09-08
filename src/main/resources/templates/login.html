@@ -9,6 +9,9 @@
 		        
 		<table align="center">
 			<tr>
+				<p  align="center" style="color:red" th:if="${loginError}">Wrong user or password</p>
+			</tr>
+			<tr>
 				<td>User name:</td>
 				<td><input type="text" id="username" name="username" />
 					                </td>
@@ -16,7 +19,7 @@
 
 			<tr>
 				<td>Password:</td>
-				<td><input type="text" id="password" name="password" />
+				<td><input id="password" name="password"  type="password" />
 					                </td>
 			</tr>
 
@@ -25,10 +28,12 @@
 			</tr>
 
 		</table>
+		
 		<input name="response_type" type="hidden" th:value="${response_type}"/>
     	<input name="client_id" type="hidden" th:value="${client_id}"/>
     	<input name="state" type="hidden" th:value="${state}"/>
     	<input name="redirect_uri" type="hidden" th:value="${redirect_uri}"/>
+    	
   		
 	</form>
 
