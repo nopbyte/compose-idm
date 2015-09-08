@@ -22,7 +22,23 @@ public class ServiceObjectResponseMessage extends AbstractCoreEnityResponse impl
 	
 	private boolean payment;
 	    
-	    
+	
+	public ServiceObjectResponseMessage(ServiceObject so)
+	{
+		this.id = so.getId();
+		this.api_token = so.getApiToken();
+		this.owner_id = so.getOwner().getId();
+		this.lastModified = so.getLastModified();
+		this.groups = (so.getApprovedGroups(so.getGroups()));
+		this.attributeValues = so.getApprovedAttributeValues(so.getAttributes());
+		
+		//new stuff
+		this.reputation = so.getReputation();
+		this.data_provenance_collection = so.isCollectProvenance();
+		this.payment = so.isPayment();
+		
+	}
+
 	 
 	//end new stuff
 	public ServiceObjectResponseMessage(ServiceObject so, List<Map<String, Object>> policy2)

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -31,29 +32,32 @@ import de.passau.uni.sec.compose.id.core.event.GetServiceSourceCodeEvent;
 import de.passau.uni.sec.compose.id.core.event.GetUserEvent;
 import de.passau.uni.sec.compose.id.core.service.AnyEntityById;
 import de.passau.uni.sec.compose.id.core.service.ApplicationService;
+import de.passau.uni.sec.compose.id.core.service.CloudPublisher;
 import de.passau.uni.sec.compose.id.core.service.ServiceCompositionService;
 import de.passau.uni.sec.compose.id.core.service.ServiceInstanceService;
 import de.passau.uni.sec.compose.id.core.service.ServiceObjectService;
 import de.passau.uni.sec.compose.id.core.service.ServiceSourceCodeService;
+import de.passau.uni.sec.compose.id.core.service.UpdateManager;
 import de.passau.uni.sec.compose.id.core.service.UserService;
 import de.passau.uni.sec.compose.id.core.service.security.RestAuthentication;
 import de.passau.uni.sec.compose.id.rest.messages.EntityResponseMessage;
 import de.passau.uni.sec.compose.id.rest.messages.Id;
 
 @Controller
-@RequestMapping("/idm/any")
-public class AnyEntityController {
-private static Logger LOG = LoggerFactory.getLogger(AnyEntityController.class);
+@RequestMapping("/idm/update/push/")
+public class TriggerUpdateEntityController {
+private static Logger LOG = LoggerFactory.getLogger(TriggerUpdateEntityController.class);
 	
-	@Autowired
-	private AnyEntityById entityById;
 
 	@Autowired
-	private UserService uService;
+	private AnyEntityById entityById;
 	
 	@Autowired
     private RestAuthentication authenticator;
-    
+
+	@Autowired
+	UpdateManager update;
+	
 	@RequestMapping(value="{Id}/", method={RequestMethod.GET})
     public @ResponseBody ResponseEntity<Object> getUser( @RequestHeader("Authorization") String token,
     		@PathVariable(value="Id") String uid,UriComponentsBuilder builder
@@ -79,9 +83,8 @@ private static Logger LOG = LoggerFactory.getLogger(AnyEntityController.class);
 		try{
 			 //This method just authenticates... it doesn't do access control
 			 Collection<IPrincipal> principals = authenticator.authenticatePrincipals(LOG,cred);
-			 EntityResponseMessage r =null;
-			 Map<String,Object> res = entityById.getAnyEntity(uid, principals);			 
-			 return new ResponseEntity<Object>(res, HttpStatus.OK);
+			 int status = update.handleUpdateForEntity(uid,principals);
+			 return new ResponseEntity<Object>(status, HttpStatus.OK);
 		 }
 		 catch(IdManagementException idm){
 			 //sinc@Autowirede the creation of the exception generated the log entries for the stacktrace, we don't do it again here
@@ -94,6 +97,7 @@ private static Logger LOG = LoggerFactory.getLogger(AnyEntityController.class);
 			 return new ResponseEntity<Object>(null, HttpStatus.INTERNAL_SERVER_ERROR);	 
 		 }
 	}
+	
 	
     
 }

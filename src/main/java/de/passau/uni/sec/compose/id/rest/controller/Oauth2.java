@@ -64,6 +64,7 @@ public class Oauth2 {
     		@RequestParam(value="client_id", required=false, defaultValue="clientId") String clientId,
     		@RequestParam(value="state", required=false, defaultValue="pre") String state,
     		@RequestParam(value="redirect_uri", required=true) String url,
+    		@RequestParam(value="error", required=false, defaultValue="") String error,
     		Model model) {
 		
 		// GET /authorize?response_type=code&client_id=s6BhdRkqt3&state=xyz
@@ -72,6 +73,10 @@ public class Oauth2 {
 		model.addAttribute("client_id", clientId);
 		model.addAttribute("state", state);
 		model.addAttribute("redirect_uri", url);
+		if(error!= null && !"".equals(error))
+		{
+			model.addAttribute("error", error);
+		}
 		
         return "login";
 	
@@ -102,11 +107,18 @@ public class Oauth2 {
 				return "redirect:" + url+"#access_token="+res.getAccessToken()+"&state="+state+"&token_type=bearer&expires_in=3600";
 			}
 			
-			
-			
 		} catch (IdManagementException e) {
 			
-			return "redirect:" + url+"#error=access_denied&state="+state;
+			 model.addAttribute("loginError", true);
+			 model.addAttribute("response_type", resposeType);
+			 model.addAttribute("client_id", clientId);
+			 model.addAttribute("state", state);
+			 model.addAttribute("redirect_uri", url);
+			 model.addAttribute("username", username);
+			 model.addAttribute("password",password);
+	    		 
+			//TODO change this! do not redirect... reload idm page.
+			return "login";
 		}
 		
     	/*

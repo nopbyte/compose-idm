@@ -68,6 +68,8 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 	@Autowired
 	UniqueValidation check;
 	
+	@Autowired
+	UpdateManager updater;
 	
 	@Autowired
 	UniqueRepository uniqueRepository;
@@ -166,9 +168,9 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 				so.setApiToken(newToken);
 				so.UpdateLastModifiedToNow();
 				serviceObjectRepository.save(so);
-				List<Map<String, Object>> policy = policyManager.getPolicyExistingServiceObject(so);
+				updater.handleUpdateForEntity(so.getId(),event.getPrincipals());
 				//keep the policy in the response since this call could be issued by Servioticy
-				return new ServiceObjectResponseMessage(so, policy);
+				return new ServiceObjectResponseMessage(so);
 			}
 			else
 				//Although one should not leak which error happen. It is important to help developers to get what they are doing wrong in this case, since there are two authentication credentials at the same time (the API token, and the user token provided as authentication header)

@@ -5,52 +5,65 @@ import java.security.SecureRandom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.util.LRUMap;
 import com.github.cage.GCage;
 
+import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
+import de.passau.uni.sec.compose.id.core.persistence.entities.Code;
+
 
 @Service
 public class CaptchaService extends GCage 
 {
+	
+	@Autowired
+	CodeService codeService;
 
 	private static Logger LOG = LoggerFactory.getLogger(CaptchaService.class);
-	LRUMap<String, String> sessions = new LRUMap<>(0, 100);
 	
-	public boolean addSession(String id)
+	public boolean addSession(String id) throws IdManagementException
 	{
-		if(sessions.containsKey(id))
-			return false;
-		sessions.put(id, "");
-		return true;
+		return codeService.addCode(id, "", CodeService.TYPE_CAPTCHA);
 	}
 	
 	public void removeSession(String id)
 	{
-		sessions.remove(id);
+		Code c = codeService.getCode(id, CodeService.TYPE_CAPTCHA);
+		if(c !=null)
+			codeService.deleteCode(c);
 	}
-	public boolean setText(String id, String text)
+	public boolean setText(String id, String text) throws IdManagementException
 	{
-		if(sessions.containsKey(id))
+		Code c = codeService.getCode(id, CodeService.TYPE_CAPTCHA);
+		if(c != null)
 		{
-			sessions.put(id, text);
-			return true;
+			return codeService.updateCodeReference(id, text, CodeService.TYPE_CAPTCHA );
 		}
+		LOG.info("code with id :"+id+" not found in the code database");
 		return false;
 	}
 	
 	public boolean verifyText(String id, String text)
 	{
-		if(sessions.containsKey(id) && !sessions.get(id).equals(""))
+		Code c = codeService.getCode(id, CodeService.TYPE_CAPTCHA); 
+		if(c!=null)
 		{
-			if(text != null && text.equals(sessions.get(id)))
+			if(c.getReference() == null || c.getReference().equals(""))
+			{
+				LOG.info("found an empty text in the captcha");
+				return false;
+			}
+			if(text != null && text.equals(c.getReference()))
 				return true;
 		}
+		LOG.info("Code with id:"+id+" was not found attempting to check the text validation");
 		return false;
 	}
 
-	public String getNewSession() 
+	public String getNewSession() throws IdManagementException 
 	{
 		int value;
 		SecureRandom random;

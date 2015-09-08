@@ -75,10 +75,5 @@ public class PolicyManager
       		
 	}
 	
-	public List<Map<String, Object>> getPolicyExistingServiceObject(ServiceObject serviceObject)
-	{
-		List<Map<String, Object>> policy = new LinkedList<>();
-		//TODO get policy for the service object here!
-		return policy;
-	}
+	
 }
