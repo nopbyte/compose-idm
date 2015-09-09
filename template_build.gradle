@@ -63,6 +63,7 @@ dependencies {
 	
 	//captcha stuff
     compile files('./src/main/resources/lib/cage.jar')
+    compile files('./src/main/resources/lib/csbCloudJava.jar')
     
     testCompile 'org.springframework:spring-test'
     testCompile 'com.jayway.jsonpath:json-path-assert:0.8.1'
