@@ -114,7 +114,7 @@ public class GenerateOTPData
 				
 				//small test locally
 				
-				GenericSenderOTPData data2 = new GenericSenderOTPData();
+				/*GenericSenderOTPData data2 = new GenericSenderOTPData();
 				data2.setInfo(eu);
 				data2.setMaxHeight(-1);
 				data2.setMaxWidth(16);
@@ -129,7 +129,7 @@ public class GenerateOTPData
 					dr = new DataReceiver(StorageProviderFactory.PROVIDER_SERVIOTICY,iotpParams);
 					dr.decryptMessage(r);
 				}
-				
+				*/
 				// end of test
 				
 				
