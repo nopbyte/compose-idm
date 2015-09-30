@@ -64,7 +64,7 @@ public class IdManagementException extends Exception
 		{
 			String trace = getStackTrace(cause);
 			//TODO extract this as a configuration property in the future, to make it DEBUG or ERROR.
-			this.log(classLogger,Level.ERROR, trace);
+			this.log(classLogger,level, trace);
 		}
 		this.log(classLogger,level, loggingMessage);
 	}

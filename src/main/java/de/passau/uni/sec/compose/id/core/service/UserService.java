@@ -195,7 +195,7 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 			}
 		}
 		if(!ok)
-			throw new IdManagementException("Not sufficient permissions for the action requred ",null, LOG,"The entities authenticated for the request do not have sufficient permissions to execute it, principals "+RestAuthentication.getBasicInfoPrincipals(principals),Level.ERROR, 403);
+			throw new IdManagementException("Not sufficient permissions for the action requred ",null, LOG,"The entities authenticated for the request do not have sufficient permissions to execute it, principals "+RestAuthentication.getBasicInfoPrincipals(principals),Level.DEBUG, 403);
 		
 	}
 

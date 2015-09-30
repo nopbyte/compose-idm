@@ -96,9 +96,8 @@ public class ServioticyManager
         }catch(Exception ex)
         {
         	throw new IdManagementException("An error ocurred while getting policy for the service object",null,LOG,"An error ocurred trying to access servioticy" , Level.ERROR, (responseEntity==null?500:responseEntity.getStatusCode().value()));
-        }
-		
-}
+        }		
+	}
 
 	private Map<String, Object> getMapFromServioticy(String id)
 			throws IdManagementException

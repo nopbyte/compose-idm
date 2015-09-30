@@ -91,7 +91,7 @@ public class HTTPClient<T>
 		catch(HttpClientErrorException clientError)
 		{
 			if(clientError.getStatusCode().equals(HttpStatus.UNAUTHORIZED))
-					throw new IdManagementException("Authentication failed, wrong credentials ",clientError,LOG,"Unauthorized while attempting to get token to "+url+" with Headers: "+headers+" and postdata "+postData+" and urlQueryParams "+urlQueryParams,Level.ERROR,401);
+					throw new IdManagementException("Authentication failed, wrong credentials ",clientError,LOG,"Unauthorized while attempting to get token to "+url+" with Headers: "+headers+" and postdata "+postData+" and urlQueryParams "+urlQueryParams,Level.INFO,401);
 			throw new IdManagementException("An error ocurred during HTTP communication",clientError,LOG,"HttClientError  while attempting "+messageType+" message to "+url+" with Headers: "+headers+" and postdata "+postData+" and urlQueryParams "+urlQueryParams,Level.ERROR,500);
 		}
 		catch(RestClientException restE)
