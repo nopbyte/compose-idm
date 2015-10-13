@@ -98,7 +98,7 @@ public class GenerateOTPData
 			data.setMaxHeight(-1);
 			data.setSecretDerivationType(SecretDerivatorFactory.RIGHT_BIT_SHIFT_IDENTITY);
 			data.setMaxWidth(16);
-			data.setFactorOfSecretDerivation(8);
+			data.setFactorOfSecretDerivation(4);
 			data.setIndex(0);
 			data.setDepth(0);
 			data.setRootSecret(key);
