@@ -59,15 +59,15 @@ public class ServioticyManager
 			ServiceObject soRaw = soRepo.findOne(id);
 			if(soRaw != null)
 			{
-				ServiceObjectResponseMessage rso = new ServiceObjectResponseMessage(soRaw);
-				Map<String, Object> r = getMapFromServioticy(id);
-				Map<String, Object> res = (Map<String, Object>) r.get("security");
+				ServiceObjectResponseMessage idmSo = new ServiceObjectResponseMessage(soRaw);
+				Map<String, Object> serioticySO = getMapFromServioticy(id);
+				Map<String, Object> security = (Map<String, Object>) serioticySO.get("security");
 		        ObjectMapper m = new ObjectMapper();
-		        Map<String,Object> props = m.convertValue(rso, Map.class);
+		        Map<String,Object> props = m.convertValue(idmSo, Map.class);
 		        props.remove("policy");
 		        for(String key: props.keySet())//replace new values of IDM stuff
-		        	res.put(key, props.get(key));
-		        PostMapToServioticy(id, r);
+		        	security.put(key, props.get(key));
+		        PostMapToServioticy(id, serioticySO);
 		    }
 		
 	}

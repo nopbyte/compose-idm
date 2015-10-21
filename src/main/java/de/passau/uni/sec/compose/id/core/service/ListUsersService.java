@@ -13,41 +13,41 @@ import org.springframework.stereotype.Service;
 
 import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.core.event.Event;
-import de.passau.uni.sec.compose.id.core.event.ListGroupsEvent;
-import de.passau.uni.sec.compose.id.core.persistence.entities.Group;
-import de.passau.uni.sec.compose.id.core.persistence.repository.GroupRepository;
-import de.passau.uni.sec.compose.id.rest.messages.GroupResponseMessage;
+import de.passau.uni.sec.compose.id.core.event.ListUsersEvent;
+import de.passau.uni.sec.compose.id.core.persistence.entities.User;
+import de.passau.uni.sec.compose.id.core.persistence.repository.UserRepository;
+import de.passau.uni.sec.compose.id.rest.messages.UserResponseMessage;
 
 
 @Service
-public class ListGroupService extends AbstractListEntityService 
+public class ListUsersService extends AbstractListEntityService 
 {
 
 	private static final int MAX_PAGE = 10;
 
-	private static Logger LOG = LoggerFactory.getLogger(ListGroupService.class);
+	private static Logger LOG = LoggerFactory.getLogger(ListUsersService.class);
 	
 	@Autowired
-	private GroupRepository groupRepo;
+	private UserRepository userRepo;
 	
 	@Override
 	public Object postACListAllEntities(Event event)
 			throws IdManagementException 
 	{
 		
-		ListGroupsEvent ev = (ListGroupsEvent) event;
-		List<GroupResponseMessage> res = new LinkedList<GroupResponseMessage>();
+		ListUsersEvent ev = (ListUsersEvent) event;
+		List<UserResponseMessage> res = new LinkedList<UserResponseMessage>();
 		
 		if(ev.getPage() == -1){
-			Collection<Group> groups =groupRepo.findAll();
-			for(Group g : groups)
-				res.add(new GroupResponseMessage(g));
+			Collection<User> users=userRepo.findAll();
+			for(User u : users)
+				res.add(new UserResponseMessage(u));
 		}
 		else{
 			PageRequest req = new PageRequest(ev.getPage(), MAX_PAGE);
-			Page<Group> groups = groupRepo.findAll(req);
-			for(Group g : groups)
-				res.add(new GroupResponseMessage(g));
+			Page<User> users = userRepo.findAll(req);
+			for(User u : users)
+				res.add(new UserResponseMessage(u));
 		}
 		return res;
 	}

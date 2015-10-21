@@ -16,6 +16,8 @@ public class AttributeValueResponseMessage extends AbstractEnityResponse impleme
 	
 	private String value ;
 	
+	private String attribute_definition_name;
+	
 	private boolean approved = false;
 
 	private String group_id;
@@ -55,6 +57,7 @@ public class AttributeValueResponseMessage extends AbstractEnityResponse impleme
 		 this.approved = value.isApproved();
 		 this.attribute_definition_id = value.getDefinition().getId();
 		 this.group_id = value.getDefinition().getGroup().getId();
+		 this.attribute_definition_name = value.getDefinition().getName();
 	}
 	
 	public String getId() {
@@ -94,6 +97,16 @@ public class AttributeValueResponseMessage extends AbstractEnityResponse impleme
 	public void setGroup_id(String group_id)
 	{
 		this.group_id = group_id;
+	}
+
+	public String getAttribute_definition_name()
+	{
+		return attribute_definition_name;
+	}
+
+	public void setAttribute_definition_name(String attribute_definition_name)
+	{
+		this.attribute_definition_name = attribute_definition_name;
 	}
 	
 	
