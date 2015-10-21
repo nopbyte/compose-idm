@@ -85,7 +85,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			check.verifyUnique(message.getId());
 			
 			if(serviceObjectRepository.exists(message.getId()))
-				throw new IdManagementException("ServiceObject already exists",null,LOG,"Conflict while attempting to crete a service objcet: "+event.getLoggingDetails(),Level.ERROR,409);
+				throw new IdManagementException("ServiceObject already exists",null,LOG,"Conflict while attempting to crete a service objcet: "+event.getLoggingDetails(),Level.DEBUG,409);
 			
 			User u = authentication.getUserFromEvent(event);
 			ServiceObject so = new ServiceObject();
@@ -147,7 +147,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 		if(so !=null)
 			authz.authorizeIfOwner(event.getPrincipals(), so);
 		else
-			throw new IdManagementException("Service Object not found",null, LOG," Attempting to update a non-existent service object"+event.getEntityId(),Level.ERROR, 404);
+			throw new IdManagementException("Service Object not found",null, LOG," Attempting to update a non-existent service object"+event.getEntityId(),Level.DEBUG, 404);
 		
 	}
 	
@@ -174,7 +174,7 @@ public class ServiceObjectService extends AbstractSecureEntityBasicEntityService
 			}
 			else
 				//Although one should not leak which error happen. It is important to help developers to get what they are doing wrong in this case, since there are two authentication credentials at the same time (the API token, and the user token provided as authentication header)
-				throw new IdManagementException("Forbidden action. Wrong API TOKEN",null, LOG," Wrong API token for Service Object: "+tokenUpdate.getEntityId(),Level.ERROR, 401);
+				throw new IdManagementException("Forbidden action. Wrong API TOKEN",null, LOG," Wrong API token for Service Object: "+tokenUpdate.getEntityId(),Level.DEBUG, 401);
 				
 		}
 		// 403 Forbidden, 304 Not modified, or 409 not modified (conflict), 

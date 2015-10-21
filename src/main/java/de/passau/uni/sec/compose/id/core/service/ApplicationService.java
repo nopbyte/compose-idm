@@ -73,7 +73,7 @@ public class ApplicationService extends AbstractSecureEntityBasicEntityService i
 			check.verifyUnique(message.getId());
 			
 			if(applicationRepository.exists(message.getId()))
-				throw new IdManagementException("Application already exists",null,LOG,"Conflict while attempting to create an  Application: "+event.getLoggingDetails(),Level.ERROR,409);
+				throw new IdManagementException("Application already exists",null,LOG,"Conflict while attempting to create an  Application: "+event.getLoggingDetails(),Level.DEBUG,409);
 			
 			User u = authentication.getUserFromEvent(event);
 			Application app  = new Application();

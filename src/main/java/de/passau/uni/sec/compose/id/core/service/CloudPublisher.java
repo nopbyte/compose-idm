@@ -6,9 +6,13 @@ import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -27,6 +31,7 @@ import de.passau.uni.sec.compose.id.common.exception.IdManagementException;
 import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
 
 @Service
+@PropertySource("classpath:csb.properties")
 public class  CloudPublisher {
 	
 	public static String IDMUPDATES = "IDMUPDATES";
@@ -40,40 +45,51 @@ public class  CloudPublisher {
 	@Autowired
 	private AnyEntityById entityById;
 	
+	@Autowired
+	private Environment env;
+	
 	private static Logger LOG = LoggerFactory.getLogger(CloudPublisher.class);
 	
-	public void init(String topicn)
+	@PostConstruct
+	private void init()
 	{
-		this.topicName = topicn;
 		objectMapper = new ObjectMapper();
-
-		for(int i = 0; i<10 && !connected; i++)
+		this.topicName = env.getProperty("csb.topic");
+		String start = env.getProperty("csb.start");
+		if(topicName != null && start != null && start.trim().toUpperCase().equals("TRUE"))
 		{
-			try
-			{
-					factory = CSBFactory.getInstance();
-					Session session = factory.createSession();
-					connected = true;
-					Topic topic = session.createTopic(topicName, null);
-					pub = session.createTopicPublisher(topic, new PubSubEventListener() {
-					@Override
-					public void onEvent(PubSubEvent event) {
-					}
-				}, null);
-			 } catch (CSBException e)
-			{
-				LOG.error("pub sub unable to intialize ");
-				e.printStackTrace();
-				try
-				{
-					Thread.sleep(1000);
-				} catch (InterruptedException e1)
-				{
-					
-				}
-			}
-		}
 		
+				for(int i = 0; i<10 && !connected; i++)
+				{
+					try
+					{
+							factory = CSBFactory.getInstance();
+							Session session = factory.createSession();
+							if(session!=null){
+								LOG.error("Session from CSB is null.... exiting the CSB attempt");
+								return;
+							}
+							connected = true;
+							Topic topic = session.createTopic(topicName, null);
+							pub = session.createTopicPublisher(topic, new PubSubEventListener() {
+							@Override
+							public void onEvent(PubSubEvent event) {
+							}
+						}, null);
+					 } catch (CSBException e)
+					{
+						LOG.error("pub sub unable to intialize ");
+						e.printStackTrace();
+						try
+						{
+							Thread.sleep(1000);
+						} catch (InterruptedException e1)
+						{
+							
+						}
+					}
+				}
+	  }
 	}
 	
 	public boolean updateEntity(String id, Collection<IPrincipal> collection) throws IdManagementException

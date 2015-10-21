@@ -261,6 +261,7 @@ public class AttributeValueService extends AbstractBasicListEntityService implem
 			value.setDefinition(def);
 			value.setId(UUID.randomUUID().toString());
 			attributeRepository.save(value);
+			updater.handleUpdateForEntity(value.getEnityId(),event.getPrincipals());
 			return new AttributeValueResponseMessage(value);
 		}
 		else 

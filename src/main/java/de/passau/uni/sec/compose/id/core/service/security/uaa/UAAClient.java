@@ -230,7 +230,8 @@ public class UAAClient implements UsersAuthzAndAuthClient
 		}
 		else if(responseEntity.getStatusCode().equals(HttpStatus.UNAUTHORIZED))
 		{
-			throw new IdManagementException("Authentication failed, wrong credentials ",null, LOG," Incorrect credentials \""+username+"\" and \""+password+"\"",Level.ERROR, 401);
+			LOG.error( "Incorrect credentials \""+username+"\" and \""+password+"\"");
+			throw new IdManagementException("Authentication failed, wrong credentials ",null, LOG," Incorrect credentials \""+username+"\" and \""+password+"\"",Level.INFO, 401);
 		}
 		throw new IdManagementException("Authentication failed.",null, LOG," Incorrect credentials \""+username+"\" and \""+password+"\"",Level.ERROR, responseEntity.getStatusCode().value());
 		
@@ -272,11 +273,13 @@ public class UAAClient implements UsersAuthzAndAuthClient
         }
         catch(Exception e)
         {
-        	throw new IdManagementException("An error ocurred while getting information for the user",null,LOG,"An error ocurred trying to parse the uri: "+responseEntity.getHeaders().getFirst("Location")+" after HTTP communication with "+url+ " response: "+responseEntity.toString(),Level.ERROR,responseEntity.getStatusCode().value());
+        	LOG.error("An Exception ocurred trying to parse the uri: "+responseEntity.getHeaders().getFirst("Location")+" after HTTP communication with "+url+ " response: "+responseEntity.toString());
+        	throw new IdManagementException("An error ocurred while getting information for the user",null,LOG,"An error ocurred trying to parse the uri: "+responseEntity.getHeaders().getFirst("Location")+" after HTTP communication with "+url+ " response: "+responseEntity.toString(),Level.INFO,responseEntity.getStatusCode().value());
         }
         if(!responseEntity.getStatusCode().equals(HttpStatus.OK))
         {
-        	throw new IdManagementException("An error ocurred while getting information for the user",null,LOG,"An error ocurred trying to parse the uri: "+responseEntity.getHeaders().getFirst("Location")+" after HTTP communication with "+url+ " response: "+responseEntity.toString(),Level.ERROR,responseEntity.getStatusCode().value());
+        	LOG.error("Unexpected error code "+responseEntity.getStatusCode()+" trying to parse the uri: "+responseEntity.getHeaders().getFirst("Location")+" after HTTP communication with "+url+ " response: "+responseEntity.toString());
+        	throw new IdManagementException("An error ocurred while getting information for the user",null,LOG,"An error ocurred trying to parse the uri: "+responseEntity.getHeaders().getFirst("Location")+" after HTTP communication with "+url+ " response: "+responseEntity.toString(),Level.INFO,responseEntity.getStatusCode().value());
         }
         
         return responseEntity.getBody();

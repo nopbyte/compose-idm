@@ -88,10 +88,10 @@ public class AttributeDefinitionService extends AbstractBasicListEntityService i
 			ListAttributesInGroupEvent gevent = (ListAttributesInGroupEvent)event;
 			Group g = groupRepository.findOne(gevent.getId() );
 			if(g == null)
-				throw new IdManagementException("Group not found",null, LOG," Attempt to list attribute definitions for non-existing group with id: "+gevent.getId()+", principals "+RestAuthentication.getBasicInfoPrincipals(event.getPrincipals()),Level.ERROR, 404);
+				throw new IdManagementException("Group not found",null, LOG," Attempt to list attribute definitions for non-existing group with id: "+gevent.getId()+", principals "+RestAuthentication.getBasicInfoPrincipals(event.getPrincipals()),Level.INFO, 404);
 			return getAttrubyteDefinitions(g);
 		}
-		throw new IdManagementException("Method not implemented",null, LOG,"The type of list functionality is not implemented",Level.DEBUG, 501);	
+		throw new IdManagementException("Method not implemented",null, LOG,"The type of list functionality is not implemented",Level.ERROR, 501);	
 	}
 	
 
@@ -135,7 +135,7 @@ public class AttributeDefinitionService extends AbstractBasicListEntityService i
 		
 		List<AttributeDefinition> defs = attributeRepository.findByNameAndGroup(attrEvent.getMessage().getName(), groupDefinition);
 		if(defs.size()!=0)
-			throw new IdManagementException("Attribute definition already extists",null, LOG,"Attempt to create an attribute definition already exists in group with id: "+attrEvent.getGroup_id()+" with name: "+attrEvent.getMessage().getName()+", principals "+RestAuthentication.getBasicInfoPrincipals(attrEvent.getPrincipals()),Level.ERROR, 409);
+			throw new IdManagementException("Attribute definition already extists",null, LOG,"Attempt to create an attribute definition already exists in group with id: "+attrEvent.getGroup_id()+" with name: "+attrEvent.getMessage().getName()+", principals "+RestAuthentication.getBasicInfoPrincipals(attrEvent.getPrincipals()),Level.DEBUG, 409);
 		AttributeDefinition attributeDef = new AttributeDefinition();
 		//ownership or admin role in the the Group is checked in ACcess control method already
 		attributeDef.setGroup(groupDefinition);

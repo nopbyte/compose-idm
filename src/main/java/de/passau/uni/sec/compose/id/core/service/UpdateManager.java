@@ -24,11 +24,6 @@ public class UpdateManager
 	@Autowired
 	ServioticyManager servioticy;
 	
-	@PostConstruct
-	public void initPubSub()
-	{
-		pub.init(CloudPublisher.IDMUPDATES);
-	}
 	
 	/**
 	 * Takes care to notify entities about the change through pub sub, and in case it is a servioticy instance it is updated through the private API.
