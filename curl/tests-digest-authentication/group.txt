@@ -23,5 +23,7 @@ curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json;charse
 ##
 curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/group_attributes/71afc9ae-9c2b-4f2c-8657-5f8da6b1cffd/
 
+#Every entity in a group (with pages) with -1 in page, you get them all...
 
-curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/group/?page=1
+curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/group/?page=0
+

@@ -32,6 +32,12 @@ curl -H "Authorization: Bearer $TOKEN"   -H "Content-Type: application/json;char
 curl --digest -u "composecontroller:composecontrollerpassword"   -H "If-Unmodified-Since: 1400853224000" -H "Content-Type: application/json;charset=UTF-8" -X DELETE http://localhost:8080/idm/user/19f712f8-3338-4670-9ac8-ae5392972250
 
 
+#Get all users... (with page -1 you get them all)
+
+curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json;charset=UTF-8"  http://localhost:8080/idm/user/?page=0
+
+
+
 
 ################	Anonymous user #####################################
 

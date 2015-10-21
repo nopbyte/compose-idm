@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.csb.client.CSBException;
 import com.ibm.csb.client.CSBFactory;
 import com.ibm.csb.client.Message;
+import com.ibm.csb.client.MessageListener;
 import com.ibm.csb.client.PubSubEvent;
 import com.ibm.csb.client.PubSubEventListener;
 import com.ibm.csb.client.Session;
@@ -34,13 +35,14 @@ import de.passau.uni.sec.compose.id.core.domain.IPrincipal;
 @PropertySource("classpath:csb.properties")
 public class  CloudPublisher {
 	
-	public static String IDMUPDATES = "IDMUPDATES";
-	private String topicName;
-	private CSBFactory factory;
-	private TopicPublisher pub;
-	private ObjectMapper objectMapper ;
-	private boolean connected = false;
 	
+	private String idmtopic;
+	private CSBFactory factory;
+	private TopicPublisher idmPublisher;
+	private ObjectMapper objectMapper ;
+	private boolean idmConnected = false;
+	private int tries=0;
+	private String start;
 
 	@Autowired
 	private AnyEntityById entityById;
@@ -53,13 +55,16 @@ public class  CloudPublisher {
 	@PostConstruct
 	private void init()
 	{
+
 		objectMapper = new ObjectMapper();
-		this.topicName = env.getProperty("csb.topic");
-		String start = env.getProperty("csb.start");
-		if(topicName != null && start != null && start.trim().toUpperCase().equals("TRUE"))
+		this.idmtopic = env.getProperty("csb.idm.topic");
+		start = env.getProperty("csb.start");
+		String triesString = env.getProperty("csb.tries");
+		tries = Integer.parseInt(triesString);
+		if(idmtopic != null && start != null && start.trim().toUpperCase().equals("TRUE"))
 		{
 		
-				for(int i = 0; i<10 && !connected; i++)
+				for(int i = 0; i<tries && !idmConnected; i++)
 				{
 					try
 					{
@@ -69,9 +74,9 @@ public class  CloudPublisher {
 								LOG.error("Session from CSB is null.... exiting the CSB attempt");
 								return;
 							}
-							connected = true;
-							Topic topic = session.createTopic(topicName, null);
-							pub = session.createTopicPublisher(topic, new PubSubEventListener() {
+							idmConnected = true;
+							Topic topic = session.createTopic(idmtopic, null);
+							idmPublisher = session.createTopicPublisher(topic, new PubSubEventListener() {
 							@Override
 							public void onEvent(PubSubEvent event) {
 							}
@@ -92,11 +97,18 @@ public class  CloudPublisher {
 	  }
 	}
 	
-	public boolean updateEntity(String id, Collection<IPrincipal> collection) throws IdManagementException
+	public boolean updateEntity(String id) throws IdManagementException
 	{
 		//Map<String,Object> res = entityById.getAnyEntity(id, collection);
-		sendMessage(id);
-		return true;
+		try{
+			if(idmConnected)
+				sendMessage(id);
+			return true;
+		}catch(Throwable e)
+		{
+			LOG.error("I thought CSB was connected but it wasn't... :(");
+		}
+		return false;
 	}
 	private boolean sendMessage(String message)
 	{
@@ -106,11 +118,11 @@ public class  CloudPublisher {
 			objectMapper.writeValue(sr, message);
 			Message msg = factory.createMessage();
 			msg.setBuffer(sr.toString().replaceAll("\"", "").getBytes());
-			pub.publish(msg);
+			idmPublisher.publish(msg);
 			return true;
 		} catch (CSBException e)
 		{
-			LOG.error("pub sub unable to send a message. Topic: "+topicName+" value "+sr.toString());
+			LOG.error("pub sub unable to send a message. Topic: "+idmtopic+" value "+sr.toString());
 		} catch (JsonGenerationException e1)
 		{
 			LOG.error("Unable to convert to string Map object representation of entity"+e1.getLocalizedMessage());
@@ -126,19 +138,19 @@ public class  CloudPublisher {
 	}
 	private boolean sendMessage(Map<String,Object> message)
 	{
-		if(!connected)
-			LOG.error("it seems pub sub is not connected for topic "+this.topicName+" ?");
+		if(!idmConnected)
+			LOG.error("it seems pub sub is not connected for topic "+this.idmtopic+" ?");
 		StringWriter sr = new StringWriter();		
 		try
 		{
 			objectMapper.writeValue(sr, message);
 			Message msg = factory.createMessage();
 			msg.setBuffer(sr.toString().getBytes());
-			pub.publish(msg);
+			idmPublisher.publish(msg);
 			return true;
 		} catch (CSBException e)
 		{
-			LOG.error("pub sub unable to send a message. Topic: "+topicName+" value "+sr.toString());
+			LOG.error("pub sub unable to send a message. Topic: "+idmtopic+" value "+sr.toString());
 		} catch (JsonGenerationException e1)
 		{
 			LOG.error("Unable to convert to string Map object representation of entity"+e1.getLocalizedMessage());
@@ -150,6 +162,7 @@ public class  CloudPublisher {
 
 		return false;
 	}
+	
 	
 
 }
