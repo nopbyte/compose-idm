@@ -70,6 +70,11 @@ public class UAAClient implements UsersAuthzAndAuthClient
 	
 	private String redirectUriBase;
 	
+	int totalMemoryInMB;
+	int  instanceMemoryInMB;
+	int  maxRouteAmount;
+	int  maxServicesAmount;
+	
 	
 	private String getOauthAdminAuthToken() throws IdManagementException
 	{
@@ -107,7 +112,11 @@ public class UAAClient implements UsersAuthzAndAuthClient
         this.adminpassword = properties.getProperty("admin-password");
         this.org = properties.getProperty("org");
         this.space = properties.getProperty("space");
-        
+        this.totalMemoryInMB= Integer.parseInt(properties.getProperty("max.memory"));
+        this.instanceMemoryInMB=Integer.parseInt(properties.getProperty("max.instancememory"));
+    	this.maxRouteAmount=Integer.parseInt(properties.getProperty("max.route"));
+    	this.maxServicesAmount=Integer.parseInt(properties.getProperty("max.services"));
+    			
     }
 
 	@Override
@@ -435,10 +444,10 @@ public class UAAClient implements UsersAuthzAndAuthClient
 
 
 	@Override
-	public void removeUserFromCloud(String uid) throws IdManagementException 
+	public void removeUserFromCloud(String uid, String userName) throws IdManagementException 
 	{
 		CloudUserRegistration cr = new CloudUserRegistration();
-		cr.unregisterUserFromCloud(cCurl, uid ,  this.adminuser, this.adminpassword);
+		cr.unregisterUserFromCloud(userName, cCurl, uid ,  this.adminuser, this.adminpassword);
 	}
 
 
@@ -447,7 +456,7 @@ public class UAAClient implements UsersAuthzAndAuthClient
 			throws IdManagementException {
 		
 		CloudUserRegistration cr = new CloudUserRegistration();
-		cr.setupUserInCloud(cCurl,username, password, id , this.org, this.space, this.adminuser, this.adminpassword); 
+		cr.setupUserInCloud(cCurl,username, password, id , this.org, this.space, this.adminuser, this.adminpassword,totalMemoryInMB,instanceMemoryInMB,maxRouteAmount,maxServicesAmount); 
 		
 		
 	}

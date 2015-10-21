@@ -236,7 +236,7 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		userRepository.delete(sc);
 		Global entity = uniqueRepository.findOne(event.getEntityId());
 		uniqueRepository.delete(entity);
-		uaa.removeUserFromCloud(sc.getId());
+		uaa.removeUserFromCloud(sc.getId(), sc.getUsername());
 		uaa.deleteUser(sc.getId());
 	}
 
