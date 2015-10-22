@@ -132,13 +132,17 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		//u.setLastModified(new Date(System.currentTimeMillis()));
 
 		u.setRandom_auth_token(random.getRandomToken());
-
 		u = userRepository.save(u);		
-
-		CloudUserRegistration cur = new CloudUserRegistration();
-		//uaa.setupUserInCloud(id);
-		uaa.setupUserInCloud(create.getUserMessage().getUsername(),create.getUserMessage().getPassword(),id);
-		
+		try{
+			CloudUserRegistration cur = new CloudUserRegistration();
+			//uaa.setupUserInCloud(id);
+			uaa.setupUserInCloud(create.getUserMessage().getUsername(),create.getUserMessage().getPassword(),id);
+		}
+		catch(IdManagementException ex){
+			//revert changes
+			userRepository.delete(u);
+			throw ex;
+		}
 		check.insertUnique(id, check.USER);
 		UserResponseMessage res = new UserResponseMessage(u);
 		return res;

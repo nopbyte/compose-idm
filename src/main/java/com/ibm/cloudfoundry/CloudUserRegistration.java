@@ -15,40 +15,6 @@ public class CloudUserRegistration
 	public void setupUserInCloud(String cCurl, String username, String password, String uaaGid,String org, String space, String adminUser, String adminPass,
 			int totalMemoryInMB,int  instanceMemoryInMB,int  maxRouteAmount,int  maxServicesAmount) throws IdManagementException
 	{
-		/*LOG.info("Trying to register a user in CC... adminuser: "+adminUser+" and password: "+adminPass+" in url:"+cCurl);
-		LOG.info("Trying to create user in CC. Creating user with uaaUID: "+uaaGid+" with controller created with admin user:"+adminUser+" in url:"+cCurl);
-		cc  = new CConnector(cCurl,null, null, adminUser, adminPass);
-		String data = "{" +
-				"\"guid\":\"" +  uaaGid + "\"," + 
-				"\"default_space_guid\":\"" + cc.getURLbySpace(org, space).replaceFirst("/v2/spaces/", "") + "\"" + 
-				"}";
-		cc.sendQuery("POST", "/v2/users",data);
-		LOG.info("Trying to associate org with user. Org: "+org+" guid: "+uaaGid);
-		cc.associateOrg(org, uaaGid);
-		LOG.info("Trying to associate space with user. Org: "+org+" Space: "+space+" guid: "+uaaGid);
-		cc.associateSpace(org, space, uaaGid);
-		LOG.info("Trying to set org manager. Org: "+org+" guid"+uaaGid);
-		cc.setOrgManager(org, uaaGid);
-		LOG.info("Trying to set space manager. Org: "+org+" space: "+space+" guid: "+uaaGid);
-		cc.setSpaceManager(org, space, uaaGid);
-		LOG.info("Trying to set space developer. Org: "+org+" space: "+space+" guid: "+uaaGid);
-		cc.setSpaceDeveloper(org, space, uaaGid);
-		
-		/*String guid = getUserUID(cCurl,username, password);
-		LOG.info("guid obtained from CC for user :"+username+" and password: "+password+" ==  "+guid);
-		LOG.info("Trying to set org manager. Org: "+org+" guid"+guid);
-		cc.setOrgManager( org, guid);
-		LOG.info("Trying to associate org with user. Org: "+org+" guid: "+guid);
-		cc.associateOrg(org, guid);
-		LOG.info("Trying to set space manager. Org: "+org+" space: "+space+" guid: "+guid);
-		cc.setSpaceManager(org,space,guid); 
-		LOG.info("Trying to set space developer  Org: "+org+" space: "+space+" guid: "+guid);
-		cc.setSpaceDeveloper(org,space,guid); 
-		LOG.info("Trying to associate space with user. Org: "+org+" Space: "+space+" guid: "+guid);
-		cc.associateSpace(org,space,guid);
-		
-		LOG.info("Done setting up the user in the Cloud Controller... Seems it went OK");
-		*/
 		try{
 			
 			
@@ -57,10 +23,11 @@ public class CloudUserRegistration
 			String orgname = username+"-org";
 			String spacename = username+"-space";
 			String orgGuid = cc.createOrg(orgname,totalMemoryInMB,instanceMemoryInMB,maxRouteAmount,maxServicesAmount);
+			LOG.info("Create Org executed succesfully for orgname: "+orgname);
 			String spaceUid = cc.createSpace(orgname,spacename);
-			LOG.info("calling CConnector.createUser with username: "+username+" space: "+space+" and uaaGid: "+uaaGid);
+			LOG.info("Create Space executed succesfully for orgname : "+orgname+" for space: "+spacename);
 			cc.createUser(username, password, org, space);
-
+			LOG.info("User registered in the cloud with username: "+username+" space: "+space+" and uaaGid: "+uaaGid);
 			
 		}
 		catch(NullPointerException e)
