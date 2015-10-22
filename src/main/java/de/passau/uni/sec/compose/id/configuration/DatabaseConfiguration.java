@@ -71,6 +71,9 @@ DriverManagerDataSource dataSource = new DriverManagerDataSource();
         ObjectMapper mapper = new ObjectMapper();
 	    JsonNode root;
 		try {
+			if(System.getenv("VCAP_SERVICES")== null)
+				System.err.println("VCAP_SERVICES environment variable is null!");
+				
 			root = mapper.readTree(System.getenv("VCAP_SERVICES"));
 			root = root.findValue("credentials");
 			String database = root.findValue("name").asText();

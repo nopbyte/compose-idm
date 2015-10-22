@@ -112,10 +112,10 @@ public class UAAClient implements UsersAuthzAndAuthClient
         this.adminpassword = properties.getProperty("admin-password");
         this.org = properties.getProperty("org");
         this.space = properties.getProperty("space");
-        this.totalMemoryInMB= Integer.parseInt(properties.getProperty("max.memory"));
-        this.instanceMemoryInMB=Integer.parseInt(properties.getProperty("max.instancememory"));
-    	this.maxRouteAmount=Integer.parseInt(properties.getProperty("max.route"));
-    	this.maxServicesAmount=Integer.parseInt(properties.getProperty("max.services"));
+        this.totalMemoryInMB= Integer.parseInt(properties.getProperty("max.memory").trim());
+        this.instanceMemoryInMB=Integer.parseInt(properties.getProperty("max.instancememory").trim());
+    	this.maxRouteAmount=Integer.parseInt(properties.getProperty("max.route").trim());
+    	this.maxServicesAmount=Integer.parseInt(properties.getProperty("max.services").trim());
     			
     }
 
