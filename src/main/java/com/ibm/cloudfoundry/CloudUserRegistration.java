@@ -28,6 +28,9 @@ public class CloudUserRegistration
 			String spaceUid = cc.createSpace(orgname,spacename);
 			LOG.info("Create Space executed succesfully for orgname : "+orgname+" for space: "+spacename);
 			id = cc.createUser(username, password, org, space);
+			if(id == null){
+				throw new IdManagementException("problem trying to create user in the cloud. User null",null, LOG,"Exception while creating user with CConnector: id returned by connector is null",Level.ERROR, 500);			
+			}
 			LOG.info("User registered in the cloud with username: "+username+" space: "+space+" and uaaGid: "+id);
 			
 		}
