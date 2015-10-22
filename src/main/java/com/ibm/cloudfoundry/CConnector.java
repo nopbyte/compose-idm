@@ -1126,7 +1126,7 @@ public class CConnector {
 					conn.getErrorStream()));
 			String line;
 			while ((line = r.readLine()) != null) {
-				System.err.println(line);
+				//System.err.println(line);
 				debug(line);
 				data.add(line);
 			}
