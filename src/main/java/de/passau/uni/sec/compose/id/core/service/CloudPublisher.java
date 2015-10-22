@@ -70,7 +70,7 @@ public class  CloudPublisher {
 					{
 							factory = CSBFactory.getInstance();
 							Session session = factory.createSession();
-							if(session!=null){
+							if(session==null){
 								LOG.error("Session from CSB is null.... exiting the CSB attempt");
 								return;
 							}
