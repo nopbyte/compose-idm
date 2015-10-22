@@ -366,6 +366,7 @@ public class CConnector {
 
 	public void deleteUser(String uid) throws Exception {
 		sendQuery("DELETE", "/v2/users/" + uid, null);
+		sendQueryToEndpoint(_uaaURL, "DELETE", "/Users", null, false);
 	}
 
 	public void associateSpace(String org, String space, String userGid)
