@@ -452,11 +452,11 @@ public class UAAClient implements UsersAuthzAndAuthClient
 
 
 	@Override
-	public void setupUserInCloud(String username, String password, String id)
+	public String setupUserInCloud(String username, String password)
 			throws IdManagementException {
 		
 		CloudUserRegistration cr = new CloudUserRegistration();
-		cr.setupUserInCloud(cCurl,username, password, id , this.org, this.space, this.adminuser, this.adminpassword,totalMemoryInMB,instanceMemoryInMB,maxRouteAmount,maxServicesAmount); 
+		return cr.setupUserInCloud(cCurl,username, password , this.org, this.space, this.adminuser, this.adminpassword,totalMemoryInMB,instanceMemoryInMB,maxRouteAmount,maxServicesAmount); 
 		
 		
 	}

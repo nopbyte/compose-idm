@@ -119,31 +119,37 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 		uaaData.setName(name);
 		
 		//create user in the UAA
-		Map<String,Object> UAAResponse = uaa.createUser(uaaData);
-		String id = (String) UAAResponse.get("id");
-		if(id == null)
-			throw new IdManagementException("Internal communication error",null,LOG,"UAA Creation of user doesn't have an id"+UAAResponse,Level.ERROR,500);
+		//Map<String,Object> UAAResponse = uaa.createUser(uaaData);
+		//String id = (String) UAAResponse.get("id");
+		//if(id == null)
+		//	throw new IdManagementException("Internal communication error",null,LOG,"UAA Creation of user doesn't have an id"+UAAResponse,Level.ERROR,500);
 		
 		//create user in the local database
 		User u = new User();
-		u.setId(id);
+		//u.setId(id);
 		u.setReputation(rep.getReputationValueforNewUser());
 		u.setUsername(create.getUserMessage().getUsername());
 		//u.setLastModified(new Date(System.currentTimeMillis()));
 
 		u.setRandom_auth_token(random.getRandomToken());
-		u = userRepository.save(u);		
+		
 		try{
 			CloudUserRegistration cur = new CloudUserRegistration();
 			//uaa.setupUserInCloud(id);
-			uaa.setupUserInCloud(create.getUserMessage().getUsername(),create.getUserMessage().getPassword(),id);
+			String id = uaa.setupUserInCloud(create.getUserMessage().getUsername(),
+					create.getUserMessage().getPassword());
+			u.setId(id);
+			check.insertUnique(id, check.USER);
+			u = userRepository.save(u);		
+			
 		}
 		catch(IdManagementException ex){
 			//revert changes
 			userRepository.delete(u);
 			throw ex;
 		}
-		check.insertUnique(id, check.USER);
+		
+		
 		UserResponseMessage res = new UserResponseMessage(u);
 		return res;
 	}

@@ -62,7 +62,7 @@ public interface UsersAuthzAndAuthClient
 	public void changePassword(String token, String id,  String old_password,
 			String new_password) throws IdManagementException;
 	
-	public void setupUserInCloud(String username, String password, String id) throws IdManagementException;
+	public String setupUserInCloud(String username, String password) throws IdManagementException;
 	
 
 	void removeUserFromCloud(String uid, String userName)

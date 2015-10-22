@@ -12,9 +12,10 @@ public class CloudUserRegistration
 {
 	private static Logger LOG = LoggerFactory.getLogger(CloudUserRegistration.class);
 
-	public void setupUserInCloud(String cCurl, String username, String password, String uaaGid,String org, String space, String adminUser, String adminPass,
+	public String setupUserInCloud(String cCurl, String username, String password,String org, String space, String adminUser, String adminPass,
 			int totalMemoryInMB,int  instanceMemoryInMB,int  maxRouteAmount,int  maxServicesAmount) throws IdManagementException
 	{
+		String id = null;
 		try{
 			
 			
@@ -26,18 +27,19 @@ public class CloudUserRegistration
 			LOG.info("Create Org executed succesfully for orgname: "+orgname);
 			String spaceUid = cc.createSpace(orgname,spacename);
 			LOG.info("Create Space executed succesfully for orgname : "+orgname+" for space: "+spacename);
-			cc.createUser(username, password, org, space);
-			LOG.info("User registered in the cloud with username: "+username+" space: "+space+" and uaaGid: "+uaaGid);
+			id = cc.createUser(username, password, org, space);
+			LOG.info("User registered in the cloud with username: "+username+" space: "+space+" and uaaGid: "+id);
 			
 		}
 		catch(NullPointerException e)
 		{
-			throw new IdManagementException("Null pointer exceptions from IBM CConnector",e, LOG,"Exception while setting user with uaaUID"+uaaGid+" in org: "+org+" with space: "+space,Level.ERROR, 500);
+			throw new IdManagementException("Null pointer exceptions from IBM CConnector",e, LOG,"Exception while setting user with uaaUID"+id+" in org: "+org+" with space: "+space,Level.ERROR, 500);
 		}
 		catch(Exception ex)
 		{
-			throw new IdManagementException("problem trying to set the username in the organization- using IBM CConnector",ex, LOG,"Exception while setting user with uaaUID"+uaaGid+" in org: "+org+" with space: "+space,Level.ERROR, 500);			
+			throw new IdManagementException("problem trying to set the username in the organization- using IBM CConnector",ex, LOG,"Exception while setting user with uaaUID"+id+" in org: "+org+" with space: "+space,Level.ERROR, 500);			
 		}
+		return id;
 	}
 	
 	private String getUserUID(String cCurl, String username, String password) throws Exception {
