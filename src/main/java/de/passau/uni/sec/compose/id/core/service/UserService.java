@@ -241,13 +241,16 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
 	protected void postACDeleteEntity(DetailsIdEvent event)
 			throws IdManagementException {
 		
-		User sc = userRepository.getOne(event.getEntityId());
+		User sc = userRepository.findOne(event.getEntityId());
 		//the user repository will throw exception if the user still has any associations (groups...etc), so we do it first
-		userRepository.delete(sc);
-		Global entity = uniqueRepository.findOne(event.getEntityId());
-		uniqueRepository.delete(entity);
+		if(sc !=null)
+		{
+			userRepository.delete(sc);
+			Global entity = uniqueRepository.findOne(event.getEntityId());
+			uniqueRepository.delete(entity);
+		}
 		uaa.removeUserFromCloud(sc.getId(), sc.getUsername());
-		uaa.deleteUser(sc.getId());
+		//uaa.deleteUser(sc.getId());
 	}
 
 	@Override
