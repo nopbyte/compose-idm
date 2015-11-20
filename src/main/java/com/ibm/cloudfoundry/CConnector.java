@@ -55,14 +55,15 @@ public class CConnector {
 	private transient volatile Properties _tokenData;
 	private transient Proxy _proxy;
 	private transient String _proxyURL;
+	private String _nextURL = null;
 
 	public CConnector(String ccURL, String proxyURL, String idmURL,
 			String username, String password) throws Exception {
 		this(ccURL, proxyURL, idmURL, username, password, null, null, null);
 	}
-	
-	public void deleteSpace(String org,String space) throws Exception {
-		sendQuery("DELETE",getURLbySpace(org, space) , null);
+
+	public void deleteSpace(String org, String space) throws Exception {
+		sendQuery("DELETE", getURLbySpace(org, space), null);
 	}
 
 	public void deleteOrg(String orgName) throws Exception {
@@ -73,98 +74,117 @@ public class CConnector {
 		sendQuery("DELETE", "/v2/organizations/" + orgGuid, null);
 		deleteQuotaDef(quotaGuid);
 	}
-	
+
 	private String getQuotaGuidByOrg(String orgName) throws Exception {
-		return query("GET", "/v2/organizations", null)
-				.walk("resources").search("entity", "name", orgName)
-				.walk("entity").get("quota_definition_guid");
+		return query("GET", "/v2/organizations", null).walk("resources")
+				.search("entity", "name", orgName).walk("entity")
+				.get("quota_definition_guid");
 	}
-	
+
 	private void deleteQuotaDef(String quotaDefGuid) throws Exception {
-		sendQuery("DELETE", "/v2/quota_definitions/" + quotaDefGuid,null);
+		sendQuery("DELETE", "/v2/quota_definitions/" + quotaDefGuid, null);
 	}
-	
-	public String createQuota(String quotaName,int totalMemoryInMB,int instanceMemoryInMB,int maxRouteAmount,int maxServicesAmount) throws Exception {
+
+	public String createQuota(String quotaName, int totalMemoryInMB,
+			int instanceMemoryInMB, int maxRouteAmount, int maxServicesAmount)
+			throws Exception {
 		String uri = "/v2/quota_definitions";
 		JsonObject payload = new JsonObject();
 		payload.addProperty("name", quotaName);
 		payload.addProperty("non_basic_services_allowed", true);
-		payload.addProperty("total_services",maxServicesAmount);
+		payload.addProperty("total_services", maxServicesAmount);
 		payload.addProperty("total_routes", maxRouteAmount);
 		payload.addProperty("memory_limit", totalMemoryInMB);
 		payload.addProperty("instance_memory_limit", instanceMemoryInMB);
-		return query("POST", uri, payload.toString()).walk("metadata").get("guid");
+		return query("POST", uri, payload.toString()).walk("metadata").get(
+				"guid");
 	}
-	
-	public String createOrg(String orgName,int totalMemoryInMB,int instanceMemoryInMB,int maxRouteAmount,int maxServicesAmount) throws Exception {
+
+	public String createOrg(String orgName, int totalMemoryInMB,
+			int instanceMemoryInMB, int maxRouteAmount, int maxServicesAmount)
+			throws Exception {
 		String quotaName = "COMPOSE_" + orgName + "_Quota";
-		String quotaGUID = createQuota(quotaName, totalMemoryInMB, instanceMemoryInMB, maxRouteAmount, maxServicesAmount);
+		String quotaGUID = createQuota(quotaName, totalMemoryInMB,
+				instanceMemoryInMB, maxRouteAmount, maxServicesAmount);
 		JsonObject payload = new JsonObject();
 		payload.addProperty("name", orgName);
 		payload.addProperty("quota_definition_guid", quotaGUID);
-		return query("POST","/v2/organizations",payload.toString()).walk("metadata").get("guid");
+		return query("POST", "/v2/organizations", payload.toString()).walk(
+				"metadata").get("guid");
 	}
-	
-	public String createSpace(String orgName,String spaceName) throws Exception {
+
+	public String createSpace(String orgName, String spaceName)
+			throws Exception {
 		String orgGUID = query("GET", "/v2/organizations", null)
 				.walk("resources").search("entity", "name", orgName)
 				.walk("metadata").get("guid");
 		JsonObject payload = new JsonObject();
-		payload.addProperty("name",spaceName);
-		payload.addProperty("organization_guid",orgGUID);
-		return query("POST", "/v2/spaces",payload.toString()).walk("metadata").get("guid");
+		payload.addProperty("name", spaceName);
+		payload.addProperty("organization_guid", orgGUID);
+		return query("POST", "/v2/spaces", payload.toString()).walk("metadata")
+				.get("guid");
 	}
-	
+
 	public Properties getThresholdsByApp(String appGuid) throws Exception {
-		JSONWalker jsw = query("GET","/v2/apps/" + appGuid+  "/stats",null);
-		Properties worstThresholds = getThresholdsForInstance(jsw,0);
+		JSONWalker jsw = query("GET", "/v2/apps/" + appGuid + "/stats", null);
+		Properties worstThresholds = getThresholdsForInstance(jsw, 0);
 		String name = jsw.walk("0").walk("stats").get("name");
 		worstThresholds.put("name", name);
 		int instance = 1;
 		while (jsw._jo.has(instance + "")) {
-			Properties threshs = getThresholdsForInstance(jsw,instance);
+			Properties threshs = getThresholdsForInstance(jsw, instance);
 			int cpu = (Integer) worstThresholds.get("cpu");
 			long mem = (Long) worstThresholds.get("mem");
 			long disk = (Long) worstThresholds.get("disk");
-			worstThresholds.put("cpu", Math.max(cpu,(Integer) (threshs.get("cpu"))));
-			worstThresholds.put("mem", Math.max(mem,(Long) (threshs.get("mem"))));
-			worstThresholds.put("disk", Math.max(disk,(Long) (threshs.get("disk"))));
+			worstThresholds.put("cpu",
+					Math.max(cpu, (Integer) (threshs.get("cpu"))));
+			worstThresholds.put("mem",
+					Math.max(mem, (Long) (threshs.get("mem"))));
+			worstThresholds.put("disk",
+					Math.max(disk, (Long) (threshs.get("disk"))));
 			instance++;
 		}
 		return worstThresholds;
 	}
-	
-	public Map<String,Properties> getApplicationQuotas() throws Exception {
-		Map<String,Properties> quotas = new HashMap<String, Properties>();
+
+	public Map<String, Properties> getApplicationQuotas() throws Exception {
+		Map<String, Properties> quotas = new HashMap<String, Properties>();
 		for (String spaceGUID : getSpaceGids()) {
 			for (String appGuid : getRunningAppsBySpaceGUID(spaceGUID)) {
 				Properties worstThresholds = getThresholdsByApp(appGuid);
 				String name = worstThresholds.getProperty("name");
 				worstThresholds.remove("name");
 				worstThresholds.put("id", appGuid);
-				quotas.put(name,worstThresholds);
+				quotas.put(name, worstThresholds);
 			}
 		}
 		return quotas;
 	}
 
-	private Properties getThresholdsForInstance(JSONWalker jsw,int instance) {
+	private Properties getThresholdsForInstance(JSONWalker jsw, int instance) {
 		String instanceStr = instance + "";
-		long memQuota = Long.parseLong(jsw.walk(instanceStr).walk("stats").get("mem_quota"));
-		long diskQuota = Long.parseLong(jsw.walk(instanceStr).walk("stats").get("disk_quota"));
-		int cpuUsage = (int) Double.parseDouble(jsw.walk(instanceStr).walk("stats").walk("usage").get("cpu"));
-		long memUsage = Long.parseLong(jsw.walk(instanceStr).walk("stats").walk("usage").get("mem"));
-		long diskUsage = Long.parseLong(jsw.walk(instanceStr).walk("stats").walk("usage").get("disk"));
+		long memQuota = Long.parseLong(jsw.walk(instanceStr).walk("stats")
+				.get("mem_quota"));
+		long diskQuota = Long.parseLong(jsw.walk(instanceStr).walk("stats")
+				.get("disk_quota"));
+		int cpuUsage = (int) Double.parseDouble(jsw.walk(instanceStr)
+				.walk("stats").walk("usage").get("cpu"));
+		long memUsage = Long.parseLong(jsw.walk(instanceStr).walk("stats")
+				.walk("usage").get("mem"));
+		long diskUsage = Long.parseLong(jsw.walk(instanceStr).walk("stats")
+				.walk("usage").get("disk"));
 		Properties props = new Properties();
-		props.put("cpu",cpuUsage);
+		props.put("cpu", cpuUsage);
 		props.put("mem", (memUsage * 100) / memQuota);
 		props.put("disk", (diskUsage * 100) / diskQuota);
 		return props;
 	}
-	
-	private List<String> getRunningAppsBySpaceGUID(String spaceGUID) throws Exception {
+
+	private List<String> getRunningAppsBySpaceGUID(String spaceGUID)
+			throws Exception {
 		List<String> runningGuids = new LinkedList<String>();
-		List<JSONWalker> jwlist = getEntitiesOfType("spaces/" + spaceGUID + "/apps?inline-relations-depth=1");
+		List<JSONWalker> jwlist = getEntitiesOfType("spaces/" + spaceGUID
+				+ "/apps?inline-relations-depth=1");
 		for (JSONWalker jsw : jwlist) {
 			Properties p = new Properties();
 			p.setProperty("id", jsw.walk("metadata").get("guid"));
@@ -175,7 +195,7 @@ public class CConnector {
 		}
 		return runningGuids;
 	}
-	
+
 	public void bindService(String org, String space, String app,
 			String serviceInstance) throws Exception {
 		String appGuid = getAppURLByNameNSpace(getURLbySpace(org, space), app)
@@ -366,7 +386,7 @@ public class CConnector {
 
 	public void deleteUser(String uid) throws Exception {
 		sendQuery("DELETE", "/v2/users/" + uid, null);
-		sendQueryToEndpoint(_uaaURL, "DELETE", "/Users/"+uid, null, false);
+		sendQueryToEndpoint(_uaaURL, "DELETE", "/Users/" + uid , null, false);
 	}
 
 	public void associateSpace(String org, String space, String userGid)
@@ -384,9 +404,9 @@ public class CConnector {
 				null);
 	}
 
-	CConnector(String ccURL, String proxyURL, String idmURL,
-			String username, String password, String brokerName,
-			String brokerPassword, String token) throws Exception {
+	CConnector(String ccURL, String proxyURL, String idmURL, String username,
+			String password, String brokerName, String brokerPassword,
+			String token) throws Exception {
 
 		_idmURL = idmURL;
 		_ccURL = ccURL;
@@ -437,7 +457,7 @@ public class CConnector {
 		}
 
 		if (_idmURL != null) {
-			System.out.println("Logging in to IDM");
+			//System.out.println("Logging in to IDM");
 			idmLogin();
 		}
 		connect(_ccURL);
@@ -681,7 +701,7 @@ public class CConnector {
 			}
 		}
 	}
-	
+
 	public List<String> getAppsBySpace(String spaceGUI) {
 		try {
 			return sendQuery("GET", "/v2/apps", null);
@@ -690,64 +710,68 @@ public class CConnector {
 			return new LinkedList<String>();
 		}
 	}
-	
+
 	private List<String> getOrgGUIDS() throws Exception {
 		return enumerateEntityType("organizations");
 	}
-	
+
 	private List<String> getSpaceGids() throws Exception {
 		List<String> spaceGids = new LinkedList<String>();
 		for (String orgGuid : getOrgGUIDS()) {
-			for (String gids : enumerateEntityType("organizations/" + orgGuid + "/spaces")) {
+			for (String gids : enumerateEntityType("organizations/" + orgGuid
+					+ "/spaces")) {
 				spaceGids.add(gids);
 			}
 		}
 		return spaceGids;
 	}
-	
-	
+
 	private List<String> enumerateEntityType(String type) throws Exception {
 		List<String> ids = new LinkedList<String>();
 		JsonArray jsa = query("GET", "/v2/" + type, null).walk("resources")._ja;
-		for (int i=0; i<jsa.size(); i++) {
-			ids.add(jsa.get(i).getAsJsonObject().get("metadata").getAsJsonObject().get("guid").getAsString());
+		for (int i = 0; i < jsa.size(); i++) {
+			ids.add(jsa.get(i).getAsJsonObject().get("metadata")
+					.getAsJsonObject().get("guid").getAsString());
 		}
 		return ids;
 	}
-	
+
 	private List<JSONWalker> getEntitiesOfType(String type) throws Exception {
 		List<JSONWalker> walkers = new LinkedList<JSONWalker>();
 		JsonArray jsa = query("GET", "/v2/" + type, null).walk("resources")._ja;
-		for (int i=0; i<jsa.size(); i++) {
-			walkers.add(new JSONWalker(jsa.get(i).getAsJsonObject().getAsJsonObject().toString()));
+		for (int i = 0; i < jsa.size(); i++) {
+			walkers.add(new JSONWalker(jsa.get(i).getAsJsonObject()
+					.getAsJsonObject().toString()));
 		}
 		return walkers;
 	}
-	
-	private List<Properties> getAppStatesBySpaceGUID(String spaceGUID) throws Exception {
+
+	private List<Properties> getAppStatesBySpaceGUID(String spaceGUID)
+			throws Exception {
 		List<Properties> props = new LinkedList<Properties>();
-		List<JSONWalker> jwlist = getEntitiesOfType("spaces/" + spaceGUID + "/apps?inline-relations-depth=1");
+		List<JSONWalker> jwlist = getEntitiesOfType("spaces/" + spaceGUID
+				+ "/apps?inline-relations-depth=1");
 		for (JSONWalker jsw : jwlist) {
 			Properties p = new Properties();
 			p.setProperty("id", jsw.walk("metadata").get("guid"));
 			p.setProperty("name", jsw.walk("entity").get("name"));
 			p.setProperty("state", jsw.walk("entity").get("state"));
 			String cmd = jsw.walk("entity").get("command");
-			p.setProperty("command", cmd != null ?  cmd : "null");
+			p.setProperty("command", cmd != null ? cmd : "null");
 			props.add(p);
 		}
 		return props;
 	}
-	
+
 	public List<Properties> getAppStates() throws Exception {
 		List<Properties> props = new LinkedList<Properties>();
 		for (String spaceGUID : getSpaceGids()) {
 			for (Properties p : getAppStatesBySpaceGUID(spaceGUID))
-			props.add(p);
+				props.add(p);
 		}
 		return props;
 	}
-	
+
 	public void deleteApp(String org, String space, String app)
 			throws Exception {
 		String appURL = getAppURLByNameNSpace(getURLbySpace(org, space), app);
@@ -1058,7 +1082,7 @@ public class CConnector {
 				+ "\",\"instances\":" + instanceCount + "," + "\"buildpack\":"
 				+ (buildpack != null ? "\"" + buildpack + "\"" : "null")
 				+ ",\"memory\":320,\"stack_guid\":null}";
-		System.out.println(createCmd);
+		//System.out.println(createCmd);
 		boolean created = false;
 		for (String line : sendQuery("POST", "/v2/apps", createCmd)) {
 			if (line.contains("\"created_at\"")) {
@@ -1076,14 +1100,60 @@ public class CConnector {
 				"App not created, missing guid field in response output");
 	}
 
-	private List<String> sendQuery(String method, String requrl, String postData)
-			throws Exception {
+	private synchronized List<String> sendQuery(String method, String requrl,
+			String postData) throws Exception {
+		_nextURL = null;
 		return sendQueryToEndpoint(_ccURL, method, requrl, postData, false);
+	}
+
+	private static List<String> stripHeaderAndFooter(List<String> rawResponse) {
+		boolean add = false;
+		List<String> response = new LinkedList<String>();
+		for (String line : rawResponse) {
+			if (add) {
+				response.add(line);
+			}
+			if (line.contains("\"resources\":")) {
+				add = true;
+			}
+		}
+		
+		response.remove(response.size() - 1);
+		response.remove(response.size() - 1);
+		return response;
 	}
 
 	List<String> sendQueryToEndpoint(String endpointURL, String method,
 			String requrl, String postData, boolean ignoreErrors)
 			throws Exception {
+		if (_ccURL.equals(endpointURL) && method.equals("GET")) {
+			List<String> response = new LinkedList<String>();
+			List<String> raw = _sendQueryToEndpoint(
+					endpointURL, method, requrl, postData, ignoreErrors);
+			if (raw.size() == 1) {
+				return raw;
+			}
+			response.add("{");
+			response.add("  \"resources\": [");
+			response.addAll(stripHeaderAndFooter(raw));
+			while (_nextURL != null) {
+				response.add(",");
+				response.addAll(stripHeaderAndFooter(_sendQueryToEndpoint(
+						endpointURL, method, _nextURL, postData, ignoreErrors)));
+			}
+			response.add("]");
+			response.add("}");
+			return response;
+		} else {
+			return _sendQueryToEndpoint(endpointURL, method, requrl, postData,
+					ignoreErrors);
+		}
+	}
+
+	private List<String> _sendQueryToEndpoint(String endpointURL,
+			String method, String requrl, String postData, boolean ignoreErrors)
+			throws Exception {
+
 		List<String> data = new ArrayList<String>();
 		HttpURLConnection conn = null;
 		try {
@@ -1113,6 +1183,13 @@ public class CConnector {
 			String line;
 			while ((line = r.readLine()) != null) {
 				debug(line);
+				if (line.contains("\"next_url\":")) {
+					_nextURL = line.substring(line.indexOf(':') + 1).trim()
+							.replaceAll("\"", "").replaceAll(",", "");
+					if (_nextURL.equals("null")) {
+						_nextURL = null;
+					}
+				}
 				data.add(line);
 			}
 			int resCode = conn.getResponseCode();
@@ -1127,7 +1204,7 @@ public class CConnector {
 					conn.getErrorStream()));
 			String line;
 			while ((line = r.readLine()) != null) {
-				//System.err.println(line);
+				System.err.println(line);
 				debug(line);
 				data.add(line);
 			}
@@ -1240,7 +1317,7 @@ public class CConnector {
 		wr.close();
 		responseCode = conn.getResponseCode();
 		if (responseCode != 200) {
-			System.out.println("responseCode=" + responseCode);
+			//System.out.println("responseCode=" + responseCode);
 		}
 		in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 		response = new StringBuffer();
@@ -1355,7 +1432,7 @@ public class CConnector {
 		}
 		in.close();
 
-		System.out.println("Response from CC: " + response.toString());
+		//System.out.println("Response from CC: " + response.toString());
 
 		return true;
 	}
@@ -1422,7 +1499,8 @@ public class CConnector {
 		}
 
 		String get(String attr) {
-			return _jo.get(attr).isJsonNull() ? null :  _jo.get(attr).getAsString();
+			return _jo.get(attr).isJsonNull() ? null : _jo.get(attr)
+					.getAsString();
 		}
 
 		JSONWalker get(int i) {
