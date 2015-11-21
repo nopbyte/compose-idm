@@ -91,6 +91,7 @@ public class UserService extends AbstractSecureEntityBasicEntityService implemen
                 u.setId(env.getRequiredProperty("anonid"));
                 u.setReputation(rep.getReputationValueforNewUser());
                 u.setUsername(env.getRequiredProperty("anonusername"));
+                u.setReputation(0);
                 // u.setLastModified(new Date(System.currentTimeMillis()));
                 u.setRandom_auth_token(env.getRequiredProperty("anontoken"));
                 u = userRepository.save(u);
