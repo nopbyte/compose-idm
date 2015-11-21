@@ -15,6 +15,8 @@ public class UserResponseMessage implements EntityResponseMessage
 	private String username;
 	
 	private Date lastModified;
+	
+	private int reputation;
 	/**
 	 * @return This attribute should only display memberships that have been approved in the past
 	 */
@@ -31,6 +33,7 @@ public class UserResponseMessage implements EntityResponseMessage
 		approvedGroupMemberships =  u.getApprovedMemberships();
 		approvedAttributes = u.getApprovedAttributeValues();
 		lastModified = u.getLastModified();
+		reputation = u.getReputation();
 	}
 	
 	public String getUsername() {
@@ -78,6 +81,16 @@ public class UserResponseMessage implements EntityResponseMessage
 
 	public void setRandom_auth_token(String random_auth_token) {
 		this.random_auth_token = random_auth_token;
+	}
+
+	public int getReputation()
+	{
+		return reputation;
+	}
+
+	public void setReputation(int reputation)
+	{
+		this.reputation = reputation;
 	}
 	
 	
