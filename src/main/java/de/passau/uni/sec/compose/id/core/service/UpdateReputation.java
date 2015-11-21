@@ -56,8 +56,8 @@ public class UpdateReputation
 		else
 			LOG.error("unknwon entity with id: "+entityId+" and type "+entitytype+" for reputation update!");
 		
-		if(success)
-			manager.handleUpdateForEntity(entityId);
+		//if(success)
+		//	manager.handleUpdateForEntity(entityId);
 			
 	}
 
