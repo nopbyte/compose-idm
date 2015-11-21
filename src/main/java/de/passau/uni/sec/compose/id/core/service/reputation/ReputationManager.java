@@ -11,27 +11,27 @@ public class ReputationManager
 	
 	public int getReputationValueforNewUser()
 	{
-		return 3;
+		return 5;
 	}
 	//TODO fill with calls to the reputation manager or calculations.
 	public int getReputationValueForNewServiceObject(String ownerUserId)
 	{
 		LOG.debug("returning initial reputation for a new service object for user with id"+ownerUserId);
-		return 2;
+		return 5;
 		
 	}
 	public int getReputationValueForNewSourceCode(String ownerUserId)
 	{
 		LOG.debug("returning initial reputation for new source code for user with id"+ownerUserId);
-		return 2;
+		return 5;
 	}
 	public int getReputationValueForNewApplication(String ownerUserId)
 	{
 		LOG.debug("returning initial reputation for a new application for user with id"+ownerUserId);
-		return 2;
+		return 5;
 	}
 	public int getReputationValueForNewServiceInstance(String ownerUserId) {
 		LOG.debug("returning initial reputation for a new service instance for user with id"+ownerUserId);
-		return 2;
+		return 5;
 	}
 }
