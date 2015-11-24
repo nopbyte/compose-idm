@@ -57,15 +57,15 @@ public class CloudUserRegistration
 	{
 		try{
 		    CConnector cc  = new CConnector(cCurl,null, null, adminUser, adminPassword);
-		    LOG.info("Attemtpting to delete the user with uid:"+uid);
+		    // LOG.info("Attemtpting to delete the user with uid:"+uid);
 			cc.deleteUser(uid);			
-		    LOG.info("calling CConnector.deleteUser with uid:"+uid+" user executing the request, username: "+adminUser);
+		    /*LOG.info("calling CConnector.deleteUser with uid:"+uid+" user executing the request, username: "+adminUser);
 			String orgname = username+"-org";
 			String spacename = username+"-space";
 		    LOG.info("Attemtpting to delete the space "+spacename+" in org:"+orgname);
 			cc.deleteSpace(orgname, spacename);
 		    LOG.info("Attemtpting to delete the org:"+orgname);
-			cc.deleteOrg(orgname);
+			cc.deleteOrg(orgname);*/
 		    
 		}catch(Exception ex)
 		{
