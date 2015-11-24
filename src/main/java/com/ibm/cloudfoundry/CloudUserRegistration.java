@@ -21,15 +21,16 @@ public class CloudUserRegistration
 			
 			
 			CConnector cc  = new CConnector(cCurl,null, null, adminUser, adminPass);
-			String orgname = username+"-org";
-			String spacename = username+"-space";
-			String orgGuid = cc.createOrg(orgname,totalMemoryInMB,instanceMemoryInMB,maxRouteAmount,maxServicesAmount);
-			LOG.info("Create Org executed succesfully for orgname: "+orgname);
-			String spaceUid = cc.createSpace(orgname,spacename);
-			LOG.info("Create Space executed succesfully for orgname : "+orgname+" for space: "+spacename);
+			LOG.info("registering user "+username+" in org "+org+" and space "+space);
+			//String orgname = username+"-org";
+			//String spacename = username+"-space";
+			//String orgGuid = cc.createOrg(orgname,totalMemoryInMB,instanceMemoryInMB,maxRouteAmount,maxServicesAmount);
+			//LOG.info("Create Org executed succesfully for orgname: "+orgname);
+			//String spaceUid = cc.createSpace(orgname,spacename);
+			//LOG.info("Create Space executed succesfully for orgname : "+orgname+" for space: "+spacename);
 			id = cc.createUser(username, password, org, space);
 			if(id == null){
-				throw new IdManagementException("problem trying to create user in the cloud. User null",null, LOG,"Exception while creating user with CConnector: id returned by connector is null",Level.ERROR, 500);			
+				throw new IdManagementException("problem trying to create user in the cloud. Connector problem. User null",null, LOG,"Exception while creating user with CConnector: id returned by connector is null",Level.ERROR, 500);			
 			}
 			LOG.info("User registered in the cloud with username: "+username+" space: "+space+" and uaaGid: "+id);
 			
